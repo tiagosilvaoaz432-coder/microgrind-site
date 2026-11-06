@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { DEFINITION, HOME, ORIGIN, pages } from './content.mjs';
-import { escapeHtml, jsonLd, relIndex, renderFooterLinks, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.mjs';
+import { escapeHtml, OAIQ_PIXEL, jsonLd, relIndex, renderFooterLinks, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.mjs';
 import { renderWhoLevels, whoBootSource } from './who.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -339,8 +339,9 @@ export function buildSeoSite(outDir) {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, renderPage(page));
   }
-  const pt = patchHome(readFileSync(join(here, 'snapshots', 'home-pt.html'), 'utf8'), 'pt');
-  const en = patchHome(readFileSync(join(here, 'snapshots', 'home-en.html'), 'utf8'), 'en');
+  const withPixel = (html) => html.includes('oaiq(') ? html : html.replace('</head>', `${OAIQ_PIXEL}</head>`);
+  const pt = withPixel(patchHome(readFileSync(join(here, 'snapshots', 'home-pt.html'), 'utf8'), 'pt'));
+  const en = withPixel(patchHome(readFileSync(join(here, 'snapshots', 'home-en.html'), 'utf8'), 'en'));
   writeFileSync(join(outDir, 'index.html'), pt);
   mkdirSync(join(outDir, 'en'), { recursive: true });
   writeFileSync(join(outDir, 'en', 'index.html'), en);

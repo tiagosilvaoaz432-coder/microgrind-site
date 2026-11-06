@@ -1,3 +1,8 @@
+// ChatGPT Ads pixel + "open web app" click event (OpenAI custom event).
+export const OAIQ_PIXEL = `<script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("init",{pixelId:"AVdC7CzexyzwxBqEcygmLY",debug:true});
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href*="/app/"]');if(!a)return;var n='open_web_app';oaiq('measure','custom',{type:'custom'},{custom_event_name:n,event_id:n+'_'+Date.now()+'_'+Math.random().toString(36).slice(2)});});</script>
+`;
+
 import { CHROME, CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
 
@@ -265,7 +270,7 @@ export function renderPage(page) {
 <script>document.documentElement.classList.add('js');</script>
 <link rel="stylesheet" href="/marketing.css">
 <link rel="stylesheet" href="/motion.css">
-</head>
+${OAIQ_PIXEL}</head>
 <body>
 <a class="skip" href="#conteudo">${escapeHtml(chrome.skip)}</a>
 <header class="site-header">
