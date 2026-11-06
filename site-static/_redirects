@@ -1,0 +1,8 @@
+# Retired niche pages. Prepend these rules to the site _redirects.
+# Do not replace the /app rules with this file alone.
+/direito/ / 301
+/direito / 301
+/direito/index.html / 301
+/en/law/ /en/ 301
+/en/law /en/ 301
+/en/law/index.html /en/ 301

@@ -1,0 +1,342 @@
+/* Home and shared marketing motion. Loaded after the page stylesheet. */
+
+.who {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+  margin-top: 40px;
+  padding: 28px 0 8px;
+}
+
+.who-areas {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.who-levels {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.who-level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 16px 8px 8px;
+  color: var(--ink);
+  background: rgba(248, 250, 252, 0.035);
+  border: 1px solid rgba(248, 250, 252, 0.2);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.who-level-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+  background: rgba(11, 14, 20, 0.35);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.who-level-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.who-level-label {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.who-note,
+.legal .who-note {
+  margin: 14px 2px 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  font-weight: 450;
+  letter-spacing: 0;
+  line-height: 1.45;
+  text-transform: none;
+}
+
+.who-subject,
+.legal .who-subject {
+  margin: 8px 2px 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.who-subject-words {
+  display: grid;
+  min-height: 1.35em;
+}
+
+.who-subject-words [data-who-word] {
+  grid-area: 1 / 1;
+  opacity: 0;
+}
+
+.who-subject-words [data-who-word].is-on {
+  opacity: 1;
+}
+
+.who-subject-words [data-who-word]::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: #f3d25a;
+  transform: translateY(-1px);
+}
+
+.legal .who-areas {
+  margin: 6px 0 22px;
+}
+
+.legal .who-level {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.02rem;
+  line-height: 1.25;
+}
+
+.tree-example {
+  margin: 6px 0 0;
+}
+
+.section.how .step {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-demo {
+  margin-top: 18px;
+  max-width: 280px;
+}
+
+.js .step-demo .session-steps {
+  margin-top: 0;
+  animation: none;
+}
+
+.step-demo .session-bar {
+  margin-top: 12px;
+}
+
+.js .step-demo [data-beat] {
+  opacity: 0.38;
+  transform: translateY(8px);
+  transition: opacity 0.42s ease, transform 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.js .step-demo [data-beat].is-on {
+  opacity: 1;
+  transform: none;
+}
+
+.js .step-demo [data-beat].is-now .session-index {
+  box-shadow: 0 0 0 4px #3b82f633;
+}
+
+.mini-map {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: stretch;
+}
+
+.mini-map-root {
+  grid-column: 1 / -1;
+  margin: 2px 0 10px;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  font-size: 1.35rem;
+  font-weight: 720;
+  line-height: 1.05;
+}
+
+.mini-map-rail {
+  grid-column: 1;
+  grid-row: 2;
+  width: 2px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--line-strong);
+  position: relative;
+}
+
+.mini-map-rail span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-radius: inherit;
+  background: var(--blue);
+  transition: height 0.45s ease;
+}
+
+.mini-map .session-steps {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.faq-list summary::after {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .who-level:hover,
+  .who-level:focus-visible {
+    border-color: #f3d25a;
+  }
+
+  .step:hover .icon,
+  .step:focus-within .icon {
+    border-color: #f3d25a;
+  }
+
+  .faq-list summary:hover::after,
+  .faq-list summary:focus-visible::after {
+    border-color: #f3d25a;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .who-level {
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .js .reveal.is-in .who-level,
+  .js [data-who-levels].is-in .who-level {
+    opacity: 1;
+    transform: none;
+  }
+
+  .js .reveal.is-in .who-level:nth-child(2),
+  .js [data-who-levels].is-in .who-level:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+
+  .js .reveal.is-in .who-level:nth-child(3),
+  .js [data-who-levels].is-in .who-level:nth-child(3) {
+    transition-delay: 0.2s;
+  }
+
+  .js .reveal.is-in .who-level:hover,
+  .js [data-who-levels].is-in .who-level:hover,
+  .js .reveal.is-in .who-level:focus-visible,
+  .js [data-who-levels].is-in .who-level:focus-visible {
+    transform: translateY(-2px);
+    border-color: #f3d25a;
+    transition-delay: 0s;
+  }
+
+  .who-subject-words [data-who-word] {
+    transition: opacity 0.7s ease;
+  }
+
+  .js .section.how .step {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .js .section.how.is-in .step {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .js .section.how.is-in .step:nth-child(2) {
+    transition-delay: 0.09s;
+  }
+
+  .js .section.how.is-in .step:nth-child(3) {
+    transition-delay: 0.18s;
+  }
+
+  .step .icon {
+    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .step:hover .icon {
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 980px) {
+  .who {
+    align-items: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .who {
+    margin-top: 32px;
+    padding: 22px 0 4px;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .step-demo [data-beat] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .mini-map-rail span,
+  .step-demo .session-bar span,
+  .who-level,
+  .who-subject-words [data-who-word],
+  .step .icon,
+  .js .section.how .step {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+
+  .js .who-level,
+  .js .section.how .step {
+    opacity: 1;
+  }
+}

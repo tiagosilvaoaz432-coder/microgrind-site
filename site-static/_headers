@@ -1,0 +1,5 @@
+# Cloudflare Pages only. Other hosts ignore this file; set Referrer-Policy: no-referrer on the response.
+# Pages reads it at the output root, next to the waitlist index.html.
+# /app/auth/confirm* covers the exported route and confirm.html, including the token query.
+/app/auth/confirm*
+  Referrer-Policy: no-referrer

@@ -1,0 +1,8 @@
+{
+  "name": "microgrind-site",
+  "private": true,
+  "scripts": {
+    "build": "node marketing/build-seo-site.mjs",
+    "test": "node marketing/seo-site.test.mjs"
+  }
+}
