@@ -776,7 +776,7 @@ Esta página compara a MicroGrind com a **Astra AI** (Study & Exam Prep em [astr
 Não. Esta página refere só **Astra AI: Study & Exam Prep** em astra-ai.co. Outros «Astra AI» / AstraAI não entram nesta comparação.
 
 **A MicroGrind é um mapa mental / tem tutor como a Astra?**  
-Não é mapa mental. E **não** listamos «tutor» como feature da MicroGrind nesta página (nem no site live). O diferencial é mapa da matéria + sessões curtas a partir do mapa.
+Não é mapa mental. E **não** listamos «tutor» como feature da MicroGrind nesta página. O diferencial é mapa da matéria + sessões curtas a partir do mapa.
 
 **Posso usar as duas?**  
 Sim. Estrutura e sessões na MicroGrind; Exam Prep / outros formatos na Astra se te ajudarem.
@@ -844,7 +844,7 @@ This page compares MicroGrind with **Astra AI** (Study & Exam Prep at [astra-ai.
 No. This page only covers **Astra AI: Study & Exam Prep** at astra-ai.co. Other “Astra AI” / AstraAI products are out of scope.
 
 **Is MicroGrind a mind map / does it have a tutor like Astra?**  
-It is not a mind map. And we **do not** list “tutor” as a MicroGrind feature on this page (nor on the live site). The differentiator is Subject Map + short sessions from the map.
+It is not a mind map. And we **do not** list “tutor” as a MicroGrind feature on this page. The differentiator is Subject Map + short sessions from the map.
 
 **Can I use both?**  
 Yes. Structure and sessions in MicroGrind; Exam Prep / other formats in Astra if they help.

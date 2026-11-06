@@ -385,160 +385,26 @@ const CHROME_COURSES = {
   en: 'From primary to higher education, in any subject.',
 };
 
+/** Homepage meta and footer links. The page itself is rendered by home.mjs from home-copy.mjs. */
 export const HOME = {
   pt: {
     description:
       'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
-    lede: DEFINITION.pt,
-    footerBlur: 'App de estudo para qualquer curso.',
-    mind: MIND_MAP_FAQ.pt,
-    files: FILES_FAQ.pt,
-    useQuestion: 'Posso usar?',
-    removeQuestions: ['A IA não inventa coisas?', 'E se a minha sebenta tiver erros?'],
-    privacyNeedle: '<p><a class="footer-privacy" href="/privacidade/">Política de privacidade</a></p>',
     links: [
       { href: '/mapa-da-materia/', label: 'Mapa da matéria' },
       { href: '/estudar-sebenta/', label: 'Estudar a sebenta' },
       { href: '/sobre/', label: 'Sobre' },
       ...comparisonLinks.pt,
     ],
-    replacements: [
-      [
-        'A MicroGrind organiza a matéria de qualquer curso num mapa e em sessões de 5 a 25 minutos. Direito, Gestão, Engenharia e os outros.',
-        'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
-      ],
-      [
-        'Carregas a matéria. Vês o mapa. Estudas em sessões curtas. Para qualquer curso.',
-        'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
-      ],
-      [
-        'Carrega a sebenta, os slides ou os apontamentos. A MicroGrind organiza a matéria em tópicos e conceitos, a partir do teu documento, e depois estudas em sessões de 5 a 25 minutos.',
-        DEFINITION.pt,
-      ],
-      [
-        'já dominas, e não',
-        'já trabalhaste — e não',
-      ],
-      [
-        '<p class="kicker">O princípio</p><h2>Estar correto não chega.</h2><p>Tem de estar suportado pelo teu documento. A MicroGrind monta o mapa da matéria a partir da tua sebenta, do manual ou dos apontamentos.</p>',
-        '<p class="kicker">O princípio</p><h2>Feito a partir do teu material</h2><p>A MicroGrind monta o mapa da matéria a partir dos teus apontamentos, do manual, da sebenta ou dos slides. Estudas a partir do material que já usas na tua disciplina.</p>',
-      ],
-      [
-        'Para qualquer curso. Direito, Gestão, Engenharia e os outros.',
-        'Para qualquer curso ou disciplina, do ensino básico ao superior.',
-      ],
-      [
-        'Para quem estuda na universidade, em qualquer curso. O mapa parte dos teus apontamentos, da sebenta ou dos slides, seja Direito, Gestão, Engenharia ou outro.',
-        'Para quem estuda no ensino básico, secundário ou superior, em qualquer curso ou disciplina. O mapa da matéria parte dos teus apontamentos, do manual, da sebenta ou dos slides.',
-      ],
-      [
-        'A partir do teu material, monta o <strong class="ink-mark">mapa da matéria</strong>: a estrutura da cadeira, tópico a tópico. Vês por onde começar e como a matéria se liga.',
-        'A partir do teu material, a MicroGrind monta o <strong class="ink-mark">mapa da matéria</strong>: a estrutura da disciplina, tópico a tópico. Vês como a matéria está organizada e como os temas se ligam.',
-      ],
-      [
-        'PDF, sebenta, apontamentos da cadeira. O que já usas para estudar.',
-        'Apontamentos, manual, sebenta ou slides. O que já usas para estudar.',
-      ],
-      [
-        'A app organiza a tua matéria em capítulos, tópicos e conceitos. Deixas de estudar à sorte e passas a ver o fio condutor da cadeira.',
-        'A app organiza a tua matéria em capítulos, tópicos e conceitos para veres como os temas se ligam.',
-      ],
-      [
-        'Escolhes 5, 10, 15 ou 25 minutos. Cada sessão parte do mapa, por isso não perdes tempo a decidir por onde começar.',
-        'Ao iniciares uma sessão, escolhes a duração: entre 5 e 25 minutos. Estudas a matéria organizada no mapa, numa sessão curta que cabe no teu dia.',
-      ],
-      [
-        '<summary>Tenho pouco tempo e muitas cadeiras. Serve para mim?</summary><div class="faq-a"><div><p>As sessões duram entre 5 e 25 minutos e cabem entre aulas. Cada sessão parte do mapa, por isso não perdes tempo a decidir por onde começar.</p>',
-        '<summary>Tenho pouco tempo e muitas disciplinas. Serve para mim?</summary><div class="faq-a"><div><p>As sessões duram entre 5 e 25 minutos e cabem entre aulas. Ao iniciares uma sessão, escolhes a duração para estudar a matéria organizada no mapa.</p>',
-      ],
-      [
-        'aria-label="Exemplo de cadeira"',
-        'aria-label="Exemplo de disciplina"',
-      ],
-      [
-        'aria-label="Ilustração de uma cadeira que abre em tópicos e, depois, em conceitos."',
-        'aria-label="Exemplo de mapa da matéria: Direito Civil abre em tópicos e conceitos."',
-      ],
-      [
-        '<div class="tree-card" data-tree-card>',
-        '<div class="tree-card" data-tree-card><p class="session-caption tree-example">Exemplo</p>',
-      ],
-      [
-        '<p>Direito, Gestão, Engenharia e outros.</p>',
-        `<p>${CHROME_COURSES.pt}</p>`,
-      ],
-    ],
   },
   en: {
     description:
       'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
-    lede: DEFINITION.en,
-    footerBlur: 'Built for any course.',
-    mind: MIND_MAP_FAQ.en,
-    files: FILES_FAQ.en,
-    useQuestion: 'Can I use it?',
-    removeQuestions: ['Does the AI invent things?', 'What if my notes have mistakes?'],
-    privacyNeedle: '<p><a class="footer-privacy" href="/en/privacy/">Privacy policy</a></p>',
     links: [
       { href: '/en/subject-map/', label: 'Subject Map' },
       { href: '/en/study-from-pdf/', label: 'Study from PDFs' },
       { href: '/en/about/', label: 'About' },
       ...comparisonLinks.en,
-    ],
-    replacements: [
-      [
-        'MicroGrind turns the material for any degree into a subject map and 5–25 minute sessions. Law, Management, Engineering and the rest.',
-        'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
-      ],
-      [
-        'Upload your material. See the map. Study in short sessions. For any degree.',
-        'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
-      ],
-      [
-        'Upload your notes, slides or textbook. MicroGrind organises the material into topics and concepts, built from your own document, then you study in 5 to 25 minute sessions.',
-        DEFINITION.en,
-      ],
-      ['A study app for any degree.', 'Built for any course.'],
-      [
-        'From your own material, it builds a <strong class="ink-mark">subject map</strong>. You see where to start and how the material fits together.</p>',
-        'From your own material, it builds a <strong class="ink-mark">subject map</strong>. You see where to start and how the material fits together.</p><p class="does-emph">The map is the means. The sessions are the habit. What counts by the end of the week is what you have already worked through — not how many cards you flipped.</p>',
-      ],
-      [
-        '<p class="kicker">The principle</p><h2>Being correct is not enough.</h2><p>It has to be supported by your own document. MicroGrind builds the subject map from your course pack, textbook or notes.</p>',
-        '<p class="kicker">The principle</p><h2>Built from your own material</h2><p>MicroGrind builds your Subject Map from your notes, textbook or slides. Study from the material you already use for your subject.</p>',
-      ],
-      [
-        'For any degree. Law, Management, Engineering and the rest.',
-        'For any course or subject, from primary school to higher education.',
-      ],
-      [
-        '<h3>For university students</h3><p>For university students on any degree. The map is built from your own notes, course pack or slides, whether that is Law, Management, Engineering or another subject.</p>',
-        '<h3>Who it is for</h3><p>For students at any level — primary, secondary or higher education — in any course or subject. Your Subject Map is built from your own notes, textbook or slides.</p>',
-      ],
-      [
-        '<h3>Upload</h3><p>Your course pack, textbook or notes (PDF).</p>',
-        '<h3>Upload your material</h3><p>Notes, textbook or slides. What you already use to study.</p>',
-      ],
-      [
-        '<h3>See the map</h3><p>Chapters, topics, concepts.</p>',
-        '<h3>See your Subject Map</h3><p>The app organises your material into chapters, topics and concepts so you can see how they connect.</p>',
-      ],
-      [
-        '<h3>Study short</h3><p>You choose 5, 10, 15 or 25 minutes. Each session starts from the map, so you don\u2019t waste time deciding where to begin.</p>',
-        '<h3>Study in short sessions</h3><p>When you start a session, you choose its duration: between 5 and 25 minutes. Study the material organised in your Subject Map, in a short session that fits your day.</p>',
-      ],
-      [
-        '<summary>I have little time and a lot of courses. Is this for me?</summary><div class="faq-a"><div><p>Sessions last between 5 and 25 minutes and fit between classes. Each session starts from the map, so you don\u2019t spend time deciding where to begin.</p>',
-        '<summary>I have little time and several subjects to study. Is this for me?</summary><div class="faq-a"><div><p>Sessions last between 5 and 25 minutes and fit between classes. When you start a session, you choose its duration to study the material organised in your Subject Map.</p>',
-      ],
-      [
-        '<div class="tree-card" data-tree-card>',
-        '<div class="tree-card" data-tree-card><p class="session-caption tree-example">Example</p>',
-      ],
-      [
-        '<p>Law, Management, Engineering and others.</p>',
-        `<p>${CHROME_COURSES.en}</p>`,
-      ],
     ],
   },
 };

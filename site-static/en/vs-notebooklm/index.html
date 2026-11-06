@@ -28,18 +28,30 @@
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>document.documentElement.classList.add('js');</script>
+<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/marketing.css">
 <link rel="stylesheet" href="/motion.css">
+<link rel="stylesheet" href="/mg.css?v=2026-11-06">
+<script src="/mg.js?v=2026-11-06" defer></script>
 </head>
 <body>
 <a class="skip" href="#conteudo">Skip to content</a>
-<header class="site-header">
-<div class="wrap header-inner">
-<a class="logo" href="/en/" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
-<nav class="nav" aria-label="Primary">
-<a class="lang" href="/vs-notebooklm/" hreflang="pt-PT" lang="pt-PT">PT</a>
-<a class="btn btn-sm" href="https://microgrind.app/app/">Open on the web</a>
-</nav>
+<div class="mg-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+<header class="site-header mg-header" data-header>
+<div class="mg-header-inner">
+<a class="logo" href="/en/" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block"><span>MicroGrind</span></a>
+<nav class="mg-nav" aria-label="Primary"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><a href="/en/#features" data-nav="features">Features</a><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/#faq" data-nav="faq">FAQ</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
+<div class="mg-actions">
+<a class="lang" href="/vs-notebooklm/" hreflang="pt-PT" lang="pt-PT" aria-label="Português">PT</a>
+<button class="btn btn-sm btn-ghost js-install mg-hide-sm" type="button">Install</button>
+<a class="btn btn-sm" href="https://microgrind.app/app/" data-magnetic>Open on the web</a>
+<button class="mg-menu" type="button" aria-expanded="false" aria-controls="mg-sheet" data-menu><span class="visually-hidden">Menu</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16"></path><path d="M4 16h16"></path></svg></button>
+</div>
+</div>
+<div class="mg-sheet" id="mg-sheet" data-sheet hidden>
+<nav aria-label="Menu"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><a href="/en/#features" data-nav="features">Features</a><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/#faq" data-nav="faq">FAQ</a></nav>
+<div class="mg-sheet-actions"><a class="btn" href="https://microgrind.app/app/">Open on the web</a><button class="btn btn-ghost js-install" type="button">Install</button><a class="lang" href="/vs-notebooklm/" hreflang="pt-PT" lang="pt-PT">Português</a></div>
 </div>
 </header>
 <main id="conteudo" tabindex="-1">
@@ -62,23 +74,29 @@
 </div>
 </article>
 </main>
-<footer class="site-footer">
-<div class="wrap footer-grid">
-<div>
-<a class="logo" href="/en/"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
+<footer class="site-footer mg-footer">
+<div class="mg-footer-glow" aria-hidden="true"></div>
+<div class="wrap mg-footer-grid">
+<div class="mg-footer-brand">
+<a class="logo" href="/en/"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block"><span>MicroGrind</span></a>
 <p class="footer-slogan">Short sessions. Real progress.</p>
 <p>Built for any course.</p>
 <p>From primary to higher education, in any subject.</p>
+<a class="btn btn-sm mg-footer-cta" href="https://microgrind.app/app/">Open on the web</a>
 </div>
-<div class="footer-meta">
+<nav class="mg-footer-col" aria-label="Product"><p class="footer-label">Product</p><p><a class="footer-privacy" href="/en/#how-it-works">How it works</a></p><p><a class="footer-privacy" href="/en/#features">Features</a></p><p><a class="footer-privacy" href="/en/#progress">Progress</a></p><p><a class="footer-privacy" href="/en/#faq">FAQ</a></p></nav>
+<nav class="mg-footer-col" aria-label="Learn more"><p class="footer-label">Learn more</p><p><a class="footer-privacy" href="/en/subject-map/">Subject Map</a></p><p><a class="footer-privacy" href="/en/study-from-pdf/">Study from PDFs</a></p><p><a class="footer-privacy" href="/en/about/">About</a></p></nav>
+<nav class="mg-footer-col footer-compare" aria-label="Comparisons"><p class="footer-label">Comparisons</p><p><a class="footer-privacy" href="/en/vs-quizlet/">vs Quizlet</a></p><p><a class="footer-privacy" href="/en/vs-studingo/">vs Studingo</a></p><p><a class="footer-privacy" href="/en/vs-knowunity/">vs Knowunity</a></p><p><a class="footer-privacy" href="/en/vs-notebooklm/">vs Gemini Notebook</a></p><p><a class="footer-privacy" href="/en/vs-anki/">vs Anki</a></p><p><a class="footer-privacy" href="/en/vs-astra-ai/">vs Astra AI</a></p></nav>
+<div class="mg-footer-col footer-meta">
 <p class="footer-label">Contact</p>
 <p class="footer-email"><a href="mailto:ola@microgrind.app">ola@microgrind.app</a></p>
-<p><a class="footer-privacy" href="/en/subject-map/">Subject Map</a></p><p><a class="footer-privacy" href="/en/study-from-pdf/">Study from PDFs</a></p><p><a class="footer-privacy" href="/en/about/">About</a></p><nav class="footer-compare" aria-label="Comparisons"><p class="footer-label">Comparisons</p><p><a class="footer-privacy" href="/en/vs-quizlet/">vs Quizlet</a></p><p><a class="footer-privacy" href="/en/vs-studingo/">vs Studingo</a></p><p><a class="footer-privacy" href="/en/vs-knowunity/">vs Knowunity</a></p><p><a class="footer-privacy" href="/en/vs-notebooklm/">vs Gemini Notebook</a></p><p><a class="footer-privacy" href="/en/vs-anki/">vs Anki</a></p><p><a class="footer-privacy" href="/en/vs-astra-ai/">vs Astra AI</a></p></nav>
 <p><a class="footer-privacy" href="/en/privacy/">Privacy policy</a></p>
 <p class="footer-copy">© MicroGrind</p>
 </div>
 </div>
+<p class="mg-wordmark" aria-hidden="true" data-wordmark><span>MicroGrind</span></p>
 </footer>
+<div class="install-overlay" id="install-overlay" data-lang="en" data-web="https://microgrind.app/app/" data-android hidden><div class="install-dialog" id="install-dialog" role="dialog" aria-modal="true" aria-labelledby="install-dialog-title" tabindex="-1"><p class="kicker">iPhone</p><h2 id="install-dialog-title">Add MicroGrind to your Home Screen</h2><ol class="install-steps"><li>Open the web app in Safari.</li><li>Tap Share.</li><li>Tap Add to Home Screen.</li></ol><div class="install-dialog-actions"><a class="btn" id="install-open-web" href="https://microgrind.app/app/">Open the web app</a><button class="btn btn-ghost" id="install-dialog-close" type="button">Close</button></div></div></div>
 <script>
 (function () {
   var motion = window.matchMedia('(prefers-reduced-motion: reduce)');

@@ -218,7 +218,11 @@ try {
   assert.match(homePt, /Exemplo de material/);
   assert.match(homePt, /Exemplo de mapa/);
   assert.match(homePt, /Energia/);
-  assert.match(homePt, /href="\/motion.css"/);
+  for (const html of [homePt, homeEn]) {
+    assert.match(html, /<link rel="stylesheet" href="\/mg\.css\?v=[^"]+">/);
+    assert.match(html, /<script src="\/mg\.js\?v=[^"]+" defer><\/script>/);
+    assert.doesNotMatch(html, /\/_astro\//, 'homepage must not depend on the old Astro build');
+  }
   assert.match(homePt, /Exemplo de sessão/);
   assert.doesNotMatch(homePt, /na universidade/);
   assert.doesNotMatch(homePt, /apontamentos da cadeira/);
@@ -586,11 +590,16 @@ try {
   assert.match(motion, /translateY\(8px\)/);
   assert.match(motion, /translateY\(-2px\)/);
   assert.match(motion, /background:\s*transparent/);
-  assert.match(homePt, /addEventListener\('change', onMotion\)/);
-  assert.match(homeEn, /addEventListener\('change', onMotion\)/);
-  assert.match(homePt, /addEventListener\('change', onRevealMotion\)/);
-  assert.match(homeEn, /addEventListener\('change', onRevealMotion\)/);
-  assert.match(homePt, /if \(motion\.matches\) \{\s*settle\(\);/s);
+  const runtime = read('mg.js');
+  assert.match(runtime, /prefers-reduced-motion: reduce/);
+  assert.match(runtime, /onMotionChange\(armReveals\)/, 'reveals must settle when reduced motion turns on');
+  assert.match(runtime, /if \(reduced\(\)\) \{ show\(beats\.length\); return; \}/, 'step demos must settle with reduced motion');
+  const designCss = read('mg.css');
+  assert.match(designCss, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(designCss, /\[hidden\] \{ display: none !important; \}/);
+  for (const font of ['bricolage.woff2', 'geist.woff2', 'geist-mono.woff2']) {
+    assert.ok(existsSync(join(out, 'fonts', font)), font);
+  }
 
   function whoAside(html) {
     const start = html.indexOf('<aside class="who">');
@@ -631,8 +640,29 @@ try {
   assert.match(whoEn, /English/);
   assert.match(whoEn, /aria-live="polite"/);
   assert.doesNotMatch(whoEn, /<a\b|who-examples|Examples|>Law<|>Management<|>Engineering</);
-  assert.match(homePt, /bootWho/);
-  assert.match(homePt, /, 4500\)/);
+  assert.match(homePt, /data-who-rotator/);
+
+  // Redesigned homepage: story sections, interactive demos, honest labelling.
+  for (const [html, tag, sample] of [
+    [homePt, 'Demo ilustrativa', 'Demo · dados fictícios'],
+    [homeEn, 'Illustrative demo', 'Demo · sample data'],
+  ]) {
+    for (const hook of ['data-hero-device', 'data-scene', 'data-mapx', 'data-studio', 'data-score', 'data-streak', 'data-battle', 'data-tutor', 'data-exam', 'data-cards', 'data-quiz']) {
+      assert.match(html, new RegExp(hook), hook);
+    }
+    assert.ok(html.includes(tag), tag);
+    assert.ok(html.includes(sample), sample);
+    assert.doesNotMatch(html, /AggregateRating|ratingValue|testimonial|\d[\d.,]* (estudantes|students|utilizadores|users)\b/i);
+    assert.equal((html.match(/role="tablist"/g) ?? []).length, 2);
+    assert.match(html, /href="https:\/\/microgrind\.app\/app\/"/);
+    assert.match(html, /class="btn btn-lg btn-ghost js-install"/);
+    assert.match(html, /id="install-dialog"/);
+  }
+  assert.match(homePt, /Tutor IA/);
+  assert.match(homeEn, /AI Tutor/);
+  assert.match(homePt, /Os tópicos seguem a ordem dos teus resumos\./);
+  assert.match(homeEn, /Topics follow the order of your own summaries\./);
+  assert.match(runtime, /, 4500\)/);
   assert.match(sobre, /data-who-levels/);
   assert.match(sobre, /Ensino básico/);
   assert.match(sobre, /Qualquer curso ou disciplina — do teu material\./);

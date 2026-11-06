@@ -1,4 +1,5 @@
-import { CHROME, CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
+import { headAssets, renderFooter, renderHeader, renderInstallDialog } from './chrome.mjs';
+import { CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
 
 export function escapeHtml(value) {
@@ -42,28 +43,6 @@ function renderCell(cell) {
     return `<span class="adv-glyph" aria-hidden="true">${glyph}</span><span class="visually-hidden">${escapeHtml(cell.label)}</span>`;
   }
   return Array.isArray(cell) ? renderInline(cell) : escapeHtml(cell);
-}
-
-export function renderFooterLinks(links) {
-  let html = '';
-  let index = 0;
-  while (index < links.length) {
-    const link = links[index];
-    if (link.heading) {
-      const label = escapeHtml(link.label);
-      let cluster = `<p class="footer-label">${label}</p>`;
-      index += 1;
-      while (index < links.length && !links[index].heading) {
-        cluster += `<p><a class="footer-privacy" href="${escapeHtml(links[index].href)}">${escapeHtml(links[index].label)}</a></p>`;
-        index += 1;
-      }
-      html += `<nav class="footer-compare" aria-label="${label}">${cluster}</nav>`;
-    } else {
-      html += `<p><a class="footer-privacy" href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></p>`;
-      index += 1;
-    }
-  }
-  return html;
 }
 
 function renderParagraph(block) {
@@ -217,7 +196,6 @@ export function jsonLd({ locale, path, title, description, faqs }) {
 }
 
 export function renderPage(page) {
-  const chrome = CHROME[page.locale];
   const lang = page.locale === 'en' ? 'en' : 'pt-PT';
   const otherPath = page.locale === 'en' ? page.ptPath : page.enPath;
   const faqs = collectFaqs(page);
@@ -230,8 +208,6 @@ export function renderPage(page) {
   });
   const h1Attr = page.h1Negation ? ' data-seo-negation="true"' : '';
   const ledeAttr = page.ledeNegation ? ' data-seo-negation="true"' : '';
-  const blurb = page.blurb ?? chrome.blurb;
-  const footerLinks = renderFooterLinks(chrome.links);
   const articleClass = page.wide ? 'legal legal-wide' : 'legal';
   return `<!DOCTYPE html>
 <html lang="${lang}">
@@ -263,20 +239,10 @@ export function renderPage(page) {
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="/marketing.css">
-<link rel="stylesheet" href="/motion.css">
+${headAssets(['/marketing.css', '/motion.css'])}
 </head>
 <body>
-<a class="skip" href="#conteudo">${escapeHtml(chrome.skip)}</a>
-<header class="site-header">
-<div class="wrap header-inner">
-<a class="logo" href="${chrome.home}" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
-<nav class="nav" aria-label="${escapeHtml(chrome.nav)}">
-<a class="lang" href="${otherPath}" hreflang="${chrome.langHreflang}" lang="${chrome.langLang}">${chrome.lang}</a>
-<a class="btn btn-sm" href="${WEB_APP}">${escapeHtml(chrome.open)}</a>
-</nav>
-</div>
-</header>
+${renderHeader({ locale: page.locale, otherPath })}
 <main id="conteudo" tabindex="-1">
 <article class="${articleClass}">
 <div class="legal-inner">
@@ -287,23 +253,8 @@ ${page.blocks.map((block) => renderBlock(block, page.locale)).join('\n')}
 </div>
 </article>
 </main>
-<footer class="site-footer">
-<div class="wrap footer-grid">
-<div>
-<a class="logo" href="${chrome.home}"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
-<p class="footer-slogan">${escapeHtml(chrome.slogan)}</p>
-<p>${escapeHtml(blurb)}</p>
-<p>${escapeHtml(chrome.courses)}</p>
-</div>
-<div class="footer-meta">
-<p class="footer-label">${escapeHtml(chrome.contact)}</p>
-<p class="footer-email"><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
-${footerLinks}
-<p><a class="footer-privacy" href="${chrome.privacyHref}">${escapeHtml(chrome.privacy)}</a></p>
-<p class="footer-copy">© MicroGrind</p>
-</div>
-</div>
-</footer>
+${renderFooter({ locale: page.locale })}
+${renderInstallDialog(page.locale)}
 ${pageMotionScript()}
 </body>
 </html>
