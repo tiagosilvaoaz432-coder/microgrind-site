@@ -282,6 +282,10 @@ export function patchHome(html, locale) {
     next = next.replace(re, '');
   }
   if (locale === 'en') next = next.replaceAll('subject map', 'Subject Map');
+  if (spec.title) {
+    if (!next.includes(spec.oldTitle)) throw new Error(`Homepage ${locale} is missing the old title.`);
+    next = next.replaceAll(spec.oldTitle, spec.title);
+  }
 
   const listOpen = '<div class="faq-list">';
   if (!next.includes(listOpen)) throw new Error(`Homepage ${locale} is missing the FAQ list.`);
@@ -298,7 +302,7 @@ export function patchHome(html, locale) {
   const ld = jsonLd({
     locale,
     path: locale === 'en' ? '/en/' : '/',
-    title: locale === 'en' ? 'MicroGrind — Short sessions. Real progress.' : 'MicroGrind — Sessões curtas. Progresso real.',
+    title: spec.title ?? (locale === 'en' ? 'MicroGrind — Short sessions. Real progress.' : 'MicroGrind — Sessões curtas. Progresso real.'),
     description: spec.description,
     faqs,
   });

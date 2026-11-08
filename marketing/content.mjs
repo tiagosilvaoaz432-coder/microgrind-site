@@ -387,8 +387,10 @@ const CHROME_COURSES = {
 
 export const HOME = {
   pt: {
+    title: 'MicroGrind — App de estudo a partir da tua sebenta | Sessões curtas',
+    oldTitle: 'MicroGrind — Sessões curtas. Progresso real.',
     description:
-      'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
+      'App de estudo que monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
     lede: DEFINITION.pt,
     footerBlur: 'App de estudo para qualquer curso.',
     mind: MIND_MAP_FAQ.pt,
@@ -405,11 +407,11 @@ export const HOME = {
     replacements: [
       [
         'A MicroGrind organiza a matéria de qualquer curso num mapa e em sessões de 5 a 25 minutos. Direito, Gestão, Engenharia e os outros.',
-        'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
+        'App de estudo que monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
       ],
       [
         'Carregas a matéria. Vês o mapa. Estudas em sessões curtas. Para qualquer curso.',
-        'A MicroGrind monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
+        'App de estudo que monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
       ],
       [
         'Carrega a sebenta, os slides ou os apontamentos. A MicroGrind organiza a matéria em tópicos e conceitos, a partir do teu documento, e depois estudas em sessões de 5 a 25 minutos.',
@@ -470,8 +472,10 @@ export const HOME = {
     ],
   },
   en: {
+    title: 'MicroGrind — Study app that builds your Subject Map | Short sessions',
+    oldTitle: 'MicroGrind — Short sessions. Real progress.',
     description:
-      'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
+      'Study app that builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
     lede: DEFINITION.en,
     footerBlur: 'Built for any course.',
     mind: MIND_MAP_FAQ.en,
@@ -488,11 +492,11 @@ export const HOME = {
     replacements: [
       [
         'MicroGrind turns the material for any degree into a subject map and 5–25 minute sessions. Law, Management, Engineering and the rest.',
-        'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
+        'Study app that builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
       ],
       [
         'Upload your material. See the map. Study in short sessions. For any degree.',
-        'MicroGrind builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
+        'Study app that builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
       ],
       [
         'Upload your notes, slides or textbook. MicroGrind organises the material into topics and concepts, built from your own document, then you study in 5 to 25 minute sessions.',
