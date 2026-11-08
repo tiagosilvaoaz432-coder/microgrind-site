@@ -406,6 +406,10 @@ export const HOME = {
     ],
     replacements: [
       [
+        'Três passos. Não tens de montar nada nem de aprender a usar a app antes de estudar.',
+        'Uma app para estudar em três passos. Não tens de montar nada nem de aprender a usá-la antes de estudar.',
+      ],
+      [
         'A MicroGrind organiza a matéria de qualquer curso num mapa e em sessões de 5 a 25 minutos. Direito, Gestão, Engenharia e os outros.',
         'App de estudo que monta o mapa da matéria a partir da tua sebenta, manual ou slides e organiza sessões de 5 a 25 minutos. Para qualquer curso. Sessões curtas. Progresso real.',
       ],
@@ -490,6 +494,10 @@ export const HOME = {
       ...comparisonLinks.en,
     ],
     replacements: [
+      [
+        'Three steps. Nothing to set up, nothing to learn first.',
+        'A study app in three steps. Nothing to set up, nothing to learn first.',
+      ],
       [
         'MicroGrind turns the material for any degree into a subject map and 5–25 minute sessions. Law, Management, Engineering and the rest.',
         'Study app that builds a Subject Map from your notes, textbook or slides, then 5–25 minute study sessions. For any course. Short sessions. Real progress.',
