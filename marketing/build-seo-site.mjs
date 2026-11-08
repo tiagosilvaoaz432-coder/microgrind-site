@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DEFINITION, HOME, ORIGIN, pages } from './content.mjs';
 import { escapeHtml, jsonLd, relIndex, renderFooterLinks, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.mjs';
 import { renderWhoLevels, whoBootSource } from './who.mjs';
+import { installScript, renderInstallDialog } from './install.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -71,10 +72,23 @@ function insertStepDemo(html, heading, demo) {
 
 function linkMotion(html) {
   const astro = '<link rel="stylesheet" href="/_astro/SiteFooter.DZJN6EwU.css">';
-  const motion = '<link rel="stylesheet" href="/motion.css">';
+  const motion = '<link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/install.css">';
   if (!html.includes(astro)) throw new Error('Homepage is missing the Astro stylesheet.');
   if (html.includes(motion)) return html;
   return html.replace(astro, `${astro}${motion}`);
+}
+
+/** Swaps the old iPhone-only dialog and its script for the shared install guide. */
+function rewriteInstall(html, locale) {
+  const re = /<div class="install-overlay" id="install-overlay" hidden>[\s\S]*?<\/script>/;
+  const found = html.match(re);
+  if (!found || !found[0].includes("getElementById('install-bar')")) {
+    throw new Error(`Homepage ${locale} is missing the old install dialog and script.`);
+  }
+  const next = html.replace(re, `${renderInstallDialog(locale)}${installScript(locale)}`);
+  if (next.includes('install-overlay')) throw new Error(`Homepage ${locale} still has the old install dialog.`);
+  if ((next.match(/class="[^"]*js-install/g) ?? []).length < 1) throw new Error(`Homepage ${locale} has no install button.`);
+  return next;
 }
 
 const STEP_DEMO_SCRIPT = `<script>
@@ -326,6 +340,7 @@ export function patchHome(html, locale) {
   if (!next.includes('bootWho')) throw new Error(`Homepage ${locale} is missing the who motion runtime.`);
   next = patchReveal(next, locale);
   next = rewriteWho(next, locale);
+  next = rewriteInstall(next, locale);
   return next;
 }
 
@@ -346,6 +361,7 @@ export function buildSeoSite(outDir) {
   writeFileSync(join(outDir, 'en', 'index.html'), en);
   cpSync(join(here, 'site.css'), join(outDir, 'marketing.css'));
   cpSync(join(here, 'motion.css'), join(outDir, 'motion.css'));
+  cpSync(join(here, 'install.css'), join(outDir, 'install.css'));
   writeFileSync(join(outDir, '_redirects'), renderRedirects());
   writeFileSync(join(outDir, 'sitemap.xml'), renderSitemap());
   writeFileSync(join(outDir, 'robots.txt'), renderRobots());

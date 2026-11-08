@@ -1,5 +1,6 @@
 import { CHROME, CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
+import { installCopy, installScript, renderInstallDialog, renderInstallGuide } from './install.mjs';
 
 export function escapeHtml(value) {
   return String(value)
@@ -119,6 +120,7 @@ function renderBlock(block, locale) {
     return `<div data-seo-negation="true">${block.blocks.map((child) => renderBlock(child, locale)).join('')}</div>`;
   }
   if (block.type === 'levels') return renderWhoLevels(locale);
+  if (block.type === 'install') return renderInstallGuide(locale, { id: 'guia', variant: 'page' });
   if (block.type === 'h2') {
     const html = `<h2>${escapeHtml(block.text)}</h2>`;
     return block.negation ? `<div data-seo-negation="true">${html}</div>` : html;
@@ -265,6 +267,7 @@ export function renderPage(page) {
 <script>document.documentElement.classList.add('js');</script>
 <link rel="stylesheet" href="/marketing.css">
 <link rel="stylesheet" href="/motion.css">
+<link rel="stylesheet" href="/install.css">
 </head>
 <body>
 <a class="skip" href="#conteudo">${escapeHtml(chrome.skip)}</a>
@@ -274,6 +277,7 @@ export function renderPage(page) {
 <nav class="nav" aria-label="${escapeHtml(chrome.nav)}">
 <a class="lang" href="${otherPath}" hreflang="${chrome.langHreflang}" lang="${chrome.langLang}">${chrome.lang}</a>
 <a class="btn btn-sm" href="${WEB_APP}">${escapeHtml(chrome.open)}</a>
+<button class="btn btn-sm btn-ghost js-install" type="button">${escapeHtml(installCopy(page.locale).install)}</button>
 </nav>
 </div>
 </header>
@@ -304,7 +308,9 @@ ${footerLinks}
 </div>
 </div>
 </footer>
+${page.install ? '' : renderInstallDialog(page.locale)}
 ${pageMotionScript()}
+${installScript(page.locale)}
 </body>
 </html>
 `;

@@ -81,6 +81,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/sobre/" />
   </url>
   <url>
+    <loc>https://microgrind.app/instalar/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://microgrind.app/instalar/" />
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/instalar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/install/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/instalar/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/install/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://microgrind.app/instalar/" />
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/instalar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/install/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/instalar/" />
+  </url>
+  <url>
     <loc>https://microgrind.app/vs-quizlet/</loc>
     <lastmod>2026-11-05</lastmod>
     <xhtml:link rel="alternate" hreflang="pt" href="https://microgrind.app/vs-quizlet/" />

@@ -19,6 +19,7 @@ export const PAIRS = [
   { pt: '/mapa-da-materia/', en: '/en/subject-map/' },
   { pt: '/estudar-sebenta/', en: '/en/study-from-pdf/' },
   { pt: '/sobre/', en: '/en/about/' },
+  { pt: '/instalar/', en: '/en/install/' },
   ...comparisonPairs,
 ];
 
@@ -53,10 +54,20 @@ export const WEB_FAQ = {
   pt: {
     q: 'Funciona na web e no telemóvel?',
     a: 'Sim. Abre na web ou instala a app no telemóvel.',
+    parts: [
+      { text: 'Sim. Abre na web ou ' },
+      { text: 'instala a app no telemóvel', href: '/instalar/' },
+      { text: '.' },
+    ],
   },
   en: {
     q: 'Does it work on the web and on my phone?',
     a: 'Yes. Open it on the web, or install it on your phone.',
+    parts: [
+      { text: 'Yes. Open it on the web, or ' },
+      { text: 'install it on your phone', href: '/en/install/' },
+      { text: '.' },
+    ],
   },
 };
 
@@ -87,6 +98,88 @@ function faq(locale, title) {
     items: [MIND_MAP_FAQ[locale], FILES_FAQ[locale], WEB_FAQ[locale]],
   };
 }
+
+const INSTALL_FAQ = {
+  pt: [
+    {
+      q: 'Tenho de ir à App Store ou à Play Store?',
+      a: 'Não. A MicroGrind é uma app web: instalas a partir do browser, em menos de um minuto, e entras com a mesma conta.',
+    },
+    {
+      q: 'Não me aparece «Adicionar ao ecrã principal». E agora?',
+      a: 'No iPhone, confirma que estás no Safari e não dentro de outra app, como o Instagram, o TikTok ou o WhatsApp. Se o botão Partilhar não estiver visível, toca primeiro em ⋯. No Android, usa o Google Chrome.',
+    },
+    {
+      q: 'A app instalada é diferente da versão web?',
+      a: 'É a mesma MicroGrind, com a mesma conta e o mesmo progresso. Abre pelo ícone, em ecrã inteiro, sem a barra do browser.',
+    },
+    {
+      q: 'Como tiro a app do telemóvel?',
+      a: 'Como qualquer outra app: mantém o ícone premido e escolhe Remover app (iPhone) ou Desinstalar (Android).',
+    },
+  ],
+  en: [
+    {
+      q: 'Do I need the App Store or the Play Store?',
+      a: 'No. MicroGrind is a web app: you install it from your browser in under a minute, and sign in with the same account.',
+    },
+    {
+      q: 'I cannot see “Add to Home Screen”. What now?',
+      a: 'On iPhone, make sure you are in Safari and not inside another app such as Instagram, TikTok or WhatsApp. If the Share button is hidden, tap ⋯ first. On Android, use Google Chrome.',
+    },
+    {
+      q: 'Is the installed app different from the web version?',
+      a: 'It is the same MicroGrind, with the same account and the same progress. It opens from its icon, full screen, without the browser bar.',
+    },
+    {
+      q: 'How do I remove the app from my phone?',
+      a: 'Like any other app: press and hold the icon, then choose Remove App (iPhone) or Uninstall (Android).',
+    },
+  ],
+};
+
+const installPages = [
+  {
+    id: 'instalar',
+    locale: 'pt',
+    path: '/instalar/',
+    ptPath: '/instalar/',
+    enPath: '/en/install/',
+    wide: true,
+    install: true,
+    title: 'Instalar a MicroGrind no iPhone e no Android | MicroGrind',
+    description:
+      'Como instalar a MicroGrind no telemóvel: no iPhone pelo Safari, no Android pelo Chrome, e no computador. Sem App Store nem Play Store, em menos de um minuto.',
+    kicker: 'Instalar a app',
+    h1: 'Instala a MicroGrind no telemóvel',
+    lede: 'Sem App Store nem Play Store. Adicionas a app ao ecrã principal a partir do browser, em menos de um minuto, e abres a MicroGrind como qualquer outra app.',
+    blocks: [
+      { type: 'install' },
+      { type: 'faq', title: 'Perguntas frequentes', items: INSTALL_FAQ.pt },
+      { type: 'cta', href: WEB_APP, label: 'Abrir a app web' },
+    ],
+  },
+  {
+    id: 'install',
+    locale: 'en',
+    path: '/en/install/',
+    ptPath: '/instalar/',
+    enPath: '/en/install/',
+    wide: true,
+    install: true,
+    title: 'Install MicroGrind on iPhone and Android | MicroGrind',
+    description:
+      'How to install MicroGrind on your phone: from Safari on iPhone, from Chrome on Android, and on your computer. No App Store or Play Store, in under a minute.',
+    kicker: 'Install the app',
+    h1: 'Install MicroGrind on your phone',
+    lede: 'No App Store or Play Store. Add the app to your Home Screen from your browser in under a minute, then open MicroGrind like any other app.',
+    blocks: [
+      { type: 'install' },
+      { type: 'faq', title: 'Frequently asked questions', items: INSTALL_FAQ.en },
+      { type: 'cta', href: WEB_APP, label: 'Open the web app' },
+    ],
+  },
+];
 
 export const pages = [
   {
@@ -378,7 +471,7 @@ export const pages = [
       { type: 'cta', href: WEB_APP, label: 'Start at microgrind.app' },
     ],
   },
-].concat(comparisonPages);
+].concat(installPages, comparisonPages);
 
 const CHROME_COURSES = {
   pt: 'Do ensino básico ao superior, em qualquer disciplina.',
@@ -400,6 +493,7 @@ export const HOME = {
       { href: '/mapa-da-materia/', label: 'Mapa da matéria' },
       { href: '/estudar-sebenta/', label: 'Estudar a sebenta' },
       { href: '/sobre/', label: 'Sobre' },
+      { href: '/instalar/', label: 'Instalar a app' },
       ...comparisonLinks.pt,
     ],
     replacements: [
@@ -483,6 +577,7 @@ export const HOME = {
       { href: '/en/subject-map/', label: 'Subject Map' },
       { href: '/en/study-from-pdf/', label: 'Study from PDFs' },
       { href: '/en/about/', label: 'About' },
+      { href: '/en/install/', label: 'Install the app' },
       ...comparisonLinks.en,
     ],
     replacements: [
