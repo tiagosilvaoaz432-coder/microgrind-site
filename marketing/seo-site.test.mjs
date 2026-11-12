@@ -16,6 +16,8 @@ import { PLAN_FACTS, TUTOR_AVERAGE_MESSAGE_TOKENS, pricingPair } from './plans.m
 import { REGISTER_URL } from './content.mjs';
 import { practicePath } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
+import { studyPath } from './study-page.mjs';
+import { STUDY_HUB, studyGuides } from './study/index.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteStatic = join(here, '..', 'site-static');
@@ -759,6 +761,51 @@ try {
   assert.doesNotMatch(read('en/index.html'), /data-practice-promo/, 'EN home has no PT pop-up');
   assert.doesNotMatch(read('sobre/index.html'), /data-practice-promo/, 'only the homepage opens the pop-up');
   for (const rel of ['mg.css', 'mg.js']) assert.equal(readFileSync(join(siteStatic, rel), 'utf8'), read(rel), `${rel} is stale; run npm run build`);
+
+  // "Como estudar X" guides (/estudar/): one page per subject, indexable, with a working mini-test.
+  assert.ok(studyGuides.length >= 14, 'at least 14 study guides');
+  const studyHub = read('estudar/index.html');
+  const studySitemap = read('sitemap.xml');
+  assert.ok(studySitemap.includes(`<loc>https://microgrind.app${STUDY_HUB.path}</loc>`), 'study hub in sitemap');
+  assert.match(read('index.html'), /href="\/estudar\/"/, 'footer links the study hub');
+  assert.match(read('praticar/index.html'), /href="\/estudar\/"/, 'practice hub links the study hub');
+  assert.equal((studyHub.match(/<h1[\s>]/g) ?? []).length, 1);
+  const seenTitles = new Set(practicePages.map((p) => p.title));
+  for (const guide of studyGuides) {
+    const path = studyPath(guide);
+    const rel = `${path.slice(1)}index.html`;
+    const html = read(rel);
+    assert.ok(studyHub.includes(`href="${path}"`), `hub links ${path}`);
+    assert.ok(studySitemap.includes(`<loc>https://microgrind.app${path}</loc>`), `${path} in sitemap`);
+    const title = html.match(/<title>(.*?)<\/title>/)[1];
+    const description = html.match(/<meta name="description" content="(.*?)"/)[1];
+    assert.ok(title.length <= 85, `${rel} title is ${title.length} chars`);
+    assert.ok(description.length <= 160, `${rel} description is ${description.length} chars`);
+    assert.match(title, /^Como estudar /, `${rel} title starts with the search phrase`);
+    assert.ok(!seenTitles.has(title), `${rel} title is unique`);
+    seenTitles.add(title);
+    assert.ok(html.includes(`<link rel="canonical" href="https://microgrind.app${path}">`), `${rel} canonical`);
+    assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1, `${rel} one h1`);
+    assert.match(html, /<h1>Como estudar /, `${rel} h1`);
+    const graph = jsonLd(html)['@graph'];
+    assert.ok(graph.some((n) => [n['@type']].flat().includes('Article')), `${rel} Article`);
+    assert.ok(graph.some((n) => n['@type'] === 'FAQPage'), `${rel} FAQPage`);
+    assert.equal(graph.find((n) => n['@type'] === 'BreadcrumbList').itemListElement.length, 3, `${rel} breadcrumbs`);
+    assert.equal(guide.plan.length, 4, `${rel} four-week plan`);
+    assert.ok(guide.topics.length >= 5 && guide.mistakes.length >= 4 && guide.faqs.length >= 3, `${rel} has enough content`);
+    assert.match(html, /data-practice="(quiz|flashcards)"/, `${rel} embeds a mini-test`);
+    assert.equal((html.match(/data-item /g) ?? []).length, guide.test.items.length, `${rel} renders every test item`);
+    if (guide.test.mode === 'quiz') assert.equal((html.match(/data-correct/g) ?? []).length, guide.test.items.length, `${rel} one right option per question`);
+    assert.match(html, /src="\/practice\.js\?v=/, `${rel} loads practice.js`);
+    assert.ok(html.includes(`utm_campaign=${guide.slug}`), `${rel} CTA with campaign`);
+    for (const slug of guide.related) assert.ok(html.includes(`href="/estudar/${slug}/"`), `${rel} links /estudar/${slug}/`);
+    for (const slug of guide.practiceLinks) assert.ok(html.includes(`href="/praticar/${slug}/"`), `${rel} links /praticar/${slug}/`);
+    const haystack = html.toLowerCase();
+    for (const phrase of DEFERRED) assert.equal(haystack.includes(phrase), false, `${rel} contains deferred claim: ${phrase}`);
+    assert.doesNotMatch(stripSeoNegation(body(html)), /mapa mental|mind map/i, `${rel} mind-map phrase`);
+    assert.equal(readFileSync(join(siteStatic, rel), 'utf8'), html, `${rel} is stale; run npm run build`);
+  }
+  assert.equal(readFileSync(join(siteStatic, 'estudar/index.html'), 'utf8'), studyHub, 'estudar/index.html is stale');
 
   console.log('marketing/seo-site.test.mjs passed');
 } finally {
