@@ -66,8 +66,8 @@ const ROWS = [
 ];
 
 const PRICES = {
-  pt: ['≈ 8 €/mês (Plus)', '5,99 €/mês (Lite)', '4,99 €/mês (Google AI Plus)', 'Grátis · iPhone: 29,99 € (pagamento único)', '≈ 24 €/mês (Plus)', '4 €/mês'],
-  en: ['≈ €8/month (Plus)', '€5.99/month (Lite)', '€4.99/month (Google AI Plus)', 'Free · iPhone: €29.99 (one-off)', '≈ €24/month (Plus)', '€4/month'],
+  pt: ['≈ 8 €/mês (Plus)', '5,99 €/mês (Lite)', '4,99 €/mês (Google AI Plus)', 'Grátis · iPhone: 29,99 € (pagamento único)', '≈ 24 €/mês (Plus)', 'Grátis · pago desde 4 €/mês'],
+  en: ['≈ €8/month (Plus)', '€5.99/month (Lite)', '€4.99/month (Google AI Plus)', 'Free · iPhone: €29.99 (one-off)', '≈ €24/month (Plus)', 'Free · paid from €4/month'],
 };
 
 function mark(value, locale) {
