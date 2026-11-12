@@ -1,4 +1,4 @@
-# Retired niche pages. Prepend these rules to the site _redirects.
+# Retired pages. Prepend these rules to the site _redirects.
 # Do not replace the /app rules with this file alone.
 /direito/ / 301
 /direito / 301
@@ -6,3 +6,27 @@
 /en/law/ /en/ 301
 /en/law /en/ 301
 /en/law/index.html /en/ 301
+/vs-quizlet/ /comparar/ 301
+/vs-quizlet /comparar/ 301
+/en/vs-quizlet/ /en/compare/ 301
+/en/vs-quizlet /en/compare/ 301
+/vs-studingo/ /comparar/ 301
+/vs-studingo /comparar/ 301
+/en/vs-studingo/ /en/compare/ 301
+/en/vs-studingo /en/compare/ 301
+/vs-knowunity/ /comparar/ 301
+/vs-knowunity /comparar/ 301
+/en/vs-knowunity/ /en/compare/ 301
+/en/vs-knowunity /en/compare/ 301
+/vs-notebooklm/ /comparar/ 301
+/vs-notebooklm /comparar/ 301
+/en/vs-notebooklm/ /en/compare/ 301
+/en/vs-notebooklm /en/compare/ 301
+/vs-anki/ /comparar/ 301
+/vs-anki /comparar/ 301
+/en/vs-anki/ /en/compare/ 301
+/en/vs-anki /en/compare/ 301
+/vs-astra-ai/ /comparar/ 301
+/vs-astra-ai /comparar/ 301
+/en/vs-astra-ai/ /en/compare/ 301
+/en/vs-astra-ai /en/compare/ 301

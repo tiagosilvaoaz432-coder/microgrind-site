@@ -1,31 +1,32 @@
 # Site de marketing MicroGrind
 
-Pacote autónomo das páginas públicas (PT-PT e inglês). Não inclui a app, o Supabase, nem ficheiros `.env`.
+Fontes das páginas públicas de https://microgrind.app (PT-PT e inglês). Não inclui a app, o Supabase, nem ficheiros `.env` — esses ficam no repositório `MicroGrind`.
 
 ## Estrutura
 
-- `marketing/` — fontes do site: conteúdo, render, CSS, snapshots da página inicial e o teste.
-- `site-static/` — HTML, CSS, `sitemap.xml`, `robots.txt`, `_redirects` e `_headers`. É o diretório de output do Cloudflare Pages.
-- `scripts/check-site-static.mjs` — helper importado pelo teste. Confirma que o output não coloca ficheiros em `app/`.
+- `marketing/` — gerador do site (Node.js, sem dependências): conteúdo, render, CSS/JS e o teste.
+  - `marketing/practice/` — conteúdo das páginas gratuitas **Praticar** (`/praticar/…`): mini-testes e flashcards por disciplina.
+  - `marketing/practice-page.mjs`, `practice.js`, `practice.css` — render e interatividade dessas páginas.
+- `site-static/` — output gerado (HTML, CSS, `sitemap.xml`, `robots.txt`, `_redirects`). Está no git; o teste falha se estiver desatualizado.
+- `deploy/site-root/` — ficheiros que só existem no site publicado (favicons, `og.png`, `logo-mark.png`).
+- `lib/ga4.mjs` — Google Analytics/pixel (só depois do consentimento). Cópia do `lib/ga4.ts` da app.
+- `lib/app-limits.mjs` — números dos planos copiados da app.
+- `scripts/assemble-pages-site.mjs` — junta `deploy/site-root` + `site-static` + o export da app (`dist/`) na pasta enviada ao Cloudflare Pages.
+- `scripts/check-app-parity.mjs` — confirma que `lib/app-limits.mjs` e `lib/ga4.mjs` batem certo com a app.
 
-## Como gerar
-
-Na raiz deste pacote, com Node.js:
-
-```bash
-npm run build
-```
-
-O comando escreve as páginas em `site-static/`. Não publica.
-
-## Teste
+## Comandos (Node.js 22.18+)
 
 ```bash
-npm test
+npm run build   # escreve site-static/ (não publica)
+npm test        # testes + verificação de que site-static/ está atualizado
 ```
 
-Corre `node marketing/seo-site.test.mjs`.
+## Adicionar uma página Praticar
 
-## Cloudflare Pages
+1. Escreve a página num ficheiro de `marketing/practice/` (perguntas: `{ q, right, wrong: [3], why }`; flashcards: `{ front, back }`).
+2. Acrescenta-a a `PAGES` em `marketing/practice/index.mjs`.
+3. `npm run build && npm test` e faz commit de `site-static/`.
 
-Diretório de output: `site-static`.
+## Publicação
+
+O site e a web app são publicados juntos no projeto Cloudflare Pages `microgrind`, pelo workflow **"Publicar site"** (`.github/workflows/publish-site.yml`) do repositório `MicroGrind`. Esse workflow faz checkout deste repositório, corre `npm run build` + `npm test` + `check-app-parity`, exporta a app e monta tudo com `scripts/assemble-pages-site.mjs`.

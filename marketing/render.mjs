@@ -1,5 +1,12 @@
-import { CHROME, CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
+import { ga4HeadSnippet } from '../lib/ga4.mjs';
+import { headAssets, renderCookieBanner, renderFooter, renderHeader, renderInstallDialog } from './chrome.mjs';
+import { RETIRED_VS_SLUGS, comparePair } from './compare.mjs';
+import { CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
+import { closingBand, pageHero, pageKind, relatedCards, tocNav } from './page-layout.mjs';
+import { FEATURED_PLAN, PLAN_COPY, PLAN_ORDER, annualCents, euros, planCard, savingsPercent, yearlyPerMonthCents } from './plans.mjs';
+import { renderInstallGuide } from './install.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
+import { practiceSitemapEntries } from './practice-page.mjs';
 
 export function escapeHtml(value) {
   return String(value)
@@ -37,33 +44,12 @@ function renderInline(parts) {
 }
 
 function renderCell(cell) {
+  if (cell && typeof cell === 'object' && cell.kind === 'price') return `<span class="adv-price">${escapeHtml(cell.text)}</span>`;
   if (cell && typeof cell === 'object' && cell.kind === 'mark') {
     const glyph = cell.value === 'yes' ? '\u2713' : '\u2717';
     return `<span class="adv-glyph" aria-hidden="true">${glyph}</span><span class="visually-hidden">${escapeHtml(cell.label)}</span>`;
   }
   return Array.isArray(cell) ? renderInline(cell) : escapeHtml(cell);
-}
-
-export function renderFooterLinks(links) {
-  let html = '';
-  let index = 0;
-  while (index < links.length) {
-    const link = links[index];
-    if (link.heading) {
-      const label = escapeHtml(link.label);
-      let cluster = `<p class="footer-label">${label}</p>`;
-      index += 1;
-      while (index < links.length && !links[index].heading) {
-        cluster += `<p><a class="footer-privacy" href="${escapeHtml(links[index].href)}">${escapeHtml(links[index].label)}</a></p>`;
-        index += 1;
-      }
-      html += `<nav class="footer-compare" aria-label="${label}">${cluster}</nav>`;
-    } else {
-      html += `<p><a class="footer-privacy" href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></p>`;
-      index += 1;
-    }
-  }
-  return html;
 }
 
 function renderParagraph(block) {
@@ -74,7 +60,7 @@ function renderParagraph(block) {
 }
 
 function renderTable(block) {
-  const advantage = block.variant === 'advantage';
+  const advantage = block.variant === 'advantage' || block.variant === 'hub';
   const head = block.headers
     .map((cell, index) => {
       const text = !advantage && index === 0 ? `<span class="visually-hidden">${renderCell(cell)}</span>` : renderCell(cell);
@@ -87,6 +73,7 @@ function renderTable(block) {
       const cells = row
         .map((cell, index) => {
           if (index === 0) return `<th scope="row">${renderCell(cell)}</th>`;
+          if (cell && typeof cell === 'object' && cell.kind === 'price') return `<td class="adv adv-price-cell">${renderCell(cell)}</td>`;
           if (cell && typeof cell === 'object' && cell.kind === 'mark') {
             const tone = cell.value === 'yes' ? 'adv-yes' : 'adv-no';
             return `<td class="adv ${tone}">${renderCell(cell)}</td>`;
@@ -98,7 +85,7 @@ function renderTable(block) {
     })
     .join('');
   const negation = block.negation ? ' data-seo-negation="true"' : '';
-  const cls = advantage ? 'compare compare-adv' : 'compare';
+  const cls = block.variant === 'hub' ? 'compare compare-adv compare-hub' : advantage ? 'compare compare-adv' : 'compare';
   return `<div class="${cls}"${negation}><table><caption class="visually-hidden">${escapeHtml(block.caption)}</caption><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -114,11 +101,50 @@ function renderFaq(block) {
   return mentionsConfusion ? `<div data-seo-negation="true">${html}</div>` : html;
 }
 
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>';
+
+function planPrice(card, locale) {
+  const t = PLAN_COPY[locale];
+  const p = card.plan;
+  if (p.monthlyCents) {
+    const year = euros(yearlyPerMonthCents(p.monthlyCents), locale);
+    const month = euros(p.monthlyCents, locale);
+    const annual = euros(annualCents(p.monthlyCents), locale);
+    return `<p class="pl-price"><span class="pl-year"><b>${year}</b><small>${t.perMonth}</small></span><span class="pl-month"><b>${month}</b><small>${t.perMonth}</small></span></p>
+<p class="pl-bill"><span class="pl-year">${escapeHtml(t.billedYearly(annual))} · <em>${escapeHtml(t.save(savingsPercent(p.monthlyCents)))}</em><br>${escapeHtml(t.orMonthly(month))}</span><span class="pl-month">${escapeHtml(t.billedMonthly)}</span></p>`;
+  }
+  if (p.onceCents) {
+    return `<p class="pl-price"><b>${euros(p.onceCents, locale)}</b><small>${escapeHtml(t.once)}</small></p><p class="pl-bill">${escapeHtml(t.noRenewal)}</p>`;
+  }
+  return `<p class="pl-price"><b>${t.free}</b></p><p class="pl-bill">${escapeHtml(t.freeNote)}</p>`;
+}
+
+function renderPlans(block, locale) {
+  const t = PLAN_COPY[locale];
+  const cards = PLAN_ORDER.map((code) => {
+    const card = planCard(code, locale);
+    const featured = code === FEATURED_PLAN;
+    const facts = card.facts.map((f) => `<li>${CHECK}<span>${escapeHtml(f)}</span></li>`).join('');
+    const label = code === 'free' ? t.cta.free : code === 'season' ? t.cta.season : t.cta.paid(card.name);
+    const href = code === 'free' ? WEB_APP : `${WEB_APP}plans`;
+    const badge = featured ? `<span class="pl-badge">${escapeHtml(t.featured)}</span>` : '';
+    return `<li class="pl-card mg-glass${featured ? ' is-featured' : ''}" id="plano-${code}" data-spotlight>${badge}<h3>${escapeHtml(card.name)}</h3><p class="pl-tag">${escapeHtml(card.tagline)}</p>${planPrice(card, locale)}<ul class="pl-facts">${facts}</ul><a class="btn${featured ? ' btn-shine' : ' btn-ghost'}" href="${href}">${escapeHtml(label)}</a></li>`;
+  }).join('');
+  const save = savingsPercent(499);
+  return `<div class="pl" data-plans data-interval="year">
+<div class="pl-switch" role="radiogroup" aria-label="${escapeHtml(t.intervalLabel)}"><button type="button" role="radio" aria-checked="false" data-interval-choice="month">${escapeHtml(t.monthly)}</button><button type="button" role="radio" aria-checked="true" data-interval-choice="year">${escapeHtml(t.yearly)} <span class="pl-save">${escapeHtml(t.save(save))}</span></button></div>
+<ul class="pl-grid">${cards}</ul>
+<p class="pl-note">${escapeHtml(t.yearlyNote)}</p>
+</div>`;
+}
+
 function renderBlock(block, locale) {
+  if (block.type === 'plans') return renderPlans(block, locale);
   if (block.type === 'negation') {
     return `<div data-seo-negation="true">${block.blocks.map((child) => renderBlock(child, locale)).join('')}</div>`;
   }
   if (block.type === 'levels') return renderWhoLevels(locale);
+  if (block.type === 'install') return renderInstallGuide(locale, { id: 'guia', variant: 'page' });
   if (block.type === 'h2') {
     const html = `<h2>${escapeHtml(block.text)}</h2>`;
     return block.negation ? `<div data-seo-negation="true">${html}</div>` : html;
@@ -156,7 +182,39 @@ export function collectFaqs(page) {
   return faqs;
 }
 
-export function jsonLd({ locale, path, title, description, faqs }) {
+/** Monthly price of MicroGrind (EUR), as published on the site. */
+export const APP_PRICE_EUR = '4.00';
+
+/** What the app does, for search engines and AI answers. Keep in line with the app. */
+export const APP_FEATURES = {
+  pt: [
+    'Mapa da matéria a partir dos teus apontamentos, sebenta, manual ou slides (PDF, Word, texto, fotos)',
+    'Capítulos e lições na ordem dos teus resumos',
+    'Sessões de estudo de 5 a 25 minutos',
+    'Mini-lições, flashcards e quizzes',
+    'Simulações de exame (modo exame)',
+    'Tutor IA',
+    'Grind Score (0 a 100) e streaks',
+    'Battles entre estudantes',
+    'Web e telemóvel (PWA)',
+  ],
+  en: [
+    'Subject Map from your notes, course pack, textbook or slides (PDF, Word, text, photos)',
+    'Chapters and lessons in the order of your own summaries',
+    '5–25 minute study sessions',
+    'Mini-lessons, flashcards and quizzes',
+    'Mock exams (exam mode)',
+    'AI Tutor',
+    'Grind Score (0 to 100) and streaks',
+    'Battles between students',
+    'Web and phone (PWA)',
+  ],
+};
+
+/** Site-wide last modification date for the sitemap. */
+export const SITE_LASTMOD = '2026-11-06';
+
+export function jsonLd({ locale, path, title, description, faqs, breadcrumbs = [] }) {
   const pageUrl = absolute(path);
   const inLanguage = locale === 'en' ? 'en' : 'pt-PT';
   const graph = [
@@ -186,6 +244,20 @@ export function jsonLd({ locale, path, title, description, faqs }) {
       description: DEFINITION[locale === 'en' ? 'en' : 'pt'],
       slogan: locale === 'en' ? 'Short sessions. Real progress.' : 'Sessões curtas. Progresso real.',
       inLanguage: ['pt-PT', 'en'],
+      featureList: APP_FEATURES[locale === 'en' ? 'en' : 'pt'],
+      offers: {
+        '@type': 'Offer',
+        price: APP_PRICE_EUR,
+        priceCurrency: 'EUR',
+        url: WEB_APP,
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          price: APP_PRICE_EUR,
+          priceCurrency: 'EUR',
+          unitCode: 'MON',
+          referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
+        },
+      },
       publisher: { '@id': `${ORIGIN}/#org` },
     },
     {
@@ -200,6 +272,18 @@ export function jsonLd({ locale, path, title, description, faqs }) {
       publisher: { '@id': `${ORIGIN}/#org` },
     },
   ];
+  if (breadcrumbs.length > 0) {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      '@id': `${pageUrl}#breadcrumbs`,
+      itemListElement: breadcrumbs.map((crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        item: absolute(crumb.path),
+      })),
+    });
+  }
   if (faqs.length > 0) {
     graph.push({
       '@type': 'FAQPage',
@@ -216,8 +300,16 @@ export function jsonLd({ locale, path, title, description, faqs }) {
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-export function renderPage(page) {
-  const chrome = CHROME[page.locale];
+/** Insert the Google tag once, immediately after `<head>`. */
+export function withGa4Head(html) {
+  if (html.includes('googletagmanager.com/gtag/js')) return html;
+  const marker = '<head>';
+  const at = html.indexOf(marker);
+  if (at < 0) throw new Error('HTML is missing <head>.');
+  return `${html.slice(0, at + marker.length)}\n${ga4HeadSnippet()}${html.slice(at + marker.length)}`;
+}
+
+export function renderPage(page, { allPages = [], analytics = true } = {}) {
   const lang = page.locale === 'en' ? 'en' : 'pt-PT';
   const otherPath = page.locale === 'en' ? page.ptPath : page.enPath;
   const faqs = collectFaqs(page);
@@ -227,16 +319,19 @@ export function renderPage(page) {
     title: page.title,
     description: page.description,
     faqs,
+    breadcrumbs: [
+      { name: page.locale === 'en' ? 'Home' : 'Início', path: page.locale === 'en' ? '/en/' : '/' },
+      { name: page.kicker, path: page.path },
+    ],
   });
+  const kind = pageKind(page);
   const h1Attr = page.h1Negation ? ' data-seo-negation="true"' : '';
   const ledeAttr = page.ledeNegation ? ' data-seo-negation="true"' : '';
-  const blurb = page.blurb ?? chrome.blurb;
-  const footerLinks = renderFooterLinks(chrome.links);
   const articleClass = page.wide ? 'legal legal-wide' : 'legal';
   return `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
-<meta charset="utf-8">
+${analytics ? ga4HeadSnippet() : ''}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(page.title)}</title>
 <meta name="description" content="${escapeHtml(page.description)}">
@@ -258,52 +353,31 @@ export function renderPage(page) {
 <meta name="twitter:description" content="${escapeHtml(page.description)}">
 <meta name="twitter:image" content="${ORIGIN}/og.png">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
-<meta name="theme-color" content="#0b0e14">
+<meta name="theme-color" content="#07090d">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="/marketing.css">
-<link rel="stylesheet" href="/motion.css">
+${headAssets(['/marketing.css', '/motion.css'])}
 </head>
-<body>
-<a class="skip" href="#conteudo">${escapeHtml(chrome.skip)}</a>
-<header class="site-header">
-<div class="wrap header-inner">
-<a class="logo" href="${chrome.home}" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
-<nav class="nav" aria-label="${escapeHtml(chrome.nav)}">
-<a class="lang" href="${otherPath}" hreflang="${chrome.langHreflang}" lang="${chrome.langLang}">${chrome.lang}</a>
-<a class="btn btn-sm" href="${WEB_APP}">${escapeHtml(chrome.open)}</a>
-</nav>
-</div>
-</header>
+<body class="mg-page mg-page-${kind}">
+${renderHeader({ locale: page.locale, otherPath, currentPath: page.path })}
 <main id="conteudo" tabindex="-1">
+${pageHero(page, { h1Attr, ledeAttr, updated: page.updatedHtml ?? '' })}
+<div class="wrap pg-body${kind === 'legal' ? ' is-narrow' : ''}${kind === 'pricing' || kind === 'install' ? ' is-full' : ''}">
+${kind === 'legal' || kind === 'pricing' || kind === 'install' ? '' : tocNav(page.locale)}
 <article class="${articleClass}">
 <div class="legal-inner">
-<p class="kicker">${escapeHtml(page.kicker)}</p>
-<h1${h1Attr}>${escapeHtml(page.h1)}</h1>
-<p class="lede"${ledeAttr}>${escapeHtml(page.lede)}</p>
 ${page.blocks.map((block) => renderBlock(block, page.locale)).join('\n')}
 </div>
 </article>
+</div>
+${relatedCards(page, allPages)}
+${kind === 'legal' ? '' : closingBand(page.locale)}
 </main>
-<footer class="site-footer">
-<div class="wrap footer-grid">
-<div>
-<a class="logo" href="${chrome.home}"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block">MicroGrind</a>
-<p class="footer-slogan">${escapeHtml(chrome.slogan)}</p>
-<p>${escapeHtml(blurb)}</p>
-<p>${escapeHtml(chrome.courses)}</p>
-</div>
-<div class="footer-meta">
-<p class="footer-label">${escapeHtml(chrome.contact)}</p>
-<p class="footer-email"><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
-${footerLinks}
-<p><a class="footer-privacy" href="${chrome.privacyHref}">${escapeHtml(chrome.privacy)}</a></p>
-<p class="footer-copy">© MicroGrind</p>
-</div>
-</div>
-</footer>
+${renderFooter({ locale: page.locale })}
+${renderInstallDialog(page.locale)}
+${renderCookieBanner(page.locale)}
 ${pageMotionScript()}
 </body>
 </html>
@@ -319,13 +393,14 @@ export function renderSitemap() {
     .map(
       (url) => `  <url>
     <loc>${absolute(url.loc)}</loc>
-    <lastmod>2026-11-05</lastmod>
+    <lastmod>${SITE_LASTMOD}</lastmod>
     <xhtml:link rel="alternate" hreflang="pt" href="${absolute(url.pt)}" />
     <xhtml:link rel="alternate" hreflang="pt-PT" href="${absolute(url.pt)}" />
     <xhtml:link rel="alternate" hreflang="en" href="${absolute(url.en)}" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${absolute(url.pt)}" />
   </url>`
     )
+    .concat(practiceSitemapEntries())
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -344,10 +419,18 @@ export const NICHE_REDIRECT_RULES = [
   ['/en/law/index.html', '/en/', 301],
 ];
 
+/** Retired one-to-one comparison pages: each goes to the comparison page in its language. */
+export const VS_REDIRECT_RULES = RETIRED_VS_SLUGS.flatMap((slug) => [
+  [`/${slug}/`, comparePair.pt, 301],
+  [`/${slug}`, comparePair.pt, 301],
+  [`/en/${slug}/`, comparePair.en, 301],
+  [`/en/${slug}`, comparePair.en, 301],
+]);
+
 export function renderRedirects() {
-  return `# Retired niche pages. Prepend these rules to the site _redirects.
+  return `# Retired pages. Prepend these rules to the site _redirects.
 # Do not replace the /app rules with this file alone.
-${NICHE_REDIRECT_RULES.map(([source, destination, code]) => `${source} ${destination} ${code}`).join('\n')}
+${[...NICHE_REDIRECT_RULES, ...VS_REDIRECT_RULES].map(([source, destination, code]) => `${source} ${destination} ${code}`).join('\n')}
 `;
 }
 

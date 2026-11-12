@@ -1,8 +1,12 @@
 {
   "name": "microgrind-site",
   "private": true,
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "build": "node marketing/build-seo-site.mjs",
-    "test": "node marketing/seo-site.test.mjs"
+    "test": "node scripts/check-site-static.test.mjs && node scripts/assemble-pages-site.test.mjs && node marketing/seo-site.test.mjs",
+    "check:app-parity": "node scripts/check-app-parity.mjs"
   }
 }

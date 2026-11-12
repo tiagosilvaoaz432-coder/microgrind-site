@@ -29,6 +29,9 @@
   .compare-adv thead th.adv-col{font-size:.78rem;letter-spacing:-.03em;line-height:1.15;padding-inline:2px}
   .compare-adv td.adv{padding-inline:2px}
 }
+.compare-hub{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.compare-hub table{width:100%;min-width:52rem;table-layout:fixed}
+.compare-hub thead th.adv-col,.legal-wide .compare-hub td.adv{width:6.75rem}
 .adv-glyph{display:inline-grid;place-items:center;width:1.85rem;height:1.85rem;border-radius:999px;font-size:1.05rem;font-weight:760;line-height:1}
 .adv-yes .adv-glyph{color:#042f2e;background:#5eead4}
 .adv-no .adv-glyph{color:#4c0519;background:#fecdd3}
