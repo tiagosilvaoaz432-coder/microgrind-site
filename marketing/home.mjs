@@ -12,6 +12,7 @@ import { HOME_COPY } from './home-copy.mjs';
 import { chapterCard, progressRing, subjectProgress } from './learning-path.mjs';
 import { jsonLd } from './render.mjs';
 import { renderWhoLevels } from './who.mjs';
+import { renderPracticePromo } from './practice-promo.mjs';
 
 function svg(inner, cls = '') {
   const c = cls ? ` class="${cls}"` : '';
@@ -624,6 +625,7 @@ ${faq(c)}
 ${renderFooter({ locale, onHome: true })}
 ${installBar(c)}
 ${renderInstallDialog(locale)}
+${locale === 'pt' ? renderPracticePromo() : ''}
 ${renderCookieBanner(locale)}
 </body>
 </html>

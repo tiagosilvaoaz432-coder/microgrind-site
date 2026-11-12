@@ -52,8 +52,8 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/marketing.css">
 <link rel="stylesheet" href="/motion.css">
-<link rel="stylesheet" href="/mg.css?v=2026-11-08b">
-<script src="/mg.js?v=2026-11-08b" defer></script>
+<link rel="stylesheet" href="/mg.css?v=2026-11-12b">
+<script src="/mg.js?v=2026-11-12b" defer></script>
 </head>
 <body class="mg-page mg-page-guide">
 <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
@@ -61,7 +61,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <header class="site-header mg-header" data-header>
 <div class="mg-header-inner">
 <a class="logo" href="/" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block"><span>MicroGrind</span></a>
-<nav class="mg-nav" aria-label="Principal"><a href="/#como-funciona" data-nav="como-funciona">Como funciona</a><a href="/#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="/#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/#faq" data-nav="faq">Perguntas</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
+<nav class="mg-nav" aria-label="Principal"><a href="/#como-funciona" data-nav="como-funciona">Como funciona</a><div class="mg-drop" data-drop><a href="/#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><button class="mg-drop-caret" type="button" aria-expanded="false" aria-controls="mg-drop-pt" aria-label="Ver funcionalidades" data-drop-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="mg-drop-menu" id="mg-drop-pt" data-drop-menu hidden><a href="/#mapa">Mapa da matéria</a><a href="/#licoes">Lições</a><a href="/#flashcards">Flashcards</a><a href="/#quizzes">Quizzes</a><a href="/#simulacao-exame">Simulação de exame</a><a href="/#tutor">Tutor IA</a></div></div><a href="/#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/praticar/" class="mg-nav-hl">Praticar</a><a href="/#faq" data-nav="faq">Perguntas</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
 <div class="mg-actions">
 <a class="lang" href="/en/study-from-pdf/" hreflang="en" lang="en" aria-label="English">EN</a>
 <button class="btn btn-sm js-install" type="button" data-magnetic>Instalar</button>
@@ -69,7 +69,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 </div>
 </div>
 <div class="mg-sheet" id="mg-sheet" data-sheet hidden>
-<nav aria-label="Menu"><a href="/#como-funciona" data-nav="como-funciona">Como funciona</a><a href="/#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="/#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/#faq" data-nav="faq">Perguntas</a></nav>
+<nav aria-label="Menu"><a href="/#como-funciona" data-nav="como-funciona">Como funciona</a><a href="/#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="/#mapa" class="mg-sheet-sub">Mapa da matéria</a><a href="/#licoes" class="mg-sheet-sub">Lições</a><a href="/#flashcards" class="mg-sheet-sub">Flashcards</a><a href="/#quizzes" class="mg-sheet-sub">Quizzes</a><a href="/#simulacao-exame" class="mg-sheet-sub">Simulação de exame</a><a href="/#tutor" class="mg-sheet-sub">Tutor IA</a><a href="/#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/praticar/" class="mg-nav-hl">Praticar</a><a href="/#faq" data-nav="faq">Perguntas</a></nav>
 <div class="mg-sheet-actions"><button class="btn js-install" type="button">Instalar</button><a class="lang" href="/en/study-from-pdf/" hreflang="en" lang="en">English</a></div>
 </div>
 </header>

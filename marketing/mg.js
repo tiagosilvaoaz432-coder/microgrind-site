@@ -79,7 +79,7 @@
     var movePill = function (link) {
       if (!pill) return;
       if (!link) { nav.style.setProperty('--po', 0); return; }
-      nav.style.setProperty('--px', link.offsetLeft + 'px');
+      nav.style.setProperty('--px', (link.getBoundingClientRect().left - nav.getBoundingClientRect().left) + 'px');
       nav.style.setProperty('--pw', link.offsetWidth + 'px');
       nav.style.setProperty('--po', 1);
     };
@@ -99,6 +99,36 @@
       if (target) navIO.observe(target);
     });
   }
+
+  /* ---------- Funcionalidades / Features dropdown in the header ---------- */
+
+  $$('[data-drop]').forEach(function (drop) {
+    var toggle = $('[data-drop-toggle]', drop);
+    var menu = $('[data-drop-menu]', drop);
+    if (!toggle || !menu) return;
+    var closeTimer = null;
+    function setDrop(open) {
+      window.clearTimeout(closeTimer);
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      drop.classList.toggle('is-open', open);
+    }
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setDrop(menu.hidden);
+      if (!menu.hidden && e.detail === 0) { var first = $('a', menu); if (first) first.focus(); }
+    });
+    if (finePointer.matches) {
+      drop.addEventListener('mouseenter', function () { setDrop(true); });
+      drop.addEventListener('mouseleave', function () { closeTimer = window.setTimeout(function () { setDrop(false); }, 160); });
+    }
+    menu.addEventListener('click', function (e) { if (e.target.closest('a')) setDrop(false); });
+    drop.addEventListener('focusout', function (e) { if (!drop.contains(e.relatedTarget)) setDrop(false); });
+    doc.addEventListener('click', function (e) { if (!drop.contains(e.target)) setDrop(false); });
+    doc.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menu.hidden) { setDrop(false); toggle.focus(); }
+    });
+  });
 
   /* ---------- Reveal ---------- */
 
@@ -1133,6 +1163,48 @@
         try { window.sessionStorage.setItem('mg-install-dismiss', '1'); } catch (err) { /* private mode */ }
         bar.remove();
       });
+    }
+  }
+
+  /* ---------- Homepage pop-up: free practice pages (/praticar/) ----------
+   * Opens a few seconds after load, at most once every 7 days, never over another dialog
+   * and never when the visitor arrived on a #anchor. */
+  var promo = $('[data-practice-promo]');
+  if (promo) {
+    var PROMO_KEY = 'mg-practice-promo';
+    var PROMO_DAYS = 7;
+    var lastSeen = 0;
+    try { lastSeen = Number(window.localStorage.getItem(PROMO_KEY)) || 0; } catch (err) { /* private mode */ }
+    var promoFocus = null;
+    var promoTrack = function (name) {
+      try { if (typeof window.gtag === 'function' && window.mgAnalyticsLoaded) window.gtag('event', name, { promo: 'praticar' }); } catch (err) { /* never break */ }
+    };
+    var closePromo = function () {
+      if (typeof promo.close === 'function') promo.close();
+      else { promo.open = false; root.classList.remove('ig-lock'); }
+    };
+    promo.addEventListener('close', function () {
+      root.classList.remove('ig-lock');
+      if (promoFocus && promoFocus.focus) promoFocus.focus();
+    });
+    promo.addEventListener('click', function (e) { if (e.target === promo) closePromo(); });
+    $$('[data-promo-close]', promo).forEach(function (b) {
+      b.addEventListener('click', function () { promoTrack('practice_promo_dismiss'); closePromo(); });
+    });
+    $$('[data-promo-link]', promo).forEach(function (a) {
+      a.addEventListener('click', function () { promoTrack('practice_promo_click'); });
+    });
+    var due = Date.now() - lastSeen > PROMO_DAYS * 864e5;
+    if (due && !window.location.hash) {
+      window.setTimeout(function () {
+        if (doc.querySelector('dialog[open]')) return;
+        try { window.localStorage.setItem(PROMO_KEY, String(Date.now())); } catch (err) { /* private mode */ }
+        promoFocus = doc.activeElement;
+        if (typeof promo.showModal === 'function') promo.showModal();
+        else promo.open = true;
+        root.classList.add('ig-lock');
+        promoTrack('practice_promo_view');
+      }, 2500);
     }
   }
 

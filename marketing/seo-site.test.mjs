@@ -738,6 +738,28 @@ try {
     assert.equal(readFileSync(join(siteStatic, rel), 'utf8'), read(rel), `${rel} is stale; run npm run build`);
   }
 
+  // Header: Praticar link, Funcionalidades/Features dropdown with every study mode; PT home pop-up.
+  for (const [rel, locale] of [['index.html', 'pt'], ['sobre/index.html', 'pt'], ['praticar/index.html', 'pt'], ['en/index.html', 'en']]) {
+    const html = read(rel);
+    const header = html.slice(html.indexOf('<header class="site-header'), html.indexOf('</header>'));
+    const drop = header.match(/<div class="mg-drop" data-drop>([\s\S]*?)<\/div><\/div>/);
+    assert.ok(drop, `${rel} has the features dropdown`);
+    assert.match(drop[0], /aria-expanded="false"/);
+    assert.match(drop[0], /data-drop-menu hidden/);
+    const modes = Object.values(FEATURE_ANCHORS[locale]);
+    for (const id of modes) assert.ok(drop[0].includes(`#${id}"`), `${rel} dropdown links #${id}`);
+    for (const id of modes) assert.ok(header.includes(`class="mg-sheet-sub"`) && header.includes(`#${id}" class="mg-sheet-sub"`), `${rel} mobile menu links #${id}`);
+    if (locale === 'pt') assert.match(header, /<a href="\/praticar\/" class="mg-nav-hl[^"]*"[^>]*>Praticar<\/a>/, `${rel} header links /praticar/`);
+    else assert.doesNotMatch(header, /\/praticar\//, `${rel} EN header has no PT-only practice link`);
+  }
+  const promoHome = read('index.html');
+  assert.match(promoHome, /<dialog class="pp-dialog" id="practice-promo"/, 'PT home has the practice pop-up');
+  assert.match(promoHome, /data-practice-promo[\s\S]*href="\/praticar\/" data-promo-link autofocus/, 'pop-up links the hub');
+  assert.equal((promoHome.match(/class="pp-chip" href="\/praticar\/[a-z0-9-]+\/"/g) ?? []).length, 6, 'pop-up shows six subjects');
+  assert.doesNotMatch(read('en/index.html'), /data-practice-promo/, 'EN home has no PT pop-up');
+  assert.doesNotMatch(read('sobre/index.html'), /data-practice-promo/, 'only the homepage opens the pop-up');
+  for (const rel of ['mg.css', 'mg.js']) assert.equal(readFileSync(join(siteStatic, rel), 'utf8'), read(rel), `${rel} is stale; run npm run build`);
+
   console.log('marketing/seo-site.test.mjs passed');
 } finally {
   rmSync(out, { recursive: true, force: true });

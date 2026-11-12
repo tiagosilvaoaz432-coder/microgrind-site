@@ -14,7 +14,7 @@ export function esc(value) {
 }
 
 /** Bump when mg.css / mg.js change so returning visitors get the new files. */
-export const ASSET_VERSION = '2026-11-08b';
+export const ASSET_VERSION = '2026-11-12b';
 
 export const NAV = {
   pt: [
@@ -23,6 +23,7 @@ export const NAV = {
     { id: 'progresso', label: 'Progresso' },
     { href: '/planos/', label: 'Planos' },
     { href: '/comparar/', label: 'Comparar' },
+    { href: '/praticar/', label: 'Praticar', highlight: true },
     { id: 'faq', label: 'Perguntas' },
   ],
   en: [
@@ -56,8 +57,8 @@ const FEATURE_LINKS = {
 };
 
 const UI = {
-  pt: { install: 'Instalar', menu: 'Menu', product: 'Produto', learn: 'Saber mais', langName: 'English' },
-  en: { install: 'Install', menu: 'Menu', product: 'Product', learn: 'Learn more', langName: 'Português' },
+  pt: { install: 'Instalar', menu: 'Menu', product: 'Produto', learn: 'Saber mais', langName: 'English', features: 'Ver funcionalidades' },
+  en: { install: 'Install', menu: 'Menu', product: 'Product', learn: 'Learn more', langName: 'Português', features: 'Show features' },
 };
 
 /** Fonts, design-system stylesheet and script. `extraCss` keeps older page stylesheets first. */
@@ -79,18 +80,37 @@ function navHref(locale, id, onHome) {
   return onHome ? `#${id}` : `${CHROME[locale].home}#${id}`;
 }
 
+const CARET =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+
+/** Header nav links. Funcionalidades / Features gets a dropdown with each study mode. */
+function navLinks({ locale, onHome, currentPath, sheet = false }) {
+  const ui = UI[locale];
+  const featuresId = locale === 'en' ? 'features' : 'funcionalidades';
+  return NAV[locale]
+    .map((item) => {
+      if (item.href) {
+        const classes = [item.highlight ? 'mg-nav-hl' : '', item.href === currentPath ? 'is-active' : ''].filter(Boolean).join(' ');
+        const current = item.href === currentPath ? ' aria-current="page"' : '';
+        return `<a href="${item.href}"${classes ? ` class="${classes}"` : ''}${current}>${esc(item.label)}</a>`;
+      }
+      const link = `<a href="${navHref(locale, item.id, onHome)}" data-nav="${item.id}">${esc(item.label)}</a>`;
+      if (item.id !== featuresId) return link;
+      const modes = FEATURE_LINKS[locale]
+        .map(([key, label]) => `<a href="${navHref(locale, FEATURE_ANCHORS[locale][key], onHome)}"${sheet ? ' class="mg-sheet-sub"' : ''}>${esc(label)}</a>`)
+        .join('');
+      if (sheet) return `${link}${modes}`;
+      const id = `mg-drop-${locale}`;
+      return `<div class="mg-drop" data-drop>${link}<button class="mg-drop-caret" type="button" aria-expanded="false" aria-controls="${id}" aria-label="${esc(ui.features)}" data-drop-toggle>${CARET}</button><div class="mg-drop-menu" id="${id}" data-drop-menu hidden>${modes}</div></div>`;
+    })
+    .join('');
+}
+
 export function renderHeader({ locale, otherPath, onHome = false, currentPath = '' }) {
   const chrome = CHROME[locale];
   const ui = UI[locale];
-  const links = NAV[locale]
-    .map((item) => {
-      if (item.href) {
-        const current = item.href === currentPath ? ' class="is-active" aria-current="page"' : '';
-        return `<a href="${item.href}"${current}>${esc(item.label)}</a>`;
-      }
-      return `<a href="${navHref(locale, item.id, onHome)}" data-nav="${item.id}">${esc(item.label)}</a>`;
-    })
-    .join('');
+  const links = navLinks({ locale, onHome, currentPath });
+  const sheetLinks = navLinks({ locale, onHome, currentPath, sheet: true });
   return `<a class="skip" href="#conteudo">${esc(chrome.skip)}</a>
 <div class="mg-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <header class="site-header mg-header" data-header>
@@ -104,7 +124,7 @@ export function renderHeader({ locale, otherPath, onHome = false, currentPath = 
 </div>
 </div>
 <div class="mg-sheet" id="mg-sheet" data-sheet hidden>
-<nav aria-label="${esc(ui.menu)}">${links}</nav>
+<nav aria-label="${esc(ui.menu)}">${sheetLinks}</nav>
 <div class="mg-sheet-actions"><button class="btn js-install" type="button">${esc(ui.install)}</button><a class="lang" href="${otherPath}" hreflang="${chrome.langHreflang}" lang="${chrome.langLang}">${ui.langName}</a></div>
 </div>
 </header>`;
