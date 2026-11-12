@@ -1,0 +1,87 @@
+/* Practice pages (/praticar/…). Loaded after mg.css; uses its tokens. */
+
+.pq-body { max-width: 820px; margin: 0 auto; padding: 8px 20px 72px; display: grid; gap: 40px; }
+.pq-hub { max-width: var(--max); }
+.pq-h2 { font-family: var(--display); font-size: clamp(1.35rem, 2.6vw, 1.75rem); line-height: 1.2; margin: 0 0 14px; letter-spacing: -0.01em; }
+.pq-hint { color: var(--ink-2); margin: 0 0 18px; }
+.pq-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.pq-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.pq-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  padding: 22px 22px 18px;
+}
+.pq-count { margin: 0 0 6px; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.pq-q { margin: 0 0 14px; font-size: 1.12rem; line-height: 1.45; font-weight: 600; outline: none; }
+.pq-options { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.pq-option { display: flex; gap: 10px; align-items: flex-start; color: var(--ink-2); }
+.pq-letter {
+  flex: none; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 8px;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--ink); background: var(--bg-3); border: 1px solid var(--line-2);
+}
+.pq-answer summary { cursor: pointer; color: var(--blue-2); font-weight: 600; }
+.pq-answer p { margin: 10px 0 0; color: var(--ink-2); }
+.pq-answer strong { color: var(--ink); }
+
+/* Interactive mode (practice.js) */
+.pq-practice.is-interactive .pq-item { padding: 26px 24px 22px; }
+.pq-choices { display: grid; gap: 10px; margin: 0 0 14px; }
+.pq-choice {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; cursor: pointer;
+  font: inherit; color: var(--ink); background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 14px;
+  padding: 12px 14px; min-height: 48px; transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.pq-choice:hover:not(:disabled) { border-color: var(--blue-2); background: var(--bg-3); }
+.pq-choice:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 2px; }
+.pq-choice:disabled { cursor: default; }
+.pq-choice:disabled:not(.is-correct):not(.is-wrong) { opacity: 0.6; }
+.pq-choice.is-correct { border-color: var(--good); background: rgba(52, 211, 153, 0.12); }
+.pq-choice.is-correct .pq-letter { background: var(--good); color: #04120c; border-color: var(--good); }
+.pq-choice.is-wrong { border-color: var(--bad); background: rgba(251, 113, 133, 0.12); }
+.pq-choice.is-wrong .pq-letter { background: var(--bad); color: #1a0509; border-color: var(--bad); }
+.pq-feedback { border-left: 3px solid var(--line-2); padding: 4px 0 4px 14px; margin: 0 0 14px; outline: none; }
+.pq-feedback p { margin: 0; color: var(--ink-2); }
+.pq-feedback strong { color: var(--ink); }
+.pq-verdict { font-weight: 700; margin-bottom: 4px !important; }
+.pq-verdict.is-good { color: var(--good) !important; }
+.pq-verdict.is-bad { color: var(--bad) !important; }
+.pq-nav { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.pq-card .pq-front { font-size: 1.25rem; min-height: 3.2em; }
+.pq-card.is-flipped .pq-feedback { border-left-color: var(--marker); }
+
+.pq-result { border: 1px solid var(--line-2); border-radius: var(--radius-lg); padding: 28px 24px; background: var(--bg-1); display: grid; gap: 14px; outline: none; }
+.pq-score { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2rem); margin: 0; }
+.pq-score-note { margin: 0; color: var(--ink-2); }
+.pq-review-h { font-weight: 700; margin: 6px 0 8px; }
+.pq-review ul { margin: 0; padding-left: 18px; display: grid; gap: 10px; color: var(--ink-2); }
+.pq-review b { color: var(--ink); font-weight: 600; }
+.pq-result > .btn-ghost { justify-self: start; }
+
+.pq-cta { padding: 26px 24px; display: grid; gap: 10px; justify-items: start; }
+.pq-cta-h { font-family: var(--display); font-size: 1.3rem; line-height: 1.25; margin: 0; }
+.pq-cta p { margin: 0; color: var(--ink-2); }
+.pq-cta .btn { margin-top: 6px; }
+
+.pq-guide p { color: var(--ink-2); margin: 0 0 14px; }
+.pq-faq { border-top: 1px solid var(--line); padding: 14px 0; }
+.pq-faq:last-child { border-bottom: 1px solid var(--line); }
+.pq-faq summary { cursor: pointer; font-weight: 600; }
+.pq-faq p { margin: 10px 0 0; color: var(--ink-2); }
+.pq-related ul { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 6px; }
+.pq-related a, .pq-faqs a { color: var(--blue-2); }
+.pq-disclaimer { font-size: 0.88rem; color: var(--ink-3); margin: 0; }
+
+.pq-hub-group { display: grid; gap: 4px; }
+.pq-hub-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.pq-hub-card { display: grid; gap: 6px; height: 100%; padding: 20px; color: inherit; text-decoration: none; transition: border-color 0.2s var(--ease); }
+.pq-hub-card:hover { border-color: var(--blue-2); }
+.pq-hub-card b { font-size: 1.05rem; }
+.pq-hub-blurb { color: var(--ink-2); font-size: 0.92rem; }
+
+@media (max-width: 560px) {
+  .pq-body { padding: 0 14px 56px; gap: 32px; }
+  .pq-item, .pq-practice.is-interactive .pq-item { padding: 18px 16px; }
+  .pq-nav .btn { flex: 1 1 auto; }
+}

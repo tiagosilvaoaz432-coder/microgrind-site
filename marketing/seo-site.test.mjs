@@ -4,11 +4,18 @@ import { tmpdir } from 'node:os';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { GA4_MEASUREMENT_ID_PRODUCTION, ga4MeasurementId } from '../lib/ga4.mjs';
 import { DEFINITION, HOME, MIND_MAP_FAQ, PAIRS, pages } from './content.mjs';
-import { comparisonPages, comparisonPairs } from './comparisons.mjs';
+import { COMPARE_COLUMNS, RETIRED_VS_SLUGS, comparePages, comparePair } from './compare.mjs';
 import { buildSeoSite } from './build-seo-site.mjs';
-import { NICHE_REDIRECT_RULES, collectFaqs, escapeHtml, renderRedirects } from './render.mjs';
+import { NICHE_REDIRECT_RULES, VS_REDIRECT_RULES, escapeHtml, renderRedirects, withGa4Head } from './render.mjs';
 import { collidingAppFiles } from '../scripts/check-site-static.mjs';
+import { EXAM_SIMULATIONS, TUTOR_AVERAGE_MESSAGE_TOKENS as APP_AVG_TOKENS, TUTOR_PLAN_TOKEN_WINDOWS } from '../lib/app-limits.mjs';
+import { FEATURE_ANCHORS } from './anchors.mjs';
+import { PLAN_FACTS, TUTOR_AVERAGE_MESSAGE_TOKENS, pricingPair } from './plans.mjs';
+import { REGISTER_URL } from './content.mjs';
+import { practicePath } from './practice-page.mjs';
+import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteStatic = join(here, '..', 'site-static');
@@ -98,19 +105,37 @@ try {
     ['mapa-da-materia/index.html', '/mapa-da-materia/'],
     ['estudar-sebenta/index.html', '/estudar-sebenta/'],
     ['sobre/index.html', '/sobre/'],
+    ['comparar/index.html', '/comparar/'],
+    ['en/compare/index.html', '/en/compare/'],
     ['en/subject-map/index.html', '/en/subject-map/'],
     ['en/study-from-pdf/index.html', '/en/study-from-pdf/'],
     ['en/about/index.html', '/en/about/'],
+    ['instalar/index.html', '/instalar/'],
+    ['en/install/index.html', '/en/install/'],
   ]);
 
-  for (const page of comparisonPages) {
-    const rel = `${page.path.replace(/^\//, '').replace(/\/$/, '')}/index.html`;
-    expected.set(rel, page.path);
-  }
+  const measurementId = ga4MeasurementId();
+  assert.equal(GA4_MEASUREMENT_ID_PRODUCTION, 'G-MXG7DRQWRG');
+  assert.equal(ga4MeasurementId({}), 'G-MXG7DRQWRG');
+  assert.equal(ga4MeasurementId({ GA_MEASUREMENT_ID: '  G-PREVIEW1  ' }), 'G-PREVIEW1');
+  assert.throws(() => ga4MeasurementId({ EXPO_PUBLIC_GA_MEASUREMENT_ID: 'UA-123' }), /G-XXXXXXXX/);
+  const taggedTwice = withGa4Head(withGa4Head('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>'));
+  assert.equal((taggedTwice.match(/googletagmanager\.com\/gtag\/js/g) ?? []).length, 1);
+  assert.ok(taggedTwice.indexOf('googletagmanager.com/gtag/js') < taggedTwice.indexOf('</head>'));
 
   for (const [rel, path] of expected) {
     const html = read(rel);
     const canonical = `https://microgrind.app${path === '/' ? '/' : path}`;
+    const title = html.match(/<title>(.*?)<\/title>/)[1];
+    const metaDescription = html.match(/<meta name="description" content="(.*?)"/)[1];
+    assert.ok(title.length <= 85, `${rel} title is ${title.length} chars`);
+    assert.ok(metaDescription.length <= 160, `${rel} description is ${metaDescription.length} chars`);
+    const headEnd = html.indexOf('</head>');
+    const loaderAt = html.indexOf(`https://www.googletagmanager.com/gtag/js?id=${measurementId}`);
+    assert.ok(loaderAt > html.indexOf('<head') && loaderAt < headEnd, `${rel} loads gtag in head`);
+    assert.equal((html.match(/googletagmanager\.com\/gtag\/js/g) ?? []).length, 1, `${rel} loads gtag once`);
+    assert.match(html, new RegExp(`function gtag\\(\\)\\{dataLayer\\.push\\(arguments\\);\\}`));
+    assert.match(html, new RegExp(`gtag\\('config', '${measurementId}'\\)`));
     assert.match(html, new RegExp(`rel="canonical" href="${canonical.replaceAll('/', '\\/')}"`));
     assert.match(html, /hreflang="pt-PT"/);
     assert.match(html, /hreflang="en"/);
@@ -124,8 +149,16 @@ try {
     assert.ok(types.includes('MobileApplication'), rel);
     assert.ok(types.includes('FAQPage'), rel);
     assert.equal(graph.some((node) => node.sameAs), false, rel);
-    assert.equal(JSON.stringify(graph).includes('"offers"'), false, rel);
     const app = graph.find((node) => (Array.isArray(node['@type']) ? node['@type'] : [node['@type']]).includes('SoftwareApplication'));
+    assert.equal(app.offers.price, '4.00', `${rel} app price`);
+    assert.equal(app.offers.priceCurrency, 'EUR', rel);
+    assert.equal(app.offers.priceSpecification.unitCode, 'MON', rel);
+    assert.ok(app.featureList.length >= 8, rel);
+    assert.ok(app.featureList.some((f) => /Tutor/.test(f)), rel);
+    if (path !== '/' && path !== '/en/') {
+      const crumbs = graph.find((node) => node['@type'] === 'BreadcrumbList');
+      assert.ok(crumbs && crumbs.itemListElement.at(-1).item === canonical, `${rel} breadcrumbs`);
+    }
     assert.match(app.description, /Subject Map|mapa da matéria/);
     assert.match(app.description, /qualquer curso|any course/);
     assert.equal(app.audience, undefined, `${rel} must not set a law-only audience`);
@@ -139,17 +172,16 @@ try {
     assert.doesNotMatch(footer, /\bDireito\b/, `${rel} footer names Direito`);
     assert.doesNotMatch(footer, /\bLaw\b/, `${rel} footer names Law`);
     assert.doesNotMatch(footer, /\b(Gestão|Engenharia|Management|Engineering)\b/, `${rel} footer names a course example`);
+    assert.doesNotMatch(footer, /\/vs-/, `${rel} footer links a retired vs page`);
     if (path.startsWith('/en')) {
       assert.match(footer, /From primary to higher education, in any subject\./);
       assert.match(footer, /aria-label="Comparisons"/);
-      assert.match(footer, /href="\/en\/vs-quizlet\/"/);
-      assert.match(footer, /href="\/en\/vs-astra-ai\/"/);
+      assert.match(footer, /href="\/en\/compare\/"/);
       assert.doesNotMatch(footer, /href="\/en\/law\/?"/);
     } else {
       assert.match(footer, /Do ensino básico ao superior, em qualquer disciplina\./);
       assert.match(footer, /aria-label="Comparações"/);
-      assert.match(footer, /href="\/vs-quizlet\/"/);
-      assert.match(footer, /href="\/vs-astra-ai\/"/);
+      assert.match(footer, /href="\/comparar\/"/);
       assert.doesNotMatch(footer, /href="\/direito\/?"/);
     }
   }
@@ -178,14 +210,9 @@ try {
   assert.match(homeEn, /href="\/en\/about\/"/);
   assert.doesNotMatch(homePt, /href="\/direito\/?"/);
   assert.doesNotMatch(homeEn, /href="\/en\/law\/?"/);
-  assert.match(homePt, /href="\/vs-notebooklm\/"/);
-  assert.match(homePt, /href="\/vs-studingo\/"/);
-  assert.match(homePt, /href="\/vs-knowunity\/"/);
-  assert.match(homePt, /href="\/vs-anki\/"/);
-  assert.match(homeEn, /href="\/en\/vs-notebooklm\/"/);
-  assert.match(homeEn, /href="\/en\/vs-studingo\/"/);
-  assert.match(homeEn, /href="\/en\/vs-knowunity\/"/);
-  assert.match(homeEn, /href="\/en\/vs-anki\/"/);
+  assert.match(homePt, /href="\/comparar\/"/);
+  assert.match(homeEn, /href="\/en\/compare\/"/);
+  assert.doesNotMatch(`${homePt}${homeEn}`, /href="[^"]*\/vs-/);
   assert.match(homeEn, /<strong class="ink-mark">Subject Map<\/strong>/);
   assert.match(homePt, /Serve para qualquer curso/);
   assert.doesNotMatch(homePt, /estudantes de Direito/);
@@ -218,7 +245,11 @@ try {
   assert.match(homePt, /Exemplo de material/);
   assert.match(homePt, /Exemplo de mapa/);
   assert.match(homePt, /Energia/);
-  assert.match(homePt, /href="\/motion.css"/);
+  for (const html of [homePt, homeEn]) {
+    assert.match(html, /<link rel="stylesheet" href="\/mg\.css\?v=[^"]+">/);
+    assert.match(html, /<script src="\/mg\.js\?v=[^"]+" defer><\/script>/);
+    assert.doesNotMatch(html, /\/_astro\//, 'homepage must not depend on the old Astro build');
+  }
   assert.match(homePt, /Exemplo de sessão/);
   assert.doesNotMatch(homePt, /na universidade/);
   assert.doesNotMatch(homePt, /apontamentos da cadeira/);
@@ -346,189 +377,43 @@ try {
     assert.equal(homeEn.toLowerCase().includes(phrase), false, phrase);
   }
 
-  assert.deepEqual(
-    comparisonPairs.map(({ pt, en }) => ({ pt, en })),
-    [
-      { pt: '/vs-quizlet/', en: '/en/vs-quizlet/' },
-      { pt: '/vs-studingo/', en: '/en/vs-studingo/' },
-      { pt: '/vs-knowunity/', en: '/en/vs-knowunity/' },
-      { pt: '/vs-notebooklm/', en: '/en/vs-notebooklm/' },
-      { pt: '/vs-anki/', en: '/en/vs-anki/' },
-      { pt: '/vs-astra-ai/', en: '/en/vs-astra-ai/' },
-    ],
-  );
-  assert.deepEqual(PAIRS.slice(-6).map(({ pt, en }) => ({ pt, en })), comparisonPairs.map(({ pt, en }) => ({ pt, en })));
-  assert.equal(comparisonPages.length, 12);
-
+  // One comparison page (/comparar/, /en/compare/); the one-to-one vs pages are gone.
+  assert.deepEqual(comparePair, { pt: '/comparar/', en: '/en/compare/' });
+  assert.equal(comparePages.length, 2);
+  assert.ok(PAIRS.some((pair) => pair.pt === comparePair.pt && pair.en === comparePair.en));
+  assert.equal(PAIRS.some((pair) => /\/vs-/.test(pair.pt + pair.en)), false);
+  assert.equal(pages.some((page) => /\/vs-/.test(page.path)), false);
+  for (const slug of RETIRED_VS_SLUGS) {
+    assert.equal(existsSync(join(out, slug, 'index.html')), false, slug);
+    assert.equal(existsSync(join(out, 'en', slug, 'index.html')), false, slug);
+  }
   function decode(value) {
     return value.replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').replaceAll('&amp;', '&');
   }
-  function visibleFaqs(html) {
-    const faqs = [];
-    const re = /<summary>([\s\S]*?)<\/summary>[\s\S]*?<p>([\s\S]*?)<\/p>/g;
-    for (const match of html.matchAll(re)) {
-      faqs.push({
-        q: decode(match[1].replace(/<[^>]+>/g, '')),
-        a: decode(match[2].replace(/<[^>]+>/g, '')),
-      });
-    }
-    return faqs;
-  }
-  const copy = readFileSync(join(here, 'vs-copy.md'), 'utf8');
-  assert.equal(
-    readFileSync(join(here, 'copy-paginas-vs-vantagens-2026-11-06.md'), 'utf8'),
-    copy,
-    'dated advantage copy must match vs-copy.md',
-  );
-  function unwrap(markdown) {
-    return markdown
-      .replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1')
-      .replace(/`([^`]+)`/g, '$1')
-      .replace(/\*\*([^*]+)\*\*/g, '$1')
-      .replace(/\*([^*]+)\*/g, '$1');
-  }
-  const unwrapped = unwrap(copy);
-  const banned = [
-    'melhor que',
-    'better than',
-    'não inventa',
-    'does not invent',
-    'fidelidade',
-    'waiting for tiago',
-    'nota max',
-    '15m+',
-    '+2 valores',
-    '+2 grades',
-    'money back',
-  ];
-
-  for (const page of comparisonPages) {
+  for (const page of comparePages) {
     const rel = `${page.path.replace(/^\//, '').replace(/\/$/, '')}/index.html`;
     const html = read(rel);
-    const pattern = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    assert.match(html, new RegExp(`<title>${pattern(escapeHtml(page.title))}</title>`));
-    assert.match(html, new RegExp(`name="description" content="${pattern(escapeHtml(page.description))}"`));
-    assert.match(html, new RegExp(`<h1[^>]*>${pattern(escapeHtml(page.h1))}</h1>`));
-    assert.match(html, new RegExp(`<p class="lede"[^>]*>${pattern(escapeHtml(page.lede))}</p>`));
-    assert.match(html, /<table>/);
-    assert.match(html, /<th scope="col">Feature<\/th>/);
-    assert.match(html, /<th scope="col" class="adv-col">MicroGrind<\/th>/);
-    assert.match(html, /class="compare compare-adv"/);
-    const tableHtml = html.match(/<tbody>[\s\S]*?<\/tbody>/)[0];
-    const expectedRows = page.path.includes('vs-anki') ? 5 : 4;
-    assert.equal((tableHtml.match(/<tr>/g) ?? []).length, expectedRows, page.path);
-    const yesLabel = page.locale === 'pt' ? 'Sim' : 'Yes';
-    const noLabel = page.locale === 'pt' ? 'Não' : 'No';
-    const yesCell = `<td class="adv adv-yes"><span class="adv-glyph" aria-hidden="true">✓</span><span class="visually-hidden">${yesLabel}</span></td>`;
-    const noCell = `<td class="adv adv-no"><span class="adv-glyph" aria-hidden="true">✗</span><span class="visually-hidden">${noLabel}</span></td>`;
-    assert.equal((tableHtml.match(new RegExp(yesCell.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) ?? []).length, expectedRows, page.path);
-    assert.equal((tableHtml.match(new RegExp(noCell.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) ?? []).length, expectedRows, page.path);
-    assert.match(tableHtml, page.locale === 'pt' ? /via mapa da matéria \(não só upload/ : /via the Subject Map \(not only upload/);
-    assert.doesNotMatch(tableHtml, /não nicho Direito|not Law-only|Qualquer nível|Any level/);
-    if (page.path.includes('vs-anki')) {
-      assert.match(tableHtml, page.locale === 'pt' ? /App web \+ PWA \(sem depender de app desktop\)/ : /Web app \+ PWA \(no desktop app required\)/);
-    } else {
-      assert.doesNotMatch(tableHtml, /App web \+ PWA|Web app \+ PWA/);
+    assert.match(html, new RegExp(`<title>${escapeHtml(page.title).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`));
+    const table = html.match(/<div class="compare compare-adv compare-hub"[\s\S]*?<\/table><\/div>/)[0];
+    const headerText = [...table.matchAll(/<th scope="col"[^>]*>([\s\S]*?)<\/th>/g)].map((m) => m[1].replace(/<[^>]+>/g, ''));
+    assert.deepEqual(headerText, [page.locale === 'pt' ? 'Funcionalidade' : 'Feature', ...COMPARE_COLUMNS]);
+    assert.equal(COMPARE_COLUMNS.at(-1), 'MicroGrind');
+    const rows = table.match(/<tbody>[\s\S]*<\/tbody>/)[0].match(/<tr>[\s\S]*?<\/tr>/g);
+    assert.equal(rows.length, 10, page.path);
+    assert.doesNotMatch(table, /comunitária|community library/i, 'community-library row was dropped');
+    for (const row of rows.slice(0, -1)) {
+      const marks = [...row.matchAll(/class="adv adv-(yes|no)"/g)].map((m) => m[1]);
+      assert.equal(marks.length, COMPARE_COLUMNS.length, page.path);
+      assert.equal(marks.at(-1), 'yes', `${page.path}: MicroGrind is ✓ on every feature row`);
     }
-    assert.doesNotMatch(tableHtml, /N\/D|N\/A|\$|€/);
-    assert.match(html, page.locale === 'pt' ? />Tabela de vantagens</ : />Advantage table</);
-    assert.match(html, page.locale === 'pt' ? />O que (?:o|a) .+ faz bem</ : />What .+ does well</);
-    assert.match(html, page.locale === 'pt' ? />Por isso escolhe MicroGrind se…</ : />Choose MicroGrind if…</);
-    assert.doesNotMatch(html, /Tabela de comparação|Comparison table|comparação honesta|honest comparison|Quando escolher|When to choose/);
-    assert.match(html, page.locale === 'pt' ? /Última verificação: 6 Nov 2026/ : /Last checked: 6 Nov 2026/);
-    assert.match(html, page.locale === 'pt' ? /Sessões curtas\. Progresso real\./ : /Short sessions\. Real progress\./);
-    assert.doesNotMatch(html, /session-times|data-min=|role="radiogroup"|data-session/);
-    assert.doesNotMatch(html, /href="\/direito\/?"/);
-    assert.doesNotMatch(html, /href="\/en\/law\/?"/);
-    assert.deepEqual(
-      [...html.matchAll(/<img\b[^>]*src="([^"]+)"/g)].map((match) => match[1]),
-      ['/logo-mark.png', '/logo-mark.png'],
-      page.path,
-    );
-    const other = page.locale === 'pt' ? page.enPath : page.ptPath;
-    assert.match(html, new RegExp(`rel="alternate" hreflang="en" href="https://microgrind\\.app${page.enPath.replaceAll('/', '\\/')}"`));
-    assert.match(html, new RegExp(`rel="alternate" hreflang="pt-PT" href="https://microgrind\\.app${page.ptPath.replaceAll('/', '\\/')}"`));
-    assert.match(html, new RegExp(`rel="alternate" hreflang="x-default" href="https://microgrind\\.app${page.ptPath.replaceAll('/', '\\/')}"`));
-    assert.match(html, new RegExp(`class="lang" href="${other.replaceAll('/', '\\/')}"`));
-    const graph = jsonLd(html)['@graph'];
-    const webpage = graph.find((node) => node['@type'] === 'WebPage');
-    assert.equal(webpage.about['@id'], 'https://microgrind.app/#app', page.path);
-    assert.equal(JSON.stringify(graph).includes('AggregateRating'), false, page.path);
-    const model = collectFaqs(page);
-    const visible = visibleFaqs(html);
-    const faqLd = graph.find((node) => node['@type'] === 'FAQPage');
-    const expectedFaqs = page.path.includes('vs-astra-ai') ? 7 : 6;
-    assert.equal(model.length, expectedFaqs, page.path);
-    assert.equal(visible.length, expectedFaqs, page.path);
-    for (let i = 0; i < model.length; i += 1) {
-      assert.equal(visible[i].q, model[i].q, page.path);
-      assert.equal(visible[i].a, model[i].a, page.path);
-      assert.equal(faqLd.mainEntity[i].name, model[i].q, page.path);
-      assert.equal(faqLd.mainEntity[i].acceptedAnswer.text, model[i].a, page.path);
-      assert.ok(unwrapped.includes(model[i].q), model[i].q);
-      assert.ok(unwrapped.includes(model[i].a), model[i].a);
-    }
-    assert.ok(unwrapped.includes(page.h1), page.h1);
-    assert.ok(unwrapped.includes(page.title), page.title);
-    assert.ok(unwrapped.includes(page.description), page.description);
-    assert.ok(unwrapped.includes(page.lede), page.lede);
-    const haystack = html.toLowerCase();
-    for (const phrase of banned) {
-      if ((phrase === '+2 valores' || phrase === '+2 grades') && page.path.includes('vs-astra-ai')) continue;
-      assert.equal(haystack.includes(phrase), false, `${page.path} contains ${phrase}`);
-    }
-    assert.doesNotMatch(html, /grounded|zero alucina|a IA não inventa|tutor com fontes|MicroGrind tem tutor|MicroGrind has a tutor/i);
+    const prices = [...rows.at(-1).matchAll(/<span class="adv-price">([\s\S]*?)<\/span>/g)].map((m) => decode(m[1]));
+    assert.equal(prices.length, COMPARE_COLUMNS.length, page.path);
+    assert.equal(prices.at(-1), page.locale === 'pt' ? '4 €/mês' : '€4/month');
+    assert.match(html, page.locale === 'pt' ? /4 € por mês/ : /€4 a month/);
+    assert.match(html, /https:\/\/quizlet\.com\/upgrade/);
+    assert.doesNotMatch(html, /Studingo|N\/D|N\/A/);
+    assert.equal((html.match(/<summary>/g) ?? []).length, 5, page.path);
   }
-
-  const quizlet = read('vs-quizlet/index.html');
-  assert.match(quizlet, /Não apresentamos a MicroGrind como substituto\./);
-  assert.match(quizlet, /Mapa da matéria a partir do teu material \(tópicos, conceitos, relações\)/);
-  assert.match(quizlet, /não só upload → Study Guides \/ flashcards/);
-  assert.match(quizlet, /o que a MicroGrind tem e o Quizlet não/);
-  assert.doesNotMatch(quizlet, /help\.quizlet\.com/);
-  assert.doesNotMatch(quizlet, /App web \+ PWA|não nicho Direito/);
-  assert.match(read('vs-studingo/index.html'), /não só upload → flashcards gerados/);
-  assert.doesNotMatch(read('vs-studingo/index.html'), /App web \+ PWA/);
-  assert.match(read('vs-knowunity/index.html'), /não só upload → notas comunidade/);
-  assert.match(read('vs-notebooklm/index.html'), /não só upload → síntese \/ Mind Map/);
-  assert.match(read('en/vs-notebooklm/index.html'), /not only upload → synthesis \/ Mind Map/);
-  assert.match(read('vs-anki/index.html'), /não só upload → decks/);
-  assert.match(read('en/vs-anki/index.html'), /not only upload → decks/);
-  assert.match(read('vs-astra-ai/index.html'), /não só upload → Exam Prep/);
-  assert.match(read('en/vs-astra-ai/index.html'), /not only upload → Exam Prep/);
-  assert.match(read('vs-studingo/index.html'), /https:\/\/studingo\.io\/pricing/);
-  assert.doesNotMatch(read('vs-studingo/index.html'), /\$14\.99|\$59\.99/);
-  assert.match(read('vs-knowunity/index.html'), /<strong>não<\/strong> compete nesse eixo nesta página/);
-  assert.match(read('vs-knowunity/index.html'), /https:\/\/knowunity\.com\/pro-plan/);
-  assert.doesNotMatch(read('vs-knowunity/index.html'), /\$49\.99/);
-  assert.match(read('en/vs-knowunity/index.html'), /not<\/strong> competing on that axis on this page/);
-  const notebook = read('vs-notebooklm/index.html');
-  assert.match(notebook, /MicroGrind vs Gemini Notebook \(NotebookLM\) — vantagens MicroGrind/);
-  assert.match(notebook, /Gemini Notebook \(antes NotebookLM\)/);
-  assert.match(notebook, /Legenda Mind Map:/);
-  assert.match(notebook, /não «não tem mapas nenhum»/);
-  assert.match(notebook, /https:\/\/notebooklm\.google\/plans/);
-  assert.match(read('en/vs-notebooklm/index.html'), /MicroGrind vs Gemini Notebook \(NotebookLM\) — MicroGrind advantages/);
-  assert.match(read('en/vs-notebooklm/index.html'), /not “has no maps at all”/);
-  assert.match(read('en/vs-notebooklm/index.html'), /https:\/\/notebooklm\.google\/plans/);
-  assert.match(read('vs-anki/index.html'), /O Anki <strong>tem<\/strong> flashcards/);
-  assert.match(read('vs-anki/index.html'), /não é «tem flashcards»/);
-  assert.match(read('vs-anki/index.html'), /https:\/\/apps\.ankiweb\.net\//);
-  assert.match(read('en/vs-anki/index.html'), /Anki <strong>has<\/strong> flashcards/);
-  const astra = read('vs-astra-ai/index.html');
-  assert.match(astra, /https:\/\/astra-ai\.co\//);
-  assert.match(astra, /https:\/\/astra-ai\.co\/pricing/);
-  assert.match(astra, /não com projectos crypto ou outros «Astra AI»/);
-  assert.match(astra, /<strong>não<\/strong> se posiciona aqui como tutor IA/);
-  assert.match(astra, /<strong>não<\/strong> listamos «tutor» como feature da MicroGrind/);
-  assert.match(astra, /Garantias de notas Astra \(«\+2 valores…»\) são claims da Astra — não nossos\./);
-  assert.doesNotMatch(astra.replace('«+2 valores…»', ''), /\+2 valores/);
-  const astraEn = read('en/vs-astra-ai/index.html');
-  assert.match(astraEn, /not crypto projects or other “Astra AI” names/);
-  assert.match(astraEn, /not<\/strong> positioned here as an AI tutor/);
-  assert.match(astraEn, /Astra grade guarantees \(“\+2 grades…”\) are Astra’s claims — not ours\./);
-  assert.doesNotMatch(astraEn.replace('“+2 grades…”', ''), /\+2 grades/);
-  assert.doesNotMatch(`${astra}\n${astraEn}`, /astraai\.com|crypto\.astra/i);
 
   const sitemap = read('sitemap.xml');
   for (const pair of PAIRS) {
@@ -542,13 +427,7 @@ try {
   assert.match(robots, /Sitemap: https:\/\/microgrind\.app\/sitemap\.xml/);
   assert.match(robots, /Allow: \//);
   assert.doesNotMatch(sitemap, /\/direito\/|\/en\/law\//);
-  for (const pair of comparisonPairs) {
-    assert.ok(sitemap.includes(`<loc>https://microgrind.app${pair.pt}</loc>`), pair.pt);
-    assert.ok(sitemap.includes(`<loc>https://microgrind.app${pair.en}</loc>`), pair.en);
-    assert.ok(sitemap.includes(`hreflang="pt-PT" href="https://microgrind.app${pair.pt}"`));
-    assert.ok(sitemap.includes(`hreflang="en" href="https://microgrind.app${pair.en}"`));
-    assert.ok(sitemap.includes(`hreflang="x-default" href="https://microgrind.app${pair.pt}"`));
-  }
+  assert.doesNotMatch(sitemap, /\/vs-/);
 
   const redirects = read('_redirects');
   assert.equal(redirects, renderRedirects());
@@ -556,7 +435,9 @@ try {
     assert.match(redirects, new RegExp(`^${source.replaceAll('/', '\\/')} ${destination.replaceAll('/', '\\/')} ${code}$`, 'm'));
   }
   assert.doesNotMatch(redirects, /^\/mapa-da-materia/m);
-  assert.doesNotMatch(redirects, /\/vs-/);
+  for (const [source, destination, code] of VS_REDIRECT_RULES) {
+    assert.match(redirects, new RegExp(`^${source.replaceAll('/', '\\/')} ${destination.replaceAll('/', '\\/')} ${code}$`, 'm'));
+  }
   function redirectTo(pathname) {
     for (const line of redirects.split('\n')) {
       const trimmed = line.trim();
@@ -572,9 +453,18 @@ try {
   assert.deepEqual(redirectTo('/en/law/'), { destination: '/en/', code: '301' });
   assert.equal(redirectTo('/mapa-da-materia'), null);
   assert.equal(redirectTo('/mapa-da-materia/'), null);
+  assert.equal(redirectTo('/comparar'), null);
+  assert.equal(redirectTo('/comparar/'), null);
+  assert.equal(redirectTo('/en/compare'), null);
+  assert.equal(redirectTo('/en/compare/'), null);
+  assert.deepEqual(redirectTo('/vs-quizlet/'), { destination: '/comparar/', code: '301' });
+  assert.deepEqual(redirectTo('/en/vs-astra-ai'), { destination: '/en/compare/', code: '301' });
+  assert.equal([...redirects.matchAll(/^\/comparar|^\/en\/compare/gm)].length, 0, 'the comparison page itself is never redirected');
 
   const css = read('marketing.css');
   assert.match(css, /\.compare-adv td\.adv/);
+  assert.match(css, /\.compare-hub\{overflow-x:auto/);
+  assert.match(css, /\.compare-hub table\{width:100%;min-width:52rem;table-layout:fixed\}/);
   assert.match(css, /\.adv-yes \.adv-glyph\{color:#042f2e;background:#5eead4\}/);
   assert.match(css, /\.adv-no \.adv-glyph\{color:#4c0519;background:#fecdd3\}/);
   const motion = read('motion.css');
@@ -586,11 +476,16 @@ try {
   assert.match(motion, /translateY\(8px\)/);
   assert.match(motion, /translateY\(-2px\)/);
   assert.match(motion, /background:\s*transparent/);
-  assert.match(homePt, /addEventListener\('change', onMotion\)/);
-  assert.match(homeEn, /addEventListener\('change', onMotion\)/);
-  assert.match(homePt, /addEventListener\('change', onRevealMotion\)/);
-  assert.match(homeEn, /addEventListener\('change', onRevealMotion\)/);
-  assert.match(homePt, /if \(motion\.matches\) \{\s*settle\(\);/s);
+  const runtime = read('mg.js');
+  assert.match(runtime, /prefers-reduced-motion: reduce/);
+  assert.match(runtime, /onMotionChange\(armReveals\)/, 'reveals must settle when reduced motion turns on');
+  assert.match(runtime, /if \(reduced\(\)\) \{ show\(beats\.length\); return; \}/, 'step demos must settle with reduced motion');
+  const designCss = read('mg.css');
+  assert.match(designCss, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(designCss, /\[hidden\] \{ display: none !important; \}/);
+  for (const font of ['bricolage.woff2', 'geist.woff2', 'geist-mono.woff2']) {
+    assert.ok(existsSync(join(out, 'fonts', font)), font);
+  }
 
   function whoAside(html) {
     const start = html.indexOf('<aside class="who">');
@@ -631,8 +526,30 @@ try {
   assert.match(whoEn, /English/);
   assert.match(whoEn, /aria-live="polite"/);
   assert.doesNotMatch(whoEn, /<a\b|who-examples|Examples|>Law<|>Management<|>Engineering</);
-  assert.match(homePt, /bootWho/);
-  assert.match(homePt, /, 4500\)/);
+  assert.match(homePt, /data-who-rotator/);
+
+  // Redesigned homepage: story sections, interactive demos, honest labelling.
+  for (const [html, tag, sample] of [
+    [homePt, 'Demo ilustrativa', 'Demo · dados fictícios'],
+    [homeEn, 'Illustrative demo', 'Demo · sample data'],
+  ]) {
+    for (const hook of ['data-hero-device', 'data-scene', 'data-mapx', 'data-studio', 'data-score', 'data-streak', 'data-battle', 'data-tutor', 'data-exam', 'data-cards', 'data-quiz']) {
+      assert.match(html, new RegExp(hook), hook);
+    }
+    assert.ok(html.includes(tag), tag);
+    assert.ok(html.includes(sample), sample);
+    assert.doesNotMatch(html, /AggregateRating|ratingValue|testimonial|\d[\d.,]* (estudantes|students|utilizadores|users)\b/i);
+    const withoutInstall = html.replace(/<dialog class="ig-dialog"[\s\S]*?<\/dialog>/, '');
+    assert.equal((withoutInstall.match(/role="tablist"/g) ?? []).length, 2);
+    assert.match(html, /href="https:\/\/microgrind\.app\/app\/"/);
+    assert.match(html, /class="btn btn-lg btn-ghost js-install"/);
+    assert.match(html, /id="install-dialog"/);
+  }
+  assert.match(homePt, /Tutor IA/);
+  assert.match(homeEn, /AI Tutor/);
+  assert.match(homePt, /Os tópicos seguem a ordem dos teus resumos\./);
+  assert.match(homeEn, /Topics follow the order of your own summaries\./);
+  assert.match(runtime, /, 4500\)/);
   assert.match(sobre, /data-who-levels/);
   assert.match(sobre, /Ensino básico/);
   assert.match(sobre, /Qualquer curso ou disciplina — do teu material\./);
@@ -648,7 +565,69 @@ try {
   assert.match(about, /primary, secondary or higher education/);
   assert.doesNotMatch(about, /who-examples|>Law<|>Management<|>Engineering</);
 
-  const committedRels = [...expected.keys(), 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', '_redirects'];
+  // Install guide: its own page, and the same guide in the dialog on every page.
+  for (const [rel, steps] of [
+    ['instalar/index.html', ['Toca em Partilhar', 'Adicionar ao ecrã principal', 'Toca no menu ⋮', 'Toca em Instalar app']],
+    ['en/install/index.html', ['Tap Share', 'Add to Home Screen', 'Tap the ⋮ menu', 'Tap Install app']],
+  ]) {
+    const html = read(rel);
+    assert.match(html, /<div class="ig ig--page" data-ig id="guia">/, rel);
+    for (const step of steps) assert.ok(html.includes(step), `${rel} ${step}`);
+    for (const tab of ['ios', 'android', 'desktop']) assert.match(html, new RegExp(`data-ig-tab="${tab}"`), `${rel} ${tab}`);
+    assert.doesNotMatch(html, /<nav class="pg-toc"/, rel);
+  }
+  for (const rel of ['index.html', 'en/index.html', 'sobre/index.html', 'en/compare/index.html', 'instalar/index.html']) {
+    const html = read(rel);
+    assert.equal((html.match(/<dialog class="ig-dialog" id="install-dialog"/g) ?? []).length, 1, rel);
+    assert.match(html, /<div class="ig ig--dialog" data-ig id="mgi">/, rel);
+    assert.doesNotMatch(html, /install-overlay/, rel);
+    // No "Abrir na web": the install guide's "Continuar instalação" opens the web app instead.
+    assert.doesNotMatch(html, /Abrir na web|Open on the web|Abrir a app web|Open the web app/, rel);
+    const dialogHtml = html.slice(html.indexOf('<dialog class="ig-dialog"'), html.indexOf('</dialog>'));
+    assert.equal((dialogHtml.match(/<a class="btn ig-go-btn" href="https:\/\/microgrind\.app\/app\/" data-ig-go>/g) ?? []).length, 6, rel);
+    assert.match(dialogHtml, /Continuar instalação|Continue installation/, rel);
+    assert.match(html, /js-install/, rel);
+  }
+  assert.match(homePt, /href="\/instalar\/"/);
+  assert.match(homeEn, /href="\/en\/install\/"/);
+  assert.match(runtime, /installDialog\.showModal\(\)/);
+
+  // Content-page template: hero, related cards, closing band; privacy pages use it too.
+  for (const rel of ['mapa-da-materia/index.html', 'sobre/index.html', 'en/compare/index.html']) {
+    const html = read(rel);
+    assert.match(html, /<header class="ph[^"]*ph-kind-/, rel);
+    assert.match(html, /class="pg-related"/, rel);
+    assert.match(html, /class="mg-cta is-compact"/, rel);
+    assert.match(html, /data-toc/, rel);
+  }
+  for (const [rel, lang, sentence] of [
+    ['privacidade/index.html', 'pt-PT', 'Os cookies _ga e _ga_* só são criados depois de aceitares'],
+    ['en/privacy/index.html', 'en', 'The _ga and _ga_* cookies are only set after you accept'],
+  ]) {
+    const html = read(rel);
+    assert.match(html, new RegExp(`<html lang="${lang}"`), rel);
+    assert.ok(html.includes(sentence), rel);
+    assert.match(html, /mailto:ola@microgrind\.app/, rel);
+    assert.match(html, /https:\/\/www\.cnpd\.pt\//, rel);
+    assert.match(html, /Google Analytics 4/, rel);
+    assert.equal(html.includes('/_astro/'), false, rel);
+    assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1, rel);
+    assert.match(html, /<footer class="site-footer mg-footer">/, rel);
+  }
+
+  // Analytics only after consent: no Google script tag in the HTML, a banner, and a footer button.
+  for (const html of [homePt, homeEn, read('sobre/index.html'), read('privacidade/index.html')]) {
+    assert.doesNotMatch(html, /<script[^>]+googletagmanager/);
+    assert.match(html, /gtag\('consent', 'default', \{[^}]*analytics_storage: 'denied'/);
+    assert.match(html, /localStorage\.getItem\('mg-consent'\) === 'granted'/);
+    assert.match(html, /data-cookies[^>]*hidden/);
+    assert.match(html, /data-cookie-choice="granted"/);
+    assert.match(html, /data-cookie-choice="denied"/);
+    assert.match(html, /data-cookie-open/);
+  }
+  assert.match(runtime, /mgLoadAnalytics/);
+
+  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', '_redirects'];
   for (const rel of committedRels) {
     const fresh = read(rel);
     const committed = readFileSync(join(siteStatic, rel), 'utf8');
@@ -667,6 +646,97 @@ try {
   assert.equal(walk(out).some((path) => path.startsWith('direito/') || path.startsWith('en/law/')), false);
   assert.equal(existsSync(join(siteStatic, 'direito', 'index.html')), false);
   assert.equal(existsSync(join(siteStatic, 'en', 'law', 'index.html')), false);
+
+  // Pricing page: numbers match the app, both languages are paired, every card renders.
+  assert.equal(TUTOR_AVERAGE_MESSAGE_TOKENS, APP_AVG_TOKENS, 'tutor message divisor matches the app');
+  for (const [code, plan] of Object.entries(PLAN_FACTS)) {
+    assert.equal(plan.tutorTokens, TUTOR_PLAN_TOKEN_WINDOWS[code], `${code} tutor tokens match the app`);
+    assert.equal(plan.exams, EXAM_SIMULATIONS[code], `${code} exam simulations match the app`);
+  }
+  assert.ok(PAIRS.some((pair) => pair.pt === pricingPair.pt && pair.en === pricingPair.en));
+  for (const [rel, prices] of [
+    ['planos/index.html', ['4,99\u00a0€', '9,99\u00a0€', '24,99\u00a0€', '19,99\u00a0€', '47,90\u00a0€', '95,90\u00a0€', '239,90\u00a0€']],
+    ['en/pricing/index.html', ['€4.99', '€9.99', '€24.99', '€19.99', '€47.90', '€95.90', '€239.90']],
+  ]) {
+    const html = readFileSync(join(out, rel), 'utf8');
+    assert.equal((html.match(/class="pl-card/g) ?? []).length, 5, rel);
+    for (const price of prices) assert.ok(html.includes(price), `${rel} shows ${price}`);
+    assert.ok(html.includes('href="https://microgrind.app/app/plans"'), `${rel} links to the app plans screen`);
+  }
+
+  // Homepage: each study mode has its own anchor, and each studio tab names it.
+  for (const [locale, rel] of [['pt', 'index.html'], ['en', 'en/index.html']]) {
+    const html = readFileSync(join(out, rel), 'utf8');
+    for (const [key, id] of Object.entries(FEATURE_ANCHORS[locale])) {
+      assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) ?? []).length, 1, `${rel} has one #${id}`);
+      if (key !== 'map') assert.ok(html.includes(`data-anchor="${id}"`), `${rel} tab opens #${id}`);
+    }
+  }
+
+  // Free practice pages (/praticar/): indexable, complete without JS, one CTA to sign-up.
+  assert.ok(practicePages.length >= 10, 'at least ten practice pages');
+  const practiceTitles = new Set();
+  const practiceDescriptions = new Set();
+  const practiceSitemap = read('sitemap.xml');
+  const hub = read('praticar/index.html');
+  assert.ok(practiceSitemap.includes('<loc>https://microgrind.app/praticar/</loc>'), 'hub in sitemap');
+  assert.match(read('index.html'), /href="\/praticar\/"/, 'homepage footer links the practice hub');
+  assert.equal((hub.match(/<h1[\s>]/g) ?? []).length, 1, 'hub has one h1');
+  assert.ok(jsonLd(hub)['@graph'].some((node) => node['@type'] === 'ItemList'), 'hub ItemList');
+  for (const page of practicePages) {
+    const path = practicePath(page);
+    assert.ok(path.startsWith('/praticar/'), path);
+    assert.doesNotMatch(path, /^\/(direito|en\/law)\b/, `${path} must not reuse a retired URL`);
+    assert.ok(hub.includes(`href="${path}"`), `hub links ${path}`);
+    assert.ok(practiceSitemap.includes(`<loc>https://microgrind.app${path}</loc>`), `${path} in sitemap`);
+    const rel = `${path.slice(1)}index.html`;
+    const html = read(rel);
+    const title = html.match(/<title>(.*?)<\/title>/)[1];
+    const description = html.match(/<meta name="description" content="(.*?)"/)[1];
+    assert.ok(title.length <= 85, `${rel} title is ${title.length} chars`);
+    assert.ok(description.length <= 160, `${rel} description is ${description.length} chars`);
+    assert.ok(!practiceTitles.has(title), `${rel} title is unique`);
+    assert.ok(!practiceDescriptions.has(description), `${rel} description is unique`);
+    practiceTitles.add(title);
+    practiceDescriptions.add(description);
+    assert.match(html, /<html lang="pt-PT">/);
+    assert.ok(html.includes(`<link rel="canonical" href="https://microgrind.app${path}">`), `${rel} canonical`);
+    assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1, `${rel} one h1`);
+    assert.equal((html.match(/googletagmanager\.com\/gtag\/js/g) ?? []).length, 1, `${rel} gtag once`);
+    assert.doesNotMatch(html, /<script[^>]+googletagmanager/, `${rel} no Google script before consent`);
+    assert.match(html, /data-cookie-choice="granted"/, `${rel} cookie banner`);
+    assert.match(html, /src="\/practice\.js\?v=/, `${rel} loads practice.js`);
+    const graph = jsonLd(html)['@graph'];
+    const resource = graph.find((node) => [node['@type']].flat().includes('LearningResource'));
+    assert.ok(resource && resource.isAccessibleForFree === true && resource.inLanguage === 'pt-PT', `${rel} LearningResource`);
+    const crumbs = graph.find((node) => node['@type'] === 'BreadcrumbList');
+    assert.equal(crumbs.itemListElement.length, 3, `${rel} breadcrumbs`);
+    assert.equal(crumbs.itemListElement[1].item, `https://microgrind.app${PRACTICE_HUB.path}`);
+    assert.ok(graph.some((node) => node['@type'] === 'FAQPage'), `${rel} FAQPage`);
+    const total = page.items.length;
+    assert.ok(total >= 10, `${rel} has ${total} items`);
+    assert.equal((html.match(/data-item /g) ?? []).length, total, `${rel} renders every item`);
+    assert.equal((html.match(/<details class="pq-answer/g) ?? []).length, total, `${rel} every answer is in the HTML`);
+    if (page.mode === 'quiz') {
+      assert.equal((html.match(/data-correct/g) ?? []).length, total, `${rel} one right option per question`);
+      for (const item of page.items) {
+        assert.equal(item.options.length, 4, `${rel}: ${item.q}`);
+        assert.equal(new Set(item.options).size, 4, `${rel}: options are distinct in ${item.q}`);
+        assert.ok(item.why.length > 20, `${rel}: explanation for ${item.q}`);
+      }
+      const slots = new Set(page.items.map((item) => item.answer));
+      assert.ok(slots.size >= 3, `${rel} spreads the right answer over A–D`);
+      assert.equal(resource.hasPart.length, total, `${rel} Quiz questions in JSON-LD`);
+    }
+    assert.ok(html.includes(`href="${escapeHtml(`${REGISTER_URL}?utm_source=praticar&utm_medium=seo&utm_campaign=${page.slug}`).replaceAll('&quot;', '"')}"`), `${rel} CTA to sign-up with UTM`);
+    assert.match(html, /Cria perguntas a partir dos teus próprios apontamentos com o MicroGrind/);
+    const haystack = html.toLowerCase();
+    for (const phrase of DEFERRED) assert.equal(haystack.includes(phrase), false, `${rel} contains deferred claim: ${phrase}`);
+    for (const slug of page.related) assert.ok(html.includes(`href="/praticar/${slug}/"`), `${rel} links related ${slug}`);
+  }
+  for (const rel of ['practice.css', 'practice.js', 'praticar/index.html', ...practicePages.map((p) => `${practicePath(p).slice(1)}index.html`)]) {
+    assert.equal(readFileSync(join(siteStatic, rel), 'utf8'), read(rel), `${rel} is stale; run npm run build`);
+  }
 
   console.log('marketing/seo-site.test.mjs passed');
 } finally {
