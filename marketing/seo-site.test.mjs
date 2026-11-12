@@ -410,7 +410,7 @@ try {
     }
     const prices = [...rows.at(-1).matchAll(/<span class="adv-price">([\s\S]*?)<\/span>/g)].map((m) => decode(m[1]));
     assert.equal(prices.length, COMPARE_COLUMNS.length, page.path);
-    assert.equal(prices.at(-1), page.locale === 'pt' ? '4 €/mês' : '€4/month');
+    assert.equal(prices.at(-1), page.locale === 'pt' ? 'Grátis · pago desde 4 €/mês' : 'Free · paid from €4/month');
     assert.match(html, page.locale === 'pt' ? /4 € por mês/ : /€4 a month/);
     assert.match(html, /https:\/\/quizlet\.com\/upgrade/);
     assert.doesNotMatch(html, /Studingo|N\/D|N\/A/);
