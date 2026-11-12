@@ -44,7 +44,7 @@ function answerSlot(slug, index, size) {
   return h % size;
 }
 
-function normaliseQuiz(page) {
+export function normaliseQuiz(page) {
   const items = page.items.map((item, i) => {
     if (!item.right || item.wrong?.length !== 3) throw new Error(`${page.slug} item ${i + 1}: needs right + 3 wrong`);
     const slot = answerSlot(page.slug, i, 4);

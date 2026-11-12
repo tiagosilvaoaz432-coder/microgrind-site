@@ -13,6 +13,8 @@ import { renderHome } from './home.mjs';
 import { legalPages } from './legal.mjs';
 import { practicePath, renderPracticeHub, renderPracticePage } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
+import { renderStudyHub, renderStudyPage, studyPath } from './study-page.mjs';
+import { STUDY_HUB, studyGuides } from './study/index.mjs';
 import { relIndex, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -44,6 +46,15 @@ export function buildSeoSite(outDir) {
     const file = join(outDir, relIndex(practicePath(page)));
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, renderPracticePage(page));
+  }
+  // "Como estudar X" guides (PT only).
+  rmSync(join(outDir, 'estudar'), { recursive: true, force: true });
+  mkdirSync(dirname(join(outDir, relIndex(STUDY_HUB.path))), { recursive: true });
+  writeFileSync(join(outDir, relIndex(STUDY_HUB.path)), renderStudyHub());
+  for (const guide of studyGuides) {
+    const file = join(outDir, relIndex(studyPath(guide)));
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, renderStudyPage(guide));
   }
   writeFileSync(join(outDir, 'index.html'), renderHome('pt'));
   mkdirSync(join(outDir, 'en'), { recursive: true });

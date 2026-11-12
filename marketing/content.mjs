@@ -492,6 +492,7 @@ export const HOME = {
       { href: '/planos/', label: 'Planos e preços' },
       { href: '/instalar/', label: 'Instalar a app' },
       { href: '/praticar/', label: 'Praticar grátis' },
+      { href: '/estudar/', label: 'Como estudar' },
       ...compareLinks.pt,
     ],
   },

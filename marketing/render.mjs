@@ -7,6 +7,7 @@ import { FEATURED_PLAN, PLAN_COPY, PLAN_ORDER, annualCents, euros, planCard, sav
 import { renderInstallGuide } from './install.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
 import { practiceSitemapEntries } from './practice-page.mjs';
+import { studySitemapEntries } from './study-page.mjs';
 
 export function escapeHtml(value) {
   return String(value)
@@ -401,6 +402,7 @@ export function renderSitemap() {
   </url>`
     )
     .concat(practiceSitemapEntries())
+    .concat(studySitemapEntries())
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">

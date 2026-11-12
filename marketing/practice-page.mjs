@@ -12,7 +12,7 @@ import { absolute, jsonLd } from './render.mjs';
 import { ga4HeadSnippet } from '../lib/ga4.mjs';
 import { PRACTICE_AREAS, PRACTICE_HUB, practicePages } from './practice/index.mjs';
 
-export const PRACTICE_ASSET_VERSION = '2026-11-12a';
+export const PRACTICE_ASSET_VERSION = '2026-11-12b';
 export const PRACTICE_LASTMOD = '2026-11-12';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
@@ -30,7 +30,7 @@ export function registerHref(campaign) {
   return `${REGISTER_URL}?${params}`;
 }
 
-function head({ path, title, description, ld, analytics }) {
+export function head({ path, title, description, ld, analytics }) {
   return `<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -64,7 +64,7 @@ ${headAssets(['/marketing.css'])}
 </head>`;
 }
 
-function hero({ crumbs, kicker, h1, lede }) {
+export function hero({ crumbs, kicker, h1, lede }) {
   const list = crumbs
     .map((c, i) => (i === crumbs.length - 1 ? `<li aria-current="page">${esc(c.name)}</li>` : `<li><a href="${c.path}">${esc(c.name)}</a></li>`))
     .join('');
@@ -81,7 +81,7 @@ function hero({ crumbs, kicker, h1, lede }) {
 </header>`;
 }
 
-function shell({ path, title, description, ld, analytics, body }) {
+export function shell({ path, title, description, ld, analytics, body }) {
   return `${head({ path, title, description, ld, analytics })}
 <body class="mg-page mg-page-practice">
 ${renderHeader({ locale: 'pt', otherPath: '/en/', currentPath: path })}
@@ -119,7 +119,7 @@ function renderCardItem(item, index, total) {
 </li>`;
 }
 
-function ctaBlock(page, { id, final = false }) {
+export function ctaBlock(page, { id, final = false }) {
   const noun = page.mode === 'flashcards' ? 'Estes {n} cartões são' : 'Estas {n} perguntas são';
   const h = final ? 'Agora com a tua matéria' : 'Cria perguntas a partir dos teus próprios apontamentos com o MicroGrind';
   const p = final
@@ -174,30 +174,12 @@ export function practiceLd(page) {
   return base;
 }
 
-export function renderPracticePage(page, { analytics = true } = {}) {
-  const path = practicePath(page);
+/** The interactive quiz / flashcard block (practice.js). `page` needs slug, mode, items and practiceHeading. */
+export function practiceSection(page) {
   const total = page.items.length;
   const items = page.items.map((item, i) => (page.mode === 'flashcards' ? renderCardItem(item, i, total) : renderQuizItem(item, i, total))).join('\n');
-  const how = page.howTo.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('\n');
-  const faqs = page.faqs.map((f) => `<details class="pq-faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n');
-  const related = page.related
-    .map((slug) => practicePages.find((p) => p.slug === slug))
-    .filter(Boolean)
-    .map((p) => `<li><a href="${practicePath(p)}">${esc(p.h1)}</a></li>`)
-    .join('');
   const modeLabel = page.mode === 'flashcards' ? 'flashcards' : 'quiz';
-  const body = `${hero({
-    crumbs: [
-      { name: 'Início', path: '/' },
-      { name: PRACTICE_HUB.kicker, path: PRACTICE_HUB.path },
-      { name: page.kicker, path },
-    ],
-    kicker: page.kicker,
-    h1: page.h1,
-    lede: page.lede,
-  })}
-<div class="wrap pq-body">
-<section class="pq-practice" aria-labelledby="pq-practice-h" data-practice="${modeLabel}" data-slug="${esc(page.slug)}">
+  return `<section class="pq-practice" aria-labelledby="pq-practice-h" data-practice="${modeLabel}" data-slug="${esc(page.slug)}">
 <h2 id="pq-practice-h" class="pq-h2">${esc(page.practiceHeading)}</h2>
 <p class="pq-hint" data-practice-hint>${page.mode === 'flashcards' ? 'Lê a pergunta, tenta responder de cabeça e abre a resposta.' : 'Escolhe uma opção em cada pergunta e abre a resposta para confirmar.'}</p>
 <ol class="pq-list" data-practice-list>
@@ -211,7 +193,30 @@ ${ctaBlock(page, { id: 'pq-cta-final', final: true })}
 <button class="btn btn-ghost btn-sm" type="button" data-practice-restart>Recomeçar</button>
 </div>
 <p class="pq-sr" aria-live="polite" data-practice-live></p>
-</section>
+</section>`;
+}
+
+export function renderPracticePage(page, { analytics = true } = {}) {
+  const path = practicePath(page);
+  const how = page.howTo.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('\n');
+  const faqs = page.faqs.map((f) => `<details class="pq-faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n');
+  const related = page.related
+    .map((slug) => practicePages.find((p) => p.slug === slug))
+    .filter(Boolean)
+    .map((p) => `<li><a href="${practicePath(p)}">${esc(p.h1)}</a></li>`)
+    .join('');
+  const body = `${hero({
+    crumbs: [
+      { name: 'Início', path: '/' },
+      { name: PRACTICE_HUB.kicker, path: PRACTICE_HUB.path },
+      { name: page.kicker, path },
+    ],
+    kicker: page.kicker,
+    h1: page.h1,
+    lede: page.lede,
+  })}
+<div class="wrap pq-body">
+${practiceSection(page)}
 ${ctaBlock(page, { id: 'pq-cta' })}
 <section class="pq-guide" aria-labelledby="pq-guide-h">
 <h2 id="pq-guide-h" class="pq-h2">${esc(page.howTo.h2)}</h2>
@@ -268,6 +273,7 @@ export function renderPracticeHub({ analytics = true } = {}) {
   })}
 <div class="wrap pq-body pq-hub">
 ${groups}
+<p><a href="/estudar/">Queres um plano de estudo? Vê os guias de como estudar cada disciplina →</a></p>
 <section class="pq-faqs" aria-labelledby="pq-faq-h"><h2 id="pq-faq-h" class="pq-h2">Perguntas frequentes</h2>
 ${faqs}
 </section>
