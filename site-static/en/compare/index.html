@@ -52,8 +52,8 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/marketing.css">
 <link rel="stylesheet" href="/motion.css">
-<link rel="stylesheet" href="/mg.css?v=2026-11-08b">
-<script src="/mg.js?v=2026-11-08b" defer></script>
+<link rel="stylesheet" href="/mg.css?v=2026-11-12b">
+<script src="/mg.js?v=2026-11-12b" defer></script>
 </head>
 <body class="mg-page mg-page-hub">
 <a class="skip" href="#conteudo">Skip to content</a>
@@ -61,7 +61,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <header class="site-header mg-header" data-header>
 <div class="mg-header-inner">
 <a class="logo" href="/en/" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block"><span>MicroGrind</span></a>
-<nav class="mg-nav" aria-label="Primary"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><a href="/en/#features" data-nav="features">Features</a><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/pricing/">Pricing</a><a href="/en/compare/" class="is-active" aria-current="page">Compare</a><a href="/en/#faq" data-nav="faq">FAQ</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
+<nav class="mg-nav" aria-label="Primary"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><div class="mg-drop" data-drop><a href="/en/#features" data-nav="features">Features</a><button class="mg-drop-caret" type="button" aria-expanded="false" aria-controls="mg-drop-en" aria-label="Show features" data-drop-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="mg-drop-menu" id="mg-drop-en" data-drop-menu hidden><a href="/en/#subject-map">Subject Map</a><a href="/en/#lessons">Lessons</a><a href="/en/#flashcards">Flashcards</a><a href="/en/#quizzes">Quizzes</a><a href="/en/#mock-exams">Mock exams</a><a href="/en/#tutor">AI Tutor</a></div></div><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/pricing/">Pricing</a><a href="/en/compare/" class="is-active" aria-current="page">Compare</a><a href="/en/#faq" data-nav="faq">FAQ</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
 <div class="mg-actions">
 <a class="lang" href="/comparar/" hreflang="pt-PT" lang="pt-PT" aria-label="Português">PT</a>
 <button class="btn btn-sm js-install" type="button" data-magnetic>Install</button>
@@ -69,7 +69,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 </div>
 </div>
 <div class="mg-sheet" id="mg-sheet" data-sheet hidden>
-<nav aria-label="Menu"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><a href="/en/#features" data-nav="features">Features</a><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/pricing/">Pricing</a><a href="/en/compare/" class="is-active" aria-current="page">Compare</a><a href="/en/#faq" data-nav="faq">FAQ</a></nav>
+<nav aria-label="Menu"><a href="/en/#how-it-works" data-nav="how-it-works">How it works</a><a href="/en/#features" data-nav="features">Features</a><a href="/en/#subject-map" class="mg-sheet-sub">Subject Map</a><a href="/en/#lessons" class="mg-sheet-sub">Lessons</a><a href="/en/#flashcards" class="mg-sheet-sub">Flashcards</a><a href="/en/#quizzes" class="mg-sheet-sub">Quizzes</a><a href="/en/#mock-exams" class="mg-sheet-sub">Mock exams</a><a href="/en/#tutor" class="mg-sheet-sub">AI Tutor</a><a href="/en/#progress" data-nav="progress">Progress</a><a href="/en/pricing/">Pricing</a><a href="/en/compare/" class="is-active" aria-current="page">Compare</a><a href="/en/#faq" data-nav="faq">FAQ</a></nav>
 <div class="mg-sheet-actions"><button class="btn js-install" type="button">Install</button><a class="lang" href="/comparar/" hreflang="pt-PT" lang="pt-PT">Português</a></div>
 </div>
 </header>

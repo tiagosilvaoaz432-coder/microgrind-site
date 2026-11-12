@@ -54,8 +54,8 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/mg.css?v=2026-11-08b">
-<script src="/mg.js?v=2026-11-08b" defer></script>
+<link rel="stylesheet" href="/mg.css?v=2026-11-12b">
+<script src="/mg.js?v=2026-11-12b" defer></script>
 </head>
 <body class="mg-home">
 <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
@@ -63,7 +63,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <header class="site-header mg-header" data-header>
 <div class="mg-header-inner">
 <a class="logo" href="/" aria-label="MicroGrind"><img src="/logo-mark.png" width="30" height="30" alt="" decoding="async" style="width:30px;height:30px;flex:none;display:block"><span>MicroGrind</span></a>
-<nav class="mg-nav" aria-label="Principal"><a href="#como-funciona" data-nav="como-funciona">Como funciona</a><a href="#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="#faq" data-nav="faq">Perguntas</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
+<nav class="mg-nav" aria-label="Principal"><a href="#como-funciona" data-nav="como-funciona">Como funciona</a><div class="mg-drop" data-drop><a href="#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><button class="mg-drop-caret" type="button" aria-expanded="false" aria-controls="mg-drop-pt" aria-label="Ver funcionalidades" data-drop-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="mg-drop-menu" id="mg-drop-pt" data-drop-menu hidden><a href="#mapa">Mapa da matéria</a><a href="#licoes">Lições</a><a href="#flashcards">Flashcards</a><a href="#quizzes">Quizzes</a><a href="#simulacao-exame">Simulação de exame</a><a href="#tutor">Tutor IA</a></div></div><a href="#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/praticar/" class="mg-nav-hl">Praticar</a><a href="#faq" data-nav="faq">Perguntas</a><span class="mg-nav-pill" aria-hidden="true"></span></nav>
 <div class="mg-actions">
 <a class="lang" href="/en/" hreflang="en" lang="en" aria-label="English">EN</a>
 <button class="btn btn-sm js-install" type="button" data-magnetic>Instalar</button>
@@ -71,7 +71,7 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 </div>
 </div>
 <div class="mg-sheet" id="mg-sheet" data-sheet hidden>
-<nav aria-label="Menu"><a href="#como-funciona" data-nav="como-funciona">Como funciona</a><a href="#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="#faq" data-nav="faq">Perguntas</a></nav>
+<nav aria-label="Menu"><a href="#como-funciona" data-nav="como-funciona">Como funciona</a><a href="#funcionalidades" data-nav="funcionalidades">Funcionalidades</a><a href="#mapa" class="mg-sheet-sub">Mapa da matéria</a><a href="#licoes" class="mg-sheet-sub">Lições</a><a href="#flashcards" class="mg-sheet-sub">Flashcards</a><a href="#quizzes" class="mg-sheet-sub">Quizzes</a><a href="#simulacao-exame" class="mg-sheet-sub">Simulação de exame</a><a href="#tutor" class="mg-sheet-sub">Tutor IA</a><a href="#progresso" data-nav="progresso">Progresso</a><a href="/planos/">Planos</a><a href="/comparar/">Comparar</a><a href="/praticar/" class="mg-nav-hl">Praticar</a><a href="#faq" data-nav="faq">Perguntas</a></nav>
 <div class="mg-sheet-actions"><button class="btn js-install" type="button">Instalar</button><a class="lang" href="/en/" hreflang="en" lang="en">English</a></div>
 </div>
 </header>
@@ -449,6 +449,16 @@ if ((function () { try { return window.localStorage.getItem('mg-consent') === 'g
 <div class="ig-d-pop"><b>Instalar app?</b><div class="ig-add-row"><span class="ig-logo"></span><div><b>MicroGrind</b><span>microgrind.app</span></div></div><div class="ig-add-actions"><span class="ig-t ig-t-3">Instalar</span><span>Cancelar</span></div></div>
 <div class="ig-d-win"><div class="ig-d-win-bar"><span class="ig-logo"></span><span>MicroGrind</span><span class="ig-d-win-ctl"><i></i><i></i><i></i></span></div><div class="ig-web" aria-hidden="true"><div class="ig-web-head"><span class="ig-logo"></span><span>MicroGrind</span></div><div class="ig-web-hero"><i></i><i></i><i class="short"></i></div><div class="ig-web-card"><b></b><i></i><i class="short"></i></div><div class="ig-web-card"><b></b><i></i></div></div></div>
 </div></div></div><div class="ig-flow"><ol class="ig-steps" aria-label="Passos"><li data-ig-step="1"><button type="button" aria-describedby="mgi-desktop-s1"><span class="ig-num" aria-hidden="true"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.2 4.2 8.8-9.2"/></svg></span><span class="ig-step-title">Abre no Chrome ou no Edge</span></button><p id="mgi-desktop-s1">Vai a microgrind.app/app.</p></li><li data-ig-step="2"><button type="button" aria-describedby="mgi-desktop-s2"><span class="ig-num" aria-hidden="true"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.2 4.2 8.8-9.2"/></svg></span><span class="ig-step-title">Clica no ícone de instalar</span></button><p id="mgi-desktop-s2">Fica no lado direito da barra de endereço. Também o encontras no menu ⋮ do browser.</p></li><li data-ig-step="3"><button type="button" aria-describedby="mgi-desktop-s3"><span class="ig-num" aria-hidden="true"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.2 4.2 8.8-9.2"/></svg></span><span class="ig-step-title">Confirma em Instalar</span></button><p id="mgi-desktop-s3">A app fica no menu Iniciar ou na pasta Aplicações.</p></li><li data-ig-step="4"><button type="button" aria-describedby="mgi-desktop-s4"><span class="ig-num" aria-hidden="true"><span>4</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.2 4.2 8.8-9.2"/></svg></span><span class="ig-step-title">Pronto</span></button><p id="mgi-desktop-s4">A MicroGrind abre numa janela própria, sem separadores.</p></li></ol><p class="ig-tip">Safari no Mac: menu Ficheiro → Adicionar à Dock.</p></div><div class="ig-go ig-go-bottom"><a class="btn ig-go-btn" href="https://microgrind.app/app/" data-ig-go><span class="ig-go-check" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 12.5 4.2 4.2 8.8-9.2"/></svg></span><span>Continuar instalação</span></a></div></div></div><div class="ig-dialog-foot"><a class="ig-more" href="/instalar/">Guia completo →</a></div></div></dialog>
+<dialog class="pp-dialog" id="practice-promo" aria-labelledby="pp-title" aria-describedby="pp-sub" data-practice-promo>
+<div class="pp-card">
+<button type="button" class="pp-x" data-promo-close aria-label="Fechar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></button>
+<p class="pp-kicker"><span class="mg-dot"></span>Grátis · sem conta</p>
+<h2 id="pp-title">Testa-te já na tua disciplina</h2>
+<p id="pp-sub">Mini-testes e flashcards com a resposta explicada, para Direito, Estatística, Economia, Anatomia e mais. Em 5 minutos sabes o que ainda tens de rever.</p>
+<div class="pp-chips"><a class="pp-chip" href="/praticar/direito-penal-teoria-do-crime/" data-promo-link>Direito Penal</a><a class="pp-chip" href="/praticar/distribuicao-normal-exercicios-resolvidos/" data-promo-link>Estatística</a><a class="pp-chip" href="/praticar/flashcards-anatomia/" data-promo-link>Anatomia</a><a class="pp-chip" href="/praticar/microeconomia-perguntas-de-exame/" data-promo-link>Microeconomia</a><a class="pp-chip" href="/praticar/calculo-limites-e-derivadas/" data-promo-link>Cálculo</a><a class="pp-chip" href="/praticar/biologia-geologia-exame-nacional/" data-promo-link>Biologia e Geologia</a></div>
+<div class="pp-actions"><a class="btn btn-shine" href="/praticar/" data-promo-link autofocus>Praticar grátis</a><button type="button" class="btn btn-ghost" data-promo-close>Agora não</button></div>
+</div>
+</dialog>
 <section class="mg-cookies" data-cookies role="region" aria-label="Cookies" hidden><p>Usamos cookies de análise (Google Analytics) e o pixel de anúncios da OpenAI para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares. <a href="/privacidade/">Política de privacidade</a></p><div class="mg-cookies-actions"><button type="button" class="btn btn-sm btn-ghost" data-cookie-choice="denied">Recusar</button><button type="button" class="btn btn-sm" data-cookie-choice="granted">Aceitar</button></div></section>
 </body>
 </html>
