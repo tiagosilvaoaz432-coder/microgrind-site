@@ -13,8 +13,8 @@ export function esc(value) {
     .replaceAll('"', '&quot;');
 }
 
-/** Bump when mg.css / mg.js change so returning visitors get the new files. */
-export const ASSET_VERSION = '2026-11-12b';
+/** Bump when mg.css / mg.js / mg-attr.js change so returning visitors get the new files. */
+export const ASSET_VERSION = '2026-11-21a';
 
 export const NAV = {
   pt: [
@@ -61,7 +61,11 @@ const UI = {
   en: { install: 'Install', menu: 'Menu', product: 'Product', learn: 'Learn more', langName: 'Português', features: 'Show features' },
 };
 
-/** Fonts, design-system stylesheet and script. `extraCss` keeps older page stylesheets first. */
+/**
+ * Fonts, design-system stylesheet and scripts. `extraCss` keeps older page stylesheets first.
+ * mg-attr.js (attribution + cookieless visit counter) comes right after mg.js; the publish step puts
+ * window.__MG_HIT__ in front of it (scripts/inject-web-hit-config.mjs looks for this exact tag).
+ */
 export function headAssets(extraCss = []) {
   const v = ASSET_VERSION;
   return [
@@ -70,6 +74,7 @@ export function headAssets(extraCss = []) {
     ...extraCss.map((href) => `<link rel="stylesheet" href="${href}">`),
     `<link rel="stylesheet" href="/mg.css?v=${v}">`,
     `<script src="/mg.js?v=${v}" defer></script>`,
+    `<script type="module" src="/mg-attr.js?v=${v}"></script>`,
   ].join('\n');
 }
 
@@ -177,11 +182,12 @@ export function renderFooter({ locale, onHome = false }) {
 /** Install dialog with the full guide (install.mjs). Every .js-install button opens it (mg.js). */
 export { renderInstallDialog } from './install.mjs';
 
-const COOKIES = {
+/** Banner copy. label/text/policy/accept/decline match the app's cookieBanner (locales/<pt-PT|en>/common.json; check-app-parity.mjs). */
+export const COOKIES = {
   pt: {
     footer: 'Cookies',
     label: 'Cookies',
-    text: 'Usamos cookies de análise (Google Analytics) e o pixel de anúncios da OpenAI para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares.',
+    text: 'Usamos cookies de análise (Google Analytics) e o pixel dos anúncios no ChatGPT para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares.',
     policy: 'Política de privacidade',
     accept: 'Aceitar',
     decline: 'Recusar',
@@ -189,7 +195,7 @@ const COOKIES = {
   en: {
     footer: 'Cookies',
     label: 'Cookies',
-    text: 'We use analytics cookies (Google Analytics) and OpenAI’s ad pixel to understand how the site is used and measure our ads. They are only turned on if you accept.',
+    text: 'We use analytics cookies (Google Analytics) and the ChatGPT ads pixel to understand how the site is used and measure our ads. They are only turned on if you accept.',
     policy: 'Privacy policy',
     accept: 'Accept',
     decline: 'Decline',

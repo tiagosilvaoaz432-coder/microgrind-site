@@ -18,6 +18,8 @@ import { practicePath } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
 import { studyPath } from './study-page.mjs';
 import { STUDY_HUB, studyGuides } from './study/index.mjs';
+import { ASSET_VERSION, COOKIES } from './chrome.mjs';
+import { bundleMgAttr } from './bundle-mg-attr.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteStatic = join(here, '..', 'site-static');
@@ -602,13 +604,30 @@ try {
     assert.match(html, /class="mg-cta is-compact"/, rel);
     assert.match(html, /data-toc/, rel);
   }
-  for (const [rel, lang, sentence] of [
-    ['privacidade/index.html', 'pt-PT', 'Os cookies _ga e _ga_* só são criados depois de aceitares'],
-    ['en/privacy/index.html', 'en', 'The _ga and _ga_* cookies are only set after you accept'],
+  for (const [rel, lang, sentences] of [
+    [
+      'privacidade/index.html',
+      'pt-PT',
+      [
+        'Os cookies _ga e _ga_* só são criados depois de aceitares',
+        '<strong>Necessários.</strong> Guardamos no teu browser a tua escolha sobre cookies (mg-consent) e se fechaste o aviso para instalar a app. No mesmo separador, guardamos também a origem da visita (por exemplo chatgpt), só o domínio de onde vieste e a página de entrada, até fechares o separador, para saber de onde veio um registo. Contamos visitas por dia e por origem, sem cookies, sem identificadores e sem o endereço IP. Nada disto te identifica e não precisa de consentimento.',
+        '<time datetime="2026-11-21">21 de novembro de 2026</time>',
+      ],
+    ],
+    [
+      'en/privacy/index.html',
+      'en',
+      [
+        'The _ga and _ga_* cookies are only set after you accept',
+        '<strong>Necessary.</strong> We store your cookie choice (mg-consent) and whether you closed the install prompt in your browser. In the same tab we also keep where the visit came from (for example chatgpt), the referring domain only, and the landing page, until you close the tab, so a signup can be attributed. We count visits per day and per source, with no cookies, no identifiers and no IP address. None of this identifies you and it needs no consent.',
+        '<time datetime="2026-11-21">21 November 2026</time>',
+      ],
+    ],
   ]) {
     const html = read(rel);
     assert.match(html, new RegExp(`<html lang="${lang}"`), rel);
-    assert.ok(html.includes(sentence), rel);
+    for (const sentence of sentences) assert.ok(html.includes(sentence), `${rel}: ${sentence.slice(0, 60)}`);
+    assert.doesNotMatch(html, /Não te identificam e não precisam de consentimento|They do not identify you and need no consent/, `${rel} old necessary-cookies text`);
     assert.match(html, /mailto:ola@microgrind\.app/, rel);
     assert.match(html, /https:\/\/www\.cnpd\.pt\//, rel);
     assert.match(html, /Google Analytics 4/, rel);
@@ -629,7 +648,63 @@ try {
   }
   assert.match(runtime, /mgLoadAnalytics/);
 
-  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', '_redirects'];
+  // Cookie banner: GA4 and the ChatGPT ads pixel, both only after "Aceitar" / "Accept".
+  assert.equal(COOKIES.pt.text, 'Usamos cookies de análise (Google Analytics) e o pixel dos anúncios no ChatGPT para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares.');
+  assert.equal(COOKIES.en.text, 'We use analytics cookies (Google Analytics) and the ChatGPT ads pixel to understand how the site is used and measure our ads. They are only turned on if you accept.');
+  for (const [html, locale] of [[homePt, 'pt'], [homeEn, 'en'], [read('mapa-da-materia/index.html'), 'pt'], [read('en/subject-map/index.html'), 'en']]) {
+    assert.ok(html.includes(`<p>${COOKIES[locale].text} <a href=`), `${locale} cookie banner text`);
+    assert.doesNotMatch(html, /pixel de anúncios da OpenAI|OpenAI’s ad pixel/, 'old banner text');
+  }
+
+  // mg-attr.js (attribution + cookieless counter): on every page, right after mg.js, no secrets anywhere.
+  const mgJsTag = `<script src="/mg.js?v=${ASSET_VERSION}" defer></script>`;
+  const attrTag = `<script type="module" src="/mg-attr.js?v=${ASSET_VERSION}"></script>`;
+  assert.equal(ASSET_VERSION, '2026-11-21a');
+  const builtFiles = [];
+  (function list(dir) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) list(path);
+      else builtFiles.push(relative(out, path));
+    }
+  })(out);
+  const builtPages = builtFiles.filter((rel) => rel.endsWith('.html'));
+  assert.ok(builtPages.length >= 40, `found ${builtPages.length} pages`);
+  for (const rel of builtPages) {
+    const html = read(rel);
+    assert.equal(html.split(attrTag).length - 1, 1, `${rel} loads mg-attr.js once`);
+    assert.ok(html.includes(`${mgJsTag}\n${attrTag}`), `${rel} loads mg-attr.js right after mg.js`);
+    assert.ok(html.indexOf(attrTag) < html.indexOf('</head>'), `${rel} mg-attr.js in <head>`);
+    assert.equal(html.includes('__MG_HIT__'), false, `${rel}: the counter config is only added at publish time`);
+  }
+  const attrBundle = read('mg-attr.js');
+  assert.equal(attrBundle, bundleMgAttr());
+  assert.match(attrBundle, /record_web_hit/);
+  assert.match(attrBundle, /__MG_HIT__/);
+  assert.match(attrBundle, /data-ig-copy/);
+  assert.equal(attrBundle.includes('eyJ'), false, 'mg-attr.js must not embed a JWT');
+  assert.equal(attrBundle.includes('supabase.co'), false, 'mg-attr.js must not embed a project URL');
+  assert.doesNotMatch(attrBundle, /\/\*|^\s*\/\//m, 'mg-attr.js has no comments');
+  // site-static/ is in git: no Supabase URL, anon key (a JWT) or counter config may ever land there.
+  (function scan(dir) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) scan(path);
+      else if (!/\.(woff2|png|ico|jpg|webp)$/.test(entry.name)) {
+        const text = readFileSync(path, 'utf8');
+        const rel = relative(siteStatic, path);
+        assert.equal(text.includes('eyJ'), false, `site-static/${rel} contains a JWT-like string`);
+        assert.equal(/supabase\.co\b/.test(text), false, `site-static/${rel} contains a Supabase URL`);
+        assert.equal(text.includes('__MG_HIT__='), false, `site-static/${rel} contains the counter config`);
+      }
+    }
+  })(siteStatic);
+  // Every generated file is committed as built (covers mg-attr.js and the ASSET_VERSION bump on every page).
+  for (const rel of builtFiles) {
+    assert.ok(readFileSync(join(siteStatic, rel)).equals(readFileSync(join(out, rel))), `${rel} is stale; run npm run build`);
+  }
+
+  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', 'mg-attr.js', '_redirects'];
   for (const rel of committedRels) {
     const fresh = read(rel);
     const committed = readFileSync(join(siteStatic, rel), 'utf8');

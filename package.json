@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "node marketing/build-seo-site.mjs",
-    "test": "node scripts/check-site-static.test.mjs && node scripts/assemble-pages-site.test.mjs && node marketing/seo-site.test.mjs",
+    "test": "node lib/attribution.test.mjs && node lib/web-hit.test.mjs && node marketing/mg-attr.test.mjs && node scripts/inject-web-hit-config.test.mjs && node scripts/check-site-static.test.mjs && node scripts/assemble-pages-site.test.mjs && node marketing/seo-site.test.mjs",
     "check:app-parity": "node scripts/check-app-parity.mjs"
   }
 }

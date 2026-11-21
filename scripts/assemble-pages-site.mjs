@@ -8,6 +8,9 @@
  *
  * _redirects = site-static rules (retired niche URLs) on top, then the app rules.
  * _headers   = the app export's file (it already carries the auth/confirm Referrer-Policy).
+ * Then window.__MG_HIT__ goes in front of /mg-attr.js on every site page (inject-web-hit-config.mjs),
+ * from EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY. Without them (local runs) the
+ * pages are copied as they are and the counter stays off. site-static/ itself is never changed.
  *
  * Usage, from this repo: node scripts/assemble-pages-site.mjs <app-dist-dir> <out-dir>
  * (publish-site.yml in the MicroGrind repo runs it after exporting the app).
@@ -15,6 +18,8 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+import { HIT_MARKER, describeHitResult, injectHitConfigDir } from './inject-web-hit-config.mjs';
 
 const REPO_ROOT = path.join(import.meta.dirname, '..');
 const MAX_REDIRECT_RULES = 100;
@@ -60,6 +65,7 @@ export function checkPagesFolder(out) {
     'en/index.html',
     'mg.css',
     'mg.js',
+    'mg-attr.js',
     'fonts/geist.woff2',
     'privacidade/index.html',
     'en/privacy/index.html',
@@ -88,11 +94,16 @@ export function checkPagesFolder(out) {
   if (existsSync(path.join(out, 'index.html'))) {
     const home = readFileSync(path.join(out, 'index.html'), 'utf8');
     if (!home.includes('/mg.css')) problems.push('index.html is not the marketing homepage');
+    if (!home.includes(HIT_MARKER)) problems.push('index.html does not load /mg-attr.js');
   }
   return problems;
 }
 
-export function assemblePagesSite({ repoRoot = REPO_ROOT, dist, out }) {
+/**
+ * Returns { out, hit }: `hit` says whether the counter config was injected (describeHitResult).
+ * `env` defaults to process.env; tests pass their own.
+ */
+export function assemblePagesSite({ repoRoot = REPO_ROOT, dist, out, env = process.env }) {
   const siteRoot = path.join(repoRoot, 'deploy', 'site-root');
   const siteStatic = path.join(repoRoot, 'site-static');
   if (!dist) throw new Error('Pass the app export folder (MicroGrind/appfiles/dist, npm run dist).');
@@ -112,9 +123,10 @@ export function assemblePagesSite({ repoRoot = REPO_ROOT, dist, out }) {
   );
   cpSync(path.join(dist, '_headers'), path.join(out, '_headers'));
 
+  const hit = injectHitConfigDir(out, env);
   const problems = checkPagesFolder(out);
   if (problems.length > 0) throw new Error(`Pages folder is not safe to upload:\n  ${problems.join('\n  ')}`);
-  return out;
+  return { out, hit };
 }
 
 function isDirectRun() {
@@ -131,7 +143,9 @@ if (isDirectRun()) {
   const dist = path.resolve(distArg);
   const out = path.resolve(outArg ?? path.join(REPO_ROOT, 'pages-site'));
   try {
-    assemblePagesSite({ dist, out });
+    const { hit } = assemblePagesSite({ dist, out });
+    // In GitHub Actions, a publish without the counter config shows up as a warning on the run.
+    console.log(`${hit.skipped && process.env.GITHUB_ACTIONS === 'true' ? '::warning::' : ''}${describeHitResult(hit)}`);
     console.log(`Pages folder ready: ${out}`);
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
