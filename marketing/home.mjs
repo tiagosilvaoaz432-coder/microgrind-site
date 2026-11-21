@@ -4,6 +4,7 @@
  * → who it is for → call to action → FAQ.
  * Interactive demos are driven by /mg.js and work without it as static illustrations.
  */
+import { ogImageTags, ogImageUrl } from './og.mjs';
 import { ga4HeadSnippet } from '../lib/ga4.mjs';
 import { FEATURE_ANCHORS } from './anchors.mjs';
 import { esc, headAssets, renderCookieBanner, renderFooter, renderHeader, renderInstallDialog } from './chrome.mjs';
@@ -620,14 +621,11 @@ ${ga4HeadSnippet()}<meta charset="utf-8">
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${esc(c.title)}">
 <meta property="og:description" content="${esc(spec.description)}">
-<meta property="og:image" content="${ORIGIN}/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(c.ogAlt)}">
+${ogImageTags(c.path, c.ogAlt, esc)}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(c.title)}">
 <meta name="twitter:description" content="${esc(spec.description)}">
-<meta name="twitter:image" content="${ORIGIN}/og.png">
+<meta name="twitter:image" content="${ogImageUrl(c.path)}">
 <meta name="twitter:image:alt" content="${esc(c.ogAlt)}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <meta name="theme-color" content="#07090d">

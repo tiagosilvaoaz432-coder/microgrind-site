@@ -524,6 +524,8 @@ export const HOME = {
       { href: '/en/about/', label: 'About' },
       { href: '/en/pricing/', label: 'Plans and pricing' },
       { href: '/en/install/', label: 'Install the app' },
+      { href: '/en/practice/', label: 'Free practice' },
+      { href: '/en/study/', label: 'How to study' },
       ...compareLinks.en,
     ],
   },

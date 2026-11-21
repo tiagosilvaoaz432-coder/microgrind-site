@@ -132,6 +132,7 @@
     <loc>https://microgrind.app/praticar/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/" />
   </url>
   <url>
@@ -156,30 +157,35 @@
     <loc>https://microgrind.app/praticar/distribuicao-normal-exercicios-resolvidos/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/distribuicao-normal-exercicios-resolvidos/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/normal-distribution-practice-problems/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/distribuicao-normal-exercicios-resolvidos/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/testes-de-hipoteses-exercicios/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/testes-de-hipoteses-exercicios/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/hypothesis-testing-practice-problems/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/testes-de-hipoteses-exercicios/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/calculo-limites-e-derivadas/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/calculo-limites-e-derivadas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/limits-and-derivatives-practice-problems/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/calculo-limites-e-derivadas/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/microeconomia-perguntas-de-exame/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/microeconomia-perguntas-de-exame/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/microeconomics-exam-questions/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/microeconomia-perguntas-de-exame/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/macroeconomia-perguntas-de-exame/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/macroeconomia-perguntas-de-exame/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/macroeconomics-exam-questions/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/macroeconomia-perguntas-de-exame/" />
   </url>
   <url>
@@ -192,30 +198,35 @@
     <loc>https://microgrind.app/praticar/flashcards-anatomia/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-anatomia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/anatomy-flashcards/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-anatomia/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/flashcards-fisiologia/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-fisiologia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/physiology-flashcards/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-fisiologia/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/flashcards-bioquimica/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-bioquimica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/biochemistry-flashcards/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-bioquimica/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/flashcards-farmacologia/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-farmacologia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/pharmacology-flashcards/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-farmacologia/" />
   </url>
   <url>
     <loc>https://microgrind.app/praticar/psicologia-do-desenvolvimento-perguntas/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/psicologia-do-desenvolvimento-perguntas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/developmental-psychology-exam-questions/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/psicologia-do-desenvolvimento-perguntas/" />
   </url>
   <url>
@@ -225,9 +236,87 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/biologia-geologia-exame-nacional/" />
   </url>
   <url>
+    <loc>https://microgrind.app/en/practice/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/normal-distribution-practice-problems/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/distribuicao-normal-exercicios-resolvidos/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/normal-distribution-practice-problems/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/distribuicao-normal-exercicios-resolvidos/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/hypothesis-testing-practice-problems/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/testes-de-hipoteses-exercicios/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/hypothesis-testing-practice-problems/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/testes-de-hipoteses-exercicios/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/limits-and-derivatives-practice-problems/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/calculo-limites-e-derivadas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/limits-and-derivatives-practice-problems/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/calculo-limites-e-derivadas/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/microeconomics-exam-questions/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/microeconomia-perguntas-de-exame/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/microeconomics-exam-questions/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/microeconomia-perguntas-de-exame/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/macroeconomics-exam-questions/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/macroeconomia-perguntas-de-exame/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/macroeconomics-exam-questions/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/macroeconomia-perguntas-de-exame/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/anatomy-flashcards/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-anatomia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/anatomy-flashcards/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-anatomia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/physiology-flashcards/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-fisiologia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/physiology-flashcards/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-fisiologia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/biochemistry-flashcards/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-bioquimica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/biochemistry-flashcards/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-bioquimica/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/pharmacology-flashcards/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/flashcards-farmacologia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/pharmacology-flashcards/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/flashcards-farmacologia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/practice/developmental-psychology-exam-questions/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/praticar/psicologia-do-desenvolvimento-perguntas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/practice/developmental-psychology-exam-questions/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/praticar/psicologia-do-desenvolvimento-perguntas/" />
+  </url>
+  <url>
     <loc>https://microgrind.app/estudar/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/" />
   </url>
   <url>
@@ -252,6 +341,7 @@
     <loc>https://microgrind.app/estudar/estatistica/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/estatistica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/statistics/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/estatistica/" />
   </url>
   <url>
@@ -264,12 +354,14 @@
     <loc>https://microgrind.app/estudar/calculo/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/calculo/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/calculus/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/calculo/" />
   </url>
   <url>
     <loc>https://microgrind.app/estudar/economia/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/economia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/economics/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/economia/" />
   </url>
   <url>
@@ -282,12 +374,14 @@
     <loc>https://microgrind.app/estudar/anatomia/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/anatomia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/anatomy/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/anatomia/" />
   </url>
   <url>
     <loc>https://microgrind.app/estudar/bioquimica/</loc>
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/bioquimica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/biochemistry/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/bioquimica/" />
   </url>
   <url>
@@ -313,5 +407,47 @@
     <lastmod>2026-11-21</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/historia/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/historia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/statistics/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/estatistica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/statistics/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/estatistica/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/calculus/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/calculo/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/calculus/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/calculo/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/economics/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/economia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/economics/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/economia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/anatomy/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/anatomia/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/anatomy/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/anatomia/" />
+  </url>
+  <url>
+    <loc>https://microgrind.app/en/study/biochemistry/</loc>
+    <lastmod>2026-11-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-PT" href="https://microgrind.app/estudar/bioquimica/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://microgrind.app/en/study/biochemistry/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://microgrind.app/estudar/bioquimica/" />
   </url>
 </urlset>

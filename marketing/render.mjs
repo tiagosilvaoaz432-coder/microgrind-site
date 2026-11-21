@@ -6,6 +6,7 @@ import { closingBand, pageHero, pageKind, relatedCards, tocNav } from './page-la
 import { FEATURED_PLAN, PLAN_COPY, PLAN_FACTS, PLAN_ORDER, annualCents, euros, planCard, pricingPair, savingsPercent, yearlyPerMonthCents } from './plans.mjs';
 import { renderInstallGuide } from './install.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
+import { ogImageTags, ogImageUrl } from './og.mjs';
 import { practiceSitemapEntries } from './practice-page.mjs';
 import { studySitemapEntries } from './study-page.mjs';
 
@@ -351,11 +352,11 @@ ${analytics ? ga4HeadSnippet() : ''}<meta charset="utf-8">
 <meta property="og:url" content="${absolute(page.path)}">
 <meta property="og:title" content="${escapeHtml(page.title)}">
 <meta property="og:description" content="${escapeHtml(page.description)}">
-<meta property="og:image" content="${ORIGIN}/og.png">
+${ogImageTags(page.path, page.title, escapeHtml)}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(page.title)}">
 <meta name="twitter:description" content="${escapeHtml(page.description)}">
-<meta name="twitter:image" content="${ORIGIN}/og.png">
+<meta name="twitter:image" content="${ogImageUrl(page.path)}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <meta name="theme-color" content="#07090d">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">

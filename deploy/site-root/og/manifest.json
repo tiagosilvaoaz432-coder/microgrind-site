@@ -1,0 +1,322 @@
+{
+  "comparar": {
+    "hash": "d5c289a8da29",
+    "kicker": "Comparar",
+    "title": "Comparar apps de estudo"
+  },
+  "en": {
+    "hash": "dc1a88fd24cd",
+    "kicker": "Study app",
+    "title": "First, a map of your course material. Then, short sessions."
+  },
+  "en-about": {
+    "hash": "17e3541e72a3",
+    "kicker": "About",
+    "title": "About MicroGrind"
+  },
+  "en-compare": {
+    "hash": "4d8acbc988da",
+    "kicker": "Compare",
+    "title": "Compare study apps"
+  },
+  "en-install": {
+    "hash": "47c0765af24d",
+    "kicker": "Install the app",
+    "title": "Install MicroGrind on your phone"
+  },
+  "en-practice": {
+    "hash": "11481e8d1bc2",
+    "kicker": "Practice",
+    "title": "Free exam practice, by subject"
+  },
+  "en-practice-anatomy-flashcards": {
+    "hash": "cba528fbfcca",
+    "kicker": "Anatomy",
+    "title": "Anatomy flashcards"
+  },
+  "en-practice-biochemistry-flashcards": {
+    "hash": "b6e04fba0fb3",
+    "kicker": "Biochemistry",
+    "title": "Biochemistry flashcards"
+  },
+  "en-practice-developmental-psychology-exam-questions": {
+    "hash": "e9f978668d87",
+    "kicker": "Developmental psychology",
+    "title": "Developmental psychology exam questions"
+  },
+  "en-practice-hypothesis-testing-practice-problems": {
+    "hash": "b337c47f4475",
+    "kicker": "Statistics",
+    "title": "Hypothesis testing practice problems"
+  },
+  "en-practice-limits-and-derivatives-practice-problems": {
+    "hash": "7b5b038520ff",
+    "kicker": "Calculus",
+    "title": "Limits and derivatives practice problems with solutions"
+  },
+  "en-practice-macroeconomics-exam-questions": {
+    "hash": "72ceff83ce87",
+    "kicker": "Macroeconomics",
+    "title": "Macroeconomics exam questions"
+  },
+  "en-practice-microeconomics-exam-questions": {
+    "hash": "fa880057efa0",
+    "kicker": "Microeconomics",
+    "title": "Microeconomics exam questions"
+  },
+  "en-practice-normal-distribution-practice-problems": {
+    "hash": "2d8c0baf7f6e",
+    "kicker": "Statistics",
+    "title": "Normal distribution practice problems with solutions"
+  },
+  "en-practice-pharmacology-flashcards": {
+    "hash": "03e004b50970",
+    "kicker": "Pharmacology",
+    "title": "Pharmacology flashcards"
+  },
+  "en-practice-physiology-flashcards": {
+    "hash": "865b2107e1c8",
+    "kicker": "Physiology",
+    "title": "Physiology flashcards"
+  },
+  "en-pricing": {
+    "hash": "cee7cbf876d2",
+    "kicker": "Plans and pricing",
+    "title": "Plans and pricing"
+  },
+  "en-privacy": {
+    "hash": "d1e487e71cc8",
+    "kicker": "Privacy",
+    "title": "Privacy and cookie policy"
+  },
+  "en-study": {
+    "hash": "b27894253676",
+    "kicker": "How to study",
+    "title": "How to study your subject"
+  },
+  "en-study-anatomy": {
+    "hash": "5cbc57559bb7",
+    "kicker": "How to study",
+    "title": "How to study Anatomy"
+  },
+  "en-study-biochemistry": {
+    "hash": "f49ced8761a0",
+    "kicker": "How to study",
+    "title": "How to study Biochemistry"
+  },
+  "en-study-calculus": {
+    "hash": "ea119b64385f",
+    "kicker": "How to study",
+    "title": "How to study Calculus"
+  },
+  "en-study-economics": {
+    "hash": "3639fdedb661",
+    "kicker": "How to study",
+    "title": "How to study Economics"
+  },
+  "en-study-from-pdf": {
+    "hash": "5d08a80addc4",
+    "kicker": "PDFs and notes",
+    "title": "Study from your PDFs — map first, then study."
+  },
+  "en-study-statistics": {
+    "hash": "cc24ee625f27",
+    "kicker": "How to study",
+    "title": "How to study Statistics"
+  },
+  "en-subject-map": {
+    "hash": "c6fe46013fd6",
+    "kicker": "Subject Map",
+    "title": "Subject Map vs mind map"
+  },
+  "estudar": {
+    "hash": "d502e5f87ae7",
+    "kicker": "Como estudar",
+    "title": "Como estudar a tua disciplina"
+  },
+  "estudar-anatomia": {
+    "hash": "96503716234f",
+    "kicker": "Como estudar",
+    "title": "Como estudar Anatomia"
+  },
+  "estudar-biologia-geologia": {
+    "hash": "fb96cd132552",
+    "kicker": "Como estudar",
+    "title": "Como estudar Biologia e Geologia"
+  },
+  "estudar-bioquimica": {
+    "hash": "66b59a084ae9",
+    "kicker": "Como estudar",
+    "title": "Como estudar Bioquímica"
+  },
+  "estudar-calculo": {
+    "hash": "7b200d6eb0be",
+    "kicker": "Como estudar",
+    "title": "Como estudar Cálculo"
+  },
+  "estudar-contabilidade": {
+    "hash": "b9a8055849dd",
+    "kicker": "Como estudar",
+    "title": "Como estudar Contabilidade"
+  },
+  "estudar-direito-civil": {
+    "hash": "82b658b0abcd",
+    "kicker": "Como estudar",
+    "title": "Como estudar Direito Civil"
+  },
+  "estudar-direito-constitucional": {
+    "hash": "9353345536cf",
+    "kicker": "Como estudar",
+    "title": "Como estudar Direito Constitucional"
+  },
+  "estudar-direito-penal": {
+    "hash": "fee04e507704",
+    "kicker": "Como estudar",
+    "title": "Como estudar Direito Penal"
+  },
+  "estudar-economia": {
+    "hash": "1e6367ed794e",
+    "kicker": "Como estudar",
+    "title": "Como estudar Economia"
+  },
+  "estudar-estatistica": {
+    "hash": "536fa8e72486",
+    "kicker": "Como estudar",
+    "title": "Como estudar Estatística"
+  },
+  "estudar-fisica-quimica": {
+    "hash": "8c4658a4a044",
+    "kicker": "Como estudar",
+    "title": "Como estudar Física e Química"
+  },
+  "estudar-historia": {
+    "hash": "a555c60d0fb4",
+    "kicker": "Como estudar",
+    "title": "Como estudar História"
+  },
+  "estudar-matematica": {
+    "hash": "3954c7376f2e",
+    "kicker": "Como estudar",
+    "title": "Como estudar Matemática"
+  },
+  "estudar-portugues": {
+    "hash": "47f16592685e",
+    "kicker": "Como estudar",
+    "title": "Como estudar Português"
+  },
+  "estudar-sebenta": {
+    "hash": "fe1b0ebb31fb",
+    "kicker": "Sebenta e PDF",
+    "title": "Estudar a partir do PDF — primeiro o mapa, depois o estudo."
+  },
+  "home": {
+    "hash": "f81926d66a72",
+    "kicker": "App de estudo",
+    "title": "Primeiro, o mapa da tua matéria. Depois, sessões curtas."
+  },
+  "instalar": {
+    "hash": "5284a8b25a3e",
+    "kicker": "Instalar a app",
+    "title": "Instala a MicroGrind no telemóvel"
+  },
+  "mapa-da-materia": {
+    "hash": "21cedf5a2d8c",
+    "kicker": "Mapa da matéria",
+    "title": "O mapa da matéria"
+  },
+  "planos": {
+    "hash": "be7b38a88999",
+    "kicker": "Planos e preços",
+    "title": "Planos e preços"
+  },
+  "praticar": {
+    "hash": "d8251450fc0b",
+    "kicker": "Praticar",
+    "title": "Pratica para o exame, grátis"
+  },
+  "praticar-biologia-geologia-exame-nacional": {
+    "hash": "05c944c52da5",
+    "kicker": "Biologia e Geologia",
+    "title": "Treina para o exame de Biologia e Geologia"
+  },
+  "praticar-calculo-limites-e-derivadas": {
+    "hash": "59ae4562e149",
+    "kicker": "Cálculo",
+    "title": "Exercícios de limites e derivadas resolvidos"
+  },
+  "praticar-contabilidade-financeira-exercicios": {
+    "hash": "7875bbe0b0f1",
+    "kicker": "Contabilidade Financeira",
+    "title": "Exercícios de Contabilidade Financeira"
+  },
+  "praticar-direito-civil-teoria-geral": {
+    "hash": "f3657502afbc",
+    "kicker": "Teoria Geral do Direito Civil",
+    "title": "Perguntas de Teoria Geral do Direito Civil"
+  },
+  "praticar-direito-constitucional-direitos-fundamentais": {
+    "hash": "8103454c96e0",
+    "kicker": "Direito Constitucional",
+    "title": "Perguntas de exame de Direito Constitucional"
+  },
+  "praticar-direito-penal-teoria-do-crime": {
+    "hash": "22e3fa5fb685",
+    "kicker": "Direito Penal",
+    "title": "Prepara o teu exame de Direito Penal"
+  },
+  "praticar-distribuicao-normal-exercicios-resolvidos": {
+    "hash": "d0d69c988b0f",
+    "kicker": "Estatística",
+    "title": "Exercícios de distribuição normal resolvidos"
+  },
+  "praticar-flashcards-anatomia": {
+    "hash": "8bd6f19c0c67",
+    "kicker": "Anatomia",
+    "title": "Flashcards de Anatomia"
+  },
+  "praticar-flashcards-bioquimica": {
+    "hash": "1ccb854f411e",
+    "kicker": "Bioquímica",
+    "title": "Flashcards de Bioquímica"
+  },
+  "praticar-flashcards-farmacologia": {
+    "hash": "566f360e2a82",
+    "kicker": "Farmacologia",
+    "title": "Flashcards de Farmacologia"
+  },
+  "praticar-flashcards-fisiologia": {
+    "hash": "9adf78440c28",
+    "kicker": "Fisiologia",
+    "title": "Flashcards de Fisiologia"
+  },
+  "praticar-macroeconomia-perguntas-de-exame": {
+    "hash": "abcfda6cf326",
+    "kicker": "Macroeconomia",
+    "title": "Perguntas de exame de Macroeconomia"
+  },
+  "praticar-microeconomia-perguntas-de-exame": {
+    "hash": "29010fa29821",
+    "kicker": "Microeconomia",
+    "title": "Perguntas de exame de Microeconomia"
+  },
+  "praticar-psicologia-do-desenvolvimento-perguntas": {
+    "hash": "c907829a5a1b",
+    "kicker": "Psicologia do Desenvolvimento",
+    "title": "Perguntas de Psicologia do Desenvolvimento"
+  },
+  "praticar-testes-de-hipoteses-exercicios": {
+    "hash": "cf084a3f8b9e",
+    "kicker": "Estatística",
+    "title": "Exercícios de testes de hipóteses"
+  },
+  "privacidade": {
+    "hash": "3b574fa9dfa3",
+    "kicker": "Privacidade",
+    "title": "Política de privacidade e cookies"
+  },
+  "sobre": {
+    "hash": "8d9c5fa449ca",
+    "kicker": "Sobre",
+    "title": "Sobre a MicroGrind"
+  }
+}
