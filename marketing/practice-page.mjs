@@ -5,6 +5,7 @@
  * works without JavaScript. practice.js turns it into a one-at-a-time quiz / flashcard deck.
  * Content lives in practice/*.mjs; this file only renders it. PT-PT only for now.
  */
+import { assetUrl } from './assets.mjs';
 import { esc, headAssets, renderCookieBanner, renderFooter, renderHeader, renderInstallDialog } from './chrome.mjs';
 import { ORIGIN, REGISTER_URL } from './content.mjs';
 import { closingBand } from './page-layout.mjs';
@@ -12,8 +13,6 @@ import { absolute, jsonLd } from './render.mjs';
 import { ga4HeadSnippet } from '../lib/ga4.mjs';
 import { PRACTICE_AREAS, PRACTICE_HUB, practicePages } from './practice/index.mjs';
 
-export const PRACTICE_ASSET_VERSION = '2026-11-12b';
-export const PRACTICE_LASTMOD = '2026-11-12';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
@@ -59,8 +58,8 @@ ${analytics ? ga4HeadSnippet() : ''}<meta charset="utf-8">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script>document.documentElement.classList.add('js');</script>
 ${headAssets(['/marketing.css'])}
-<link rel="stylesheet" href="/practice.css?v=${PRACTICE_ASSET_VERSION}">
-<script src="/practice.js?v=${PRACTICE_ASSET_VERSION}" defer></script>
+<link rel="stylesheet" href="${assetUrl('practice.css')}">
+<script src="${assetUrl('practice.js')}" defer></script>
 </head>`;
 }
 
@@ -283,11 +282,11 @@ ${closingBand('pt')}`;
 }
 
 /** Sitemap entries for the practice pages (PT only, no hreflang pair). */
-export function practiceSitemapEntries() {
+export function practiceSitemapEntries(lastmodFor) {
   return [PRACTICE_HUB.path, ...practicePages.map(practicePath)].map(
     (path) => `  <url>
     <loc>${absolute(path)}</loc>
-    <lastmod>${PRACTICE_LASTMOD}</lastmod>
+    <lastmod>${lastmodFor(path)}</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="${absolute(path)}" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${absolute(path)}" />
   </url>`

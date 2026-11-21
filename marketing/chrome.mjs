@@ -3,6 +3,7 @@
  * Used by the homepage (home.mjs) and by every content page (render.mjs).
  */
 import { FEATURE_ANCHORS } from './anchors.mjs';
+import { assetUrl, fontUrl } from './assets.mjs';
 import { CHROME, CONTACT_EMAIL } from './content.mjs';
 
 export function esc(value) {
@@ -13,8 +14,8 @@ export function esc(value) {
     .replaceAll('"', '&quot;');
 }
 
-/** Bump when mg.css / mg.js / mg-attr.js change so returning visitors get the new files. */
-export const ASSET_VERSION = '2026-11-21a';
+/** Kept for older imports: the version of mg.css, which changes whenever the file does (assets.mjs). */
+export const ASSET_VERSION = assetUrl('mg.css').split('?v=')[1];
 
 export const NAV = {
   pt: [
@@ -62,19 +63,19 @@ const UI = {
 };
 
 /**
- * Fonts, design-system stylesheet and scripts. `extraCss` keeps older page stylesheets first.
+ * Fonts, design-system stylesheet and scripts, all with content-hash versions (assets.mjs).
+ * `extraCss` names older page stylesheets (e.g. 'marketing.css'), loaded first.
  * mg-attr.js (attribution + cookieless visit counter) comes right after mg.js; the publish step puts
- * window.__MG_HIT__ in front of it (scripts/inject-web-hit-config.mjs looks for this exact tag).
+ * window.__MG_HIT__ in front of it (scripts/inject-web-hit-config.mjs looks for this tag).
  */
 export function headAssets(extraCss = []) {
-  const v = ASSET_VERSION;
   return [
-    `<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>`,
-    `<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>`,
-    ...extraCss.map((href) => `<link rel="stylesheet" href="${href}">`),
-    `<link rel="stylesheet" href="/mg.css?v=${v}">`,
-    `<script src="/mg.js?v=${v}" defer></script>`,
-    `<script type="module" src="/mg-attr.js?v=${v}"></script>`,
+    `<link rel="preload" href="${fontUrl('geist.woff2')}" as="font" type="font/woff2" crossorigin>`,
+    `<link rel="preload" href="${fontUrl('bricolage.woff2')}" as="font" type="font/woff2" crossorigin>`,
+    ...extraCss.map((name) => `<link rel="stylesheet" href="${assetUrl(name.replace(/^\//, ''))}">`),
+    `<link rel="stylesheet" href="${assetUrl('mg.css')}">`,
+    `<script src="${assetUrl('mg.js')}" defer></script>`,
+    `<script type="module" src="${assetUrl('mg-attr.js')}"></script>`,
   ].join('\n');
 }
 

@@ -127,7 +127,7 @@ const SOURCES = {
 const COPY = {
   pt: {
     path: '/comparar/',
-    title: 'Comparar apps de estudo: MicroGrind, Quizlet, Knowunity, Anki e mais | MicroGrind',
+    title: 'Comparar apps de estudo: Quizlet, Anki e mais | MicroGrind',
     description:
       'MicroGrind, Quizlet, Knowunity, Gemini Notebook, Anki e Astra AI lado a lado: o que cada app faz e quanto custa o plano pago mais barato.',
     kicker: 'Comparar',
@@ -162,7 +162,7 @@ const COPY = {
   },
   en: {
     path: '/en/compare/',
-    title: 'Compare study apps: MicroGrind, Quizlet, Knowunity, Anki and more | MicroGrind',
+    title: 'Compare study apps: Quizlet, Anki and more | MicroGrind',
     description:
       'MicroGrind, Quizlet, Knowunity, Gemini Notebook, Anki and Astra AI side by side: what each app does and what its cheapest paid plan costs.',
     kicker: 'Compare',

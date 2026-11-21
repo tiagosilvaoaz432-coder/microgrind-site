@@ -60,7 +60,7 @@ export const practicePages = PAGES.map((page) => (page.mode === 'quiz' ? normali
 export const PRACTICE_HUB = {
   path: '/praticar/',
   kicker: 'Praticar',
-  title: 'Perguntas de exame e flashcards grátis por disciplina | MicroGrind',
+  title: 'Perguntas de exame e flashcards grátis | MicroGrind',
   description: 'Mini-testes e flashcards grátis de Direito, Estatística, Economia, Anatomia, Bioquímica e mais. Responde, vê a explicação e treina para o exame.',
   h1: 'Pratica para o exame, grátis',
   lede: 'Mini-testes de escolha múltipla e flashcards por disciplina, com a resposta explicada. Escolhe uma página e começa já, sem conta.',

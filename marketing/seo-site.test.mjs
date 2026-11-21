@@ -19,6 +19,7 @@ import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
 import { studyPath } from './study-page.mjs';
 import { STUDY_HUB, studyGuides } from './study/index.mjs';
 import { ASSET_VERSION, COOKIES } from './chrome.mjs';
+import { assetUrl } from './assets.mjs';
 import { bundleMgAttr } from './bundle-mg-attr.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -502,13 +503,14 @@ try {
   assert.deepEqual(redirectTo('/en/vs-astra-ai'), { destination: '/en/compare/', code: '301' });
   assert.equal([...redirects.matchAll(/^\/comparar|^\/en\/compare/gm)].length, 0, 'the comparison page itself is never redirected');
 
-  const css = read('marketing.css');
+  // Rule checks read the CSS sources; the published files are minified (assets.mjs).
+  const css = readFileSync(join(here, 'site.css'), 'utf8');
   assert.match(css, /\.compare-adv td\.adv/);
   assert.match(css, /\.compare-hub\{overflow-x:auto/);
   assert.match(css, /\.compare-hub table\{width:100%;min-width:52rem;table-layout:fixed\}/);
   assert.match(css, /\.adv-yes \.adv-glyph\{color:#042f2e;background:#5eead4\}/);
   assert.match(css, /\.adv-no \.adv-glyph\{color:#4c0519;background:#fecdd3\}/);
-  const motion = read('motion.css');
+  const motion = readFileSync(join(here, 'motion.css'), 'utf8');
   assert.match(motion, /\.step-demo/);
   assert.match(motion, /prefers-reduced-motion/);
   assert.doesNotMatch(motion, /session-times|data-min/);
@@ -521,7 +523,7 @@ try {
   assert.match(runtime, /prefers-reduced-motion: reduce/);
   assert.match(runtime, /onMotionChange\(armReveals\)/, 'reveals must settle when reduced motion turns on');
   assert.match(runtime, /if \(reduced\(\)\) \{ show\(beats\.length\); return; \}/, 'step demos must settle with reduced motion');
-  const designCss = read('mg.css');
+  const designCss = readFileSync(join(here, 'mg.css'), 'utf8');
   assert.match(designCss, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(designCss, /\[hidden\] \{ display: none !important; \}/);
   for (const font of ['bricolage.woff2', 'geist.woff2', 'geist-mono.woff2']) {
@@ -594,7 +596,7 @@ try {
   assert.match(sobre, /data-who-levels/);
   assert.match(sobre, /Ensino básico/);
   assert.match(sobre, /Qualquer curso ou disciplina — do teu material\./);
-  assert.match(sobre, /href="\/motion.css"/);
+  assert.match(sobre, /href="\/motion\.css\?v=[0-9a-f]{10}"/);
   assert.match(sobre, /addEventListener\('change', onMotion\)/);
   assert.match(sobre, /Para quem estuda no ensino básico, secundário ou superior/);
   assert.doesNotMatch(sobre, /who-examples|>Direito<|>Gestão<|>Engenharia</);
@@ -602,7 +604,7 @@ try {
   assert.match(about, />Primary</);
   assert.match(about, />Higher education</);
   assert.match(about, /Any course or subject — from your own material\./);
-  assert.match(about, /href="\/motion.css"/);
+  assert.match(about, /href="\/motion\.css\?v=[0-9a-f]{10}"/);
   assert.match(about, /primary, secondary or higher education/);
   assert.doesNotMatch(about, /who-examples|>Law<|>Management<|>Engineering</);
 
@@ -694,9 +696,10 @@ try {
   }
 
   // mg-attr.js (attribution + cookieless counter): on every page, right after mg.js, no secrets anywhere.
-  const mgJsTag = `<script src="/mg.js?v=${ASSET_VERSION}" defer></script>`;
-  const attrTag = `<script type="module" src="/mg-attr.js?v=${ASSET_VERSION}"></script>`;
-  assert.equal(ASSET_VERSION, '2026-11-21a');
+  // Content-hash versions (assets.mjs): each file's ?v= changes whenever the file does.
+  const mgJsTag = `<script src="${assetUrl('mg.js')}" defer></script>`;
+  const attrTag = `<script type="module" src="${assetUrl('mg-attr.js')}"></script>`;
+  assert.match(ASSET_VERSION, /^[0-9a-f]{10}$/);
   const builtFiles = [];
   (function list(dir) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -736,12 +739,12 @@ try {
       }
     }
   })(siteStatic);
-  // Every generated file is committed as built (covers mg-attr.js and the ASSET_VERSION bump on every page).
+  // Every generated file is committed as built (covers mg-attr.js and the asset versions on every page).
   for (const rel of builtFiles) {
     assert.ok(readFileSync(join(siteStatic, rel)).equals(readFileSync(join(out, rel))), `${rel} is stale; run npm run build`);
   }
 
-  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', 'mg-attr.js', '_redirects'];
+  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', 'practice.css', 'practice.js', 'mg-attr.js', '_redirects', '_headers', '404.html'];
   for (const rel of committedRels) {
     const fresh = read(rel);
     const committed = readFileSync(join(siteStatic, rel), 'utf8');

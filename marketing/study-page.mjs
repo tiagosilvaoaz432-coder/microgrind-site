@@ -6,7 +6,8 @@
 import { esc } from './chrome.mjs';
 import { closingBand } from './page-layout.mjs';
 import { absolute, jsonLd } from './render.mjs';
-import { ctaBlock, hero, practicePath, practiceSection, shell, PRACTICE_LASTMOD } from './practice-page.mjs';
+import { LASTMOD_TOKEN } from './lastmod.mjs';
+import { ctaBlock, hero, practicePath, practiceSection, shell } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
 import { STUDY_GROUPS, STUDY_HUB, studyGuides } from './study/index.mjs';
 import { ORIGIN } from './content.mjs';
@@ -39,7 +40,7 @@ export function studyLd(guide) {
     learningResourceType: 'Guia de estudo',
     educationalLevel: guide.level,
     about: { '@type': 'Thing', name: guide.subject },
-    dateModified: PRACTICE_LASTMOD,
+    dateModified: LASTMOD_TOKEN, // replaced with this page's date in build-seo-site.mjs
     author: { '@id': `${ORIGIN}/#org` },
     publisher: { '@id': `${ORIGIN}/#org` },
   });
@@ -125,11 +126,11 @@ ${closingBand('pt')}`;
   return shell({ path, title: STUDY_HUB.title, description: STUDY_HUB.description, ld, analytics, body });
 }
 
-export function studySitemapEntries() {
+export function studySitemapEntries(lastmodFor) {
   return [STUDY_HUB.path, ...studyGuides.map(studyPath)].map(
     (path) => `  <url>
     <loc>${absolute(path)}</loc>
-    <lastmod>${PRACTICE_LASTMOD}</lastmod>
+    <lastmod>${lastmodFor(path)}</lastmod>
     <xhtml:link rel="alternate" hreflang="pt-PT" href="${absolute(path)}" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${absolute(path)}" />
   </url>`
