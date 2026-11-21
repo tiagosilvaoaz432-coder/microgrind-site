@@ -33,6 +33,7 @@ export const NAV = {
     { id: 'progress', label: 'Progress' },
     { href: '/en/pricing/', label: 'Pricing' },
     { href: '/en/compare/', label: 'Compare' },
+    { href: '/en/practice/', label: 'Practice', highlight: true },
     { id: 'faq', label: 'FAQ' },
   ],
 };

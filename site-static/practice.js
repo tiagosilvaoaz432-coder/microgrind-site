@@ -1,10 +1,56 @@
 /*
- * Practice pages (/praticar/…): turns the static list of questions into a one-at-a-time
+ * Practice pages (/praticar/…, /en/practice/…): turns the static list of questions into a one-at-a-time
  * quiz or flashcard deck. Without this script the page still shows every question with
- * its answer in a <details>, so nothing depends on it.
+ * its answer in a <details>, so nothing depends on it. Text follows the page language (<html lang>).
  */
 (function () {
   'use strict';
+
+  var TEXT = {
+    pt: {
+      hintCards: 'Tenta responder de cabeça, vira o cartão e diz se sabias.',
+      hintQuiz: 'Escolhe uma opção. Vês logo se acertaste e porquê.',
+      result: 'Ver resultado',
+      next: 'Seguinte',
+      right: 'Certo!',
+      wrong: 'Não é essa.',
+      liveRight: 'Resposta certa. ',
+      liveWrong: 'Resposta errada. ',
+      flip: 'Virar cartão',
+      knew: 'Sabia',
+      missed: 'Não sabia',
+      liveAnswer: 'Resposta: ',
+      scoreCards: function (r, t) { return 'Sabias ' + r + ' de ' + t + ' cartões.'; },
+      scoreQuiz: function (r, t) { return 'Acertaste ' + r + ' de ' + t + ' perguntas.'; },
+      high: 'Muito bem. Agora treina com a matéria exata da tua cadeira.',
+      mid: 'Bom ponto de partida. Revê as que falhaste e volta a tentar.',
+      low: 'Ainda há matéria para consolidar. Revê as explicações abaixo com calma.',
+      reviewCards: 'Cartões para rever',
+      reviewQuiz: 'Perguntas para rever'
+    },
+    en: {
+      hintCards: 'Try to answer from memory, flip the card and say whether you knew it.',
+      hintQuiz: 'Pick an option. You see straight away whether you got it right, and why.',
+      result: 'See your result',
+      next: 'Next',
+      right: 'Correct!',
+      wrong: 'Not that one.',
+      liveRight: 'Correct answer. ',
+      liveWrong: 'Wrong answer. ',
+      flip: 'Flip card',
+      knew: 'I knew it',
+      missed: 'I didn\u2019t know',
+      liveAnswer: 'Answer: ',
+      scoreCards: function (r, t) { return 'You knew ' + r + ' of ' + t + ' cards.'; },
+      scoreQuiz: function (r, t) { return 'You got ' + r + ' of ' + t + ' questions right.'; },
+      high: 'Well done. Now practise with the exact material from your own course.',
+      mid: 'A good start. Go over the ones you missed and try again.',
+      low: 'There is still material to consolidate. Go over the explanations below calmly.',
+      reviewCards: 'Cards to review',
+      reviewQuiz: 'Questions to review'
+    }
+  };
+  var T = TEXT[(document.documentElement.lang || '').slice(0, 2) === 'en' ? 'en' : 'pt'];
 
   function track(name, params) {
     try {
@@ -41,8 +87,8 @@
     if (hint) {
       hint.textContent =
         mode === 'flashcards'
-          ? 'Tenta responder de cabeça, vira o cartão e diz se sabias.'
-          : 'Escolhe uma opção. Vês logo se acertaste e porquê.';
+          ? T.hintCards
+          : T.hintQuiz;
     }
 
     items.forEach(function (item, index) {
@@ -58,7 +104,7 @@
       item.appendChild(feedback);
 
       var nav = el('div', 'pq-nav');
-      var next = el('button', 'btn btn-sm', index === total - 1 ? 'Ver resultado' : 'Seguinte');
+      var next = el('button', 'btn btn-sm', index === total - 1 ? T.result : T.next);
       next.type = 'button';
       next.hidden = true;
       next.addEventListener('click', function () {
@@ -94,21 +140,21 @@
             });
             if (!right) button.classList.add('is-wrong');
             button.setAttribute('aria-pressed', 'true');
-            verdict.textContent = right ? 'Certo!' : 'Não é essa.';
+            verdict.textContent = right ? T.right : T.wrong;
             verdict.className = 'pq-verdict ' + (right ? 'is-good' : 'is-bad');
             feedback.hidden = false;
             next.hidden = false;
-            live.textContent = (right ? 'Resposta certa. ' : 'Resposta errada. ') + explanation.textContent;
+            live.textContent = (right ? T.liveRight : T.liveWrong) + explanation.textContent;
             next.focus({ preventScroll: true });
           });
         });
       } else {
-        var flip = el('button', 'btn btn-ghost btn-sm', 'Virar cartão');
+        var flip = el('button', 'btn btn-ghost btn-sm', T.flip);
         flip.type = 'button';
-        var knew = el('button', 'btn btn-sm pq-knew', 'Sabia');
+        var knew = el('button', 'btn btn-sm pq-knew', T.knew);
         knew.type = 'button';
         knew.hidden = true;
-        var missed = el('button', 'btn btn-ghost btn-sm pq-missed', 'Não sabia');
+        var missed = el('button', 'btn btn-ghost btn-sm pq-missed', T.missed);
         missed.type = 'button';
         missed.hidden = true;
         verdict.hidden = true;
@@ -122,7 +168,7 @@
           knew.hidden = false;
           missed.hidden = false;
           item.classList.add('is-flipped');
-          live.textContent = 'Resposta: ' + explanation.textContent;
+          live.textContent = T.liveAnswer + explanation.textContent;
           knew.focus({ preventScroll: true });
         });
         function rate(value) {
@@ -168,20 +214,20 @@
       list.hidden = true;
       result.hidden = false;
       scoreEl.textContent =
-        mode === 'flashcards' ? 'Sabias ' + right + ' de ' + total + ' cartões.' : 'Acertaste ' + right + ' de ' + total + ' perguntas.';
+        mode === 'flashcards' ? T.scoreCards(right, total) : T.scoreQuiz(right, total);
       var ratio = right / total;
       noteEl.textContent =
         ratio >= 0.8
-          ? 'Muito bem. Agora treina com a matéria exata da tua cadeira.'
+          ? T.high
           : ratio >= 0.5
-            ? 'Bom ponto de partida. Revê as que falhaste e volta a tentar.'
-            : 'Ainda há matéria para consolidar. Revê as explicações abaixo com calma.';
+            ? T.mid
+            : T.low;
       reviewEl.textContent = '';
       var missedItems = items.filter(function (_, i) {
         return !outcomes[i];
       });
       if (missedItems.length > 0) {
-        reviewEl.appendChild(el('p', 'pq-review-h', mode === 'flashcards' ? 'Cartões para rever' : 'Perguntas para rever'));
+        reviewEl.appendChild(el('p', 'pq-review-h', mode === 'flashcards' ? T.reviewCards : T.reviewQuiz));
         var ul = el('ul');
         missedItems.forEach(function (item) {
           var li = el('li');

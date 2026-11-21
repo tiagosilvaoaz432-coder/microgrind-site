@@ -6,6 +6,8 @@ Fontes das páginas públicas de https://microgrind.app (PT-PT e inglês). Não 
 
 - `marketing/` — gerador do site (Node.js, sem dependências): conteúdo, render, CSS/JS e o teste.
   - `marketing/practice/` — conteúdo das páginas gratuitas **Praticar** (`/praticar/…`): mini-testes e flashcards por disciplina.
+  - `marketing/practice-en/` e `marketing/study-en/` — versões em inglês (`/en/practice/…`, `/en/study/…`) das páginas e guias que não são específicos de Portugal. Cada uma tem `ptSlug`, que a liga à página portuguesa (hreflang e botão de língua).
+  - `deploy/site-root/og/` — imagem de partilha (og:image) de cada página, 1200×630. Depois de criar uma página ou mudar um título, corre `npm run og` (precisa do Playwright) e `npm run build`; o teste falha se a imagem estiver desatualizada.
   - `marketing/practice-page.mjs`, `practice.js`, `practice.css` — render e interatividade dessas páginas.
 - `site-static/` — output gerado (HTML, CSS minificado, `sitemap.xml`, `robots.txt`, `_redirects`, `_headers`, `404.html`). Está no git; o teste falha se estiver desatualizado.
   - `marketing/assets.mjs` — cada CSS/JS/fonte é publicado com `?v=<hash do conteúdo>`; o `_headers` guarda-os em cache durante um ano. Não há versões para mudar à mão.

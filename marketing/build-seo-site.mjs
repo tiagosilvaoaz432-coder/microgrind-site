@@ -16,8 +16,10 @@ import { legalPages } from './legal.mjs';
 import { renderNotFound } from './not-found.mjs';
 import { practicePath, renderPracticeHub, renderPracticePage } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
+import { PRACTICE_HUB_EN, practicePagesEn } from './practice-en/index.mjs';
 import { renderStudyHub, renderStudyPage, studyPath } from './study-page.mjs';
 import { STUDY_HUB, studyGuides } from './study/index.mjs';
+import { STUDY_HUB_EN, studyGuidesEn } from './study-en/index.mjs';
 import { relIndex, renderHeaders, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -28,12 +30,16 @@ export function renderAllPages() {
   for (const page of pages) rendered.set(page.path, renderPage(page, { allPages: pages }));
   // Privacy pages: same template (see legal.mjs).
   for (const page of legalPages) rendered.set(page.path, renderPage(page, { allPages: pages }));
-  // Free practice pages (PT only): hub + one quiz / flashcard deck per page.
+  // Free practice pages: hub + one quiz / flashcard deck per page, in Portuguese and English.
   rendered.set(PRACTICE_HUB.path, renderPracticeHub());
   for (const page of practicePages) rendered.set(practicePath(page), renderPracticePage(page));
-  // "Como estudar X" guides (PT only).
+  rendered.set(PRACTICE_HUB_EN.path, renderPracticeHub({ locale: 'en' }));
+  for (const page of practicePagesEn) rendered.set(practicePath(page), renderPracticePage(page));
+  // "How to study X" guides, in Portuguese and English.
   rendered.set(STUDY_HUB.path, renderStudyHub());
   for (const guide of studyGuides) rendered.set(studyPath(guide), renderStudyPage(guide));
+  rendered.set(STUDY_HUB_EN.path, renderStudyHub({ locale: 'en' }));
+  for (const guide of studyGuidesEn) rendered.set(studyPath(guide), renderStudyPage(guide));
   rendered.set('/', renderHome('pt'));
   rendered.set('/en/', renderHome('en'));
   return rendered;
@@ -54,6 +60,8 @@ export function buildSeoSite(outDir, { writeManifest = false, today } = {}) {
   }
   rmSync(join(outDir, 'praticar'), { recursive: true, force: true });
   rmSync(join(outDir, 'estudar'), { recursive: true, force: true });
+  rmSync(join(outDir, 'en', 'practice'), { recursive: true, force: true });
+  rmSync(join(outDir, 'en', 'study'), { recursive: true, force: true });
 
   const rendered = renderAllPages();
   const { dates, manifest } = resolveLastmod(rendered, readLastmod(), today);

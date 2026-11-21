@@ -119,3 +119,76 @@ test('resolveLastmod keeps a date until the page content changes', () => {
   assert.equal(next.dates.get('/a/'), '2026-12-01', 'a content change moves the date');
   assert.deepEqual(Object.keys(next.manifest), ['/a/'], 'removed pages leave the manifest');
 });
+
+test('English practice and study pages are complete, paired with Portuguese and free of Portuguese UI text', async () => {
+  const { practicePagesEn, PRACTICE_HUB_EN } = await import('./practice-en/index.mjs');
+  const { studyGuidesEn, STUDY_HUB_EN } = await import('./study-en/index.mjs');
+  const { practicePath, practicePair } = await import('./practice-page.mjs');
+  const { studyPath, studyPair } = await import('./study-page.mjs');
+  const sitemap = read('sitemap.xml');
+  const deferred = ['exact passage', 'exact excerpt', 'checked against', 'validated', 'concept-by-concept', 'does not invent', 'invent things', 'outside info', 'general knowledge', 'health degree', 'medical school'];
+  const portuguese = /Pergunta \d|Cartão \d|Ver resposta|Resposta certa|Perguntas frequentes|Recomeçar|Experimentar o MicroGrind|>Início<|cadeira|sebenta/;
+  const hubEn = read('en/practice/index.html');
+  const studyHubEn = read('en/study/index.html');
+  assert.equal(practicePagesEn.length, 10);
+  assert.equal(studyGuidesEn.length, 5);
+  const entries = [
+    ...practicePagesEn.map((p) => [practicePath(p), practicePair(p), hubEn]),
+    ...studyGuidesEn.map((g) => [studyPath(g), studyPair(g), studyHubEn]),
+    [PRACTICE_HUB_EN.path, { pt: '/praticar/', en: PRACTICE_HUB_EN.path }, null],
+    [STUDY_HUB_EN.path, { pt: '/estudar/', en: STUDY_HUB_EN.path }, null],
+  ];
+  for (const [path, pair, hub] of entries) {
+    const html = read(`${path.slice(1)}index.html`);
+    assert.match(html, /<html lang="en">/, path);
+    assert.ok(pair, `${path} has a Portuguese pair`);
+    assert.ok(html.includes(`<link rel="alternate" hreflang="en" href="https://microgrind.app${pair.en}">`), `${path} hreflang en`);
+    assert.ok(html.includes(`<link rel="alternate" hreflang="pt-PT" href="https://microgrind.app${pair.pt}">`), `${path} hreflang pt-PT`);
+    const ptHtml = read(`${pair.pt.slice(1)}index.html`);
+    assert.ok(ptHtml.includes(`<link rel="alternate" hreflang="en" href="https://microgrind.app${pair.en}">`), `${pair.pt} points back at ${path}`);
+    assert.ok(html.includes(`href="${pair.pt}" hreflang="pt-PT"`) || html.includes(`href="${pair.pt}"`), `${path} language switch goes to ${pair.pt}`);
+    assert.ok(sitemap.includes(`<loc>https://microgrind.app${path}</loc>`), `${path} in sitemap`);
+    if (hub) assert.ok(hub.includes(`href="${path}"`), `${path} linked from its hub`);
+    const text = html.toLowerCase();
+    for (const phrase of deferred) assert.equal(text.includes(phrase), false, `${path} contains deferred claim: ${phrase}`);
+    assert.doesNotMatch(html.replace(/<link rel="alternate"[^>]*>/g, '').replace(/hreflang="pt-PT"[^>]*>[^<]*</g, ''), portuguese, `${path} has Portuguese interface text`);
+    if (hub) assert.match(html, /utm_source=practice/, `${path} sign-up link is tagged as English practice`);
+  }
+  const quiz = read(`${practicePath(practicePagesEn[0]).slice(1)}index.html`);
+  assert.match(quiz, /Question 1 of 10/);
+  assert.match(quiz, /<summary>Show answer<\/summary>/);
+  assert.match(quiz, /"inLanguage":"en"/);
+  assert.ok(read('en/index.html').includes('href="/en/practice/"'), 'English homepage links the practice hub');
+  assert.ok(read('en/index.html').includes('href="/en/study/"'), 'English homepage links the study guides');
+  const js = read('practice.js');
+  assert.match(js, /scoreQuiz: function \(r, t\) \{ return 'You got '/, 'practice.js speaks English on English pages');
+});
+
+test('every page has its own share image, drawn with its current heading', async () => {
+  const { renderAllPages } = await import('./build-seo-site.mjs');
+  const { ogFile, ogKey, ogText, ogTextHash, readOgManifest, OG_WIDTH, OG_HEIGHT } = await import('./og.mjs');
+  const manifest = readOgManifest();
+  const rendered = renderAllPages();
+  assert.deepEqual(Object.keys(manifest).sort(), [...rendered.keys()].map(ogKey).sort(), 'og/manifest.json lists exactly the site pages (run npm run og)');
+  for (const [path, html] of rendered) {
+    const key = ogKey(path);
+    assert.ok(html.includes(`<meta property="og:image" content="https://microgrind.app/og/${key}.jpg">`), `${path} og:image`);
+    assert.ok(html.includes(`<meta name="twitter:image" content="https://microgrind.app/og/${key}.jpg">`), `${path} twitter:image`);
+    assert.match(html, /<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="[^"]+">/, `${path} og:image size and alt`);
+    assert.equal(manifest[key].hash, ogTextHash(ogText(path, html)), `${path}: heading changed since og/${key}.jpg was drawn (run npm run og)`);
+    const jpg = readFileSync(ogFile(path));
+    assert.equal(jpg.readUInt16BE(0), 0xffd8, `og/${key}.jpg is a JPEG`);
+    let i = 2;
+    let size = null;
+    while (i < jpg.length) {
+      const marker = jpg.readUInt16BE(i);
+      if (marker >= 0xffc0 && marker <= 0xffc2) {
+        size = [jpg.readUInt16BE(i + 7), jpg.readUInt16BE(i + 5)];
+        break;
+      }
+      i += 2 + jpg.readUInt16BE(i + 2);
+    }
+    assert.deepEqual(size, [OG_WIDTH, OG_HEIGHT], `og/${key}.jpg is ${OG_WIDTH}×${OG_HEIGHT}`);
+    assert.ok(jpg.length < 150_000, `og/${key}.jpg is ${jpg.length} bytes`);
+  }
+});
