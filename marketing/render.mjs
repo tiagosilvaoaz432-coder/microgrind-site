@@ -3,7 +3,7 @@ import { headAssets, renderCookieBanner, renderFooter, renderHeader, renderInsta
 import { RETIRED_VS_SLUGS, comparePair } from './compare.mjs';
 import { CONTACT_EMAIL, DEFINITION, ORIGIN, PAIRS, WEB_APP } from './content.mjs';
 import { closingBand, pageHero, pageKind, relatedCards, tocNav } from './page-layout.mjs';
-import { FEATURED_PLAN, PLAN_COPY, PLAN_ORDER, annualCents, euros, planCard, savingsPercent, yearlyPerMonthCents } from './plans.mjs';
+import { FEATURED_PLAN, PLAN_COPY, PLAN_FACTS, PLAN_ORDER, annualCents, euros, planCard, pricingPair, savingsPercent, yearlyPerMonthCents } from './plans.mjs';
 import { renderInstallGuide } from './install.mjs';
 import { pageMotionScript, renderWhoLevels } from './who.mjs';
 import { practiceSitemapEntries } from './practice-page.mjs';
@@ -183,31 +183,41 @@ export function collectFaqs(page) {
   return faqs;
 }
 
-/** Monthly price of MicroGrind (EUR), as published on the site. */
-export const APP_PRICE_EUR = '4.00';
+/** Price range of MicroGrind's plans (EUR): Free up to the dearest monthly plan, from plans.mjs. */
+export const APP_PRICE_RANGE = {
+  low: '0',
+  high: (Math.max(...PLAN_ORDER.map((code) => PLAN_FACTS[code].monthlyCents ?? PLAN_FACTS[code].onceCents ?? 0)) / 100).toFixed(2),
+  count: PLAN_ORDER.length,
+};
 
 /** What the app does, for search engines and AI answers. Keep in line with the app. */
 export const APP_FEATURES = {
   pt: [
     'Mapa da matéria a partir dos teus apontamentos, sebenta, manual ou slides (PDF, Word, texto, fotos)',
-    'Capítulos e lições na ordem dos teus resumos',
-    'Sessões de estudo de 5 a 25 minutos',
-    'Mini-lições, flashcards e quizzes',
-    'Simulações de exame (modo exame)',
-    'Tutor IA',
-    'Grind Score (0 a 100) e streaks',
-    'Battles entre estudantes',
+    'Capítulos e lições na ordem dos teus resumos, gerados quando quiseres',
+    'Ajustar mapa: pedir alterações por escrito, com pré-visualização e desfazer',
+    'Sessões curtas: escolhes quantos itens queres estudar',
+    'Lições, flashcards com revisão espaçada, quizzes e respostas escritas avaliadas pela IA',
+    'Simulações de exame (modo exame) e pontos fracos',
+    'Plano de teste dia a dia até à data do teste',
+    'Tutor IA por disciplina',
+    'Grind Score (0 a 100) e sequência de dias',
+    'Batalhas com amigos',
+    'Lembretes de estudo por notificação',
     'Web e telemóvel (PWA)',
   ],
   en: [
     'Subject Map from your notes, course pack, textbook or slides (PDF, Word, text, photos)',
-    'Chapters and lessons in the order of your own summaries',
-    '5–25 minute study sessions',
-    'Mini-lessons, flashcards and quizzes',
-    'Mock exams (exam mode)',
-    'AI Tutor',
-    'Grind Score (0 to 100) and streaks',
-    'Battles between students',
+    'Chapters and lessons in the order of your own summaries, generated when you want them',
+    'Adjust map: ask for changes in writing, with a preview and undo',
+    'Short sessions: you choose how many items to study',
+    'Lessons, flashcards with spaced repetition, quizzes and AI-graded written answers',
+    'Mock exams (exam mode) and weak points',
+    'Day-by-day test plan up to your test date',
+    'AI Tutor for each subject',
+    'Grind Score (0 to 100) and day streak',
+    'Battles with friends',
+    'Study reminders by notification',
     'Web and phone (PWA)',
   ],
 };
@@ -247,17 +257,12 @@ export function jsonLd({ locale, path, title, description, faqs, breadcrumbs = [
       inLanguage: ['pt-PT', 'en'],
       featureList: APP_FEATURES[locale === 'en' ? 'en' : 'pt'],
       offers: {
-        '@type': 'Offer',
-        price: APP_PRICE_EUR,
+        '@type': 'AggregateOffer',
+        lowPrice: APP_PRICE_RANGE.low,
+        highPrice: APP_PRICE_RANGE.high,
+        offerCount: APP_PRICE_RANGE.count,
         priceCurrency: 'EUR',
-        url: WEB_APP,
-        priceSpecification: {
-          '@type': 'UnitPriceSpecification',
-          price: APP_PRICE_EUR,
-          priceCurrency: 'EUR',
-          unitCode: 'MON',
-          referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
-        },
+        url: `${ORIGIN}${locale === 'en' ? pricingPair.en : pricingPair.pt}`,
       },
       publisher: { '@id': `${ORIGIN}/#org` },
     },

@@ -124,7 +124,7 @@ export function ctaBlock(page, { id, final = false }) {
   const h = final ? 'Agora com a tua matéria' : 'Cria perguntas a partir dos teus próprios apontamentos com o MicroGrind';
   const p = final
     ? 'Carrega a tua sebenta, apontamentos ou slides. O MicroGrind monta o mapa da matéria e prepara quizzes, flashcards e simulações de exame com o que tens de estudar.'
-    : `${noun.replace('{n}', page.items.length)} um exemplo genérico. No MicroGrind, as perguntas saem do teu material, em sessões de 5 a 25 minutos.`;
+    : `${noun.replace('{n}', page.items.length)} um exemplo genérico. No MicroGrind, as perguntas saem do teu material, em sessões curtas.`;
   return `<aside class="pq-cta mg-glass" id="${id}" aria-labelledby="${id}-h">
 <p class="pq-cta-h" id="${id}-h">${esc(h)}</p>
 <p>${esc(p)}</p>

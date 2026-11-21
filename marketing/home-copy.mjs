@@ -2,9 +2,13 @@
  * Copy for the homepage (PT-PT and EN).
  * Approved SEO lines (definition, steps, who, principle, FAQ) are kept word for word.
  * Demo data is fictional and every demo is labelled as an illustration.
- * No statistics, testimonials, ratings, prices or grade guarantees.
+ * No statistics, testimonials, ratings or grade guarantees. Prices come from plans.mjs.
  */
 import { DEFINITION, FILES_FAQ, MIND_MAP_FAQ } from './content.mjs';
+import { cheapestMonthlyCents, euros } from './plans.mjs';
+
+const FROM_PT = euros(cheapestMonthlyCents(), 'pt');
+const FROM_EN = euros(cheapestMonthlyCents(), 'en');
 
 export const HOME_COPY = {
   pt: {
@@ -23,14 +27,14 @@ export const HOME_COPY = {
       primary: 'Começar a estudar',
       secondary: 'Ver como funciona',
       support: 'Para qualquer curso ou disciplina, do ensino básico ao superior.',
-      formats: ['PDF', 'Word', 'Slides', 'Fotos dos apontamentos'],
+      formats: ['PDF', 'Word', 'Slides em PDF', 'Fotos dos apontamentos'],
       formatsLabel: 'Formatos que podes carregar',
       deviceLabel: 'Demonstração animada da app: carregar a matéria, ver o mapa e estudar numa sessão curta.',
       stages: ['Carregar', 'Mapa', 'Sessão'],
       stagesLabel: 'Passos da demonstração',
       upload: { title: 'Nova disciplina', file: 'Biologia_cap3.pdf', pages: '48 páginas', status: 'A montar o mapa…' },
       map: { title: 'Biologia', chapter: 'Membrana', lessons: ['Difusão', 'Osmose', 'Transporte ativo'] },
-      session: { title: 'Sessão · 10 min', topic: 'Membrana', steps: ['Mini-lição', 'Flashcards', 'Quiz rápido'], done: 'Sessão concluída' },
+      session: { title: 'Sessão · 10 itens', topic: 'Membrana', steps: ['Escolha múltipla', 'Verdadeiro ou falso', 'Flashcards'], done: 'Sessão concluída' },
       chipScore: 'Grind Score',
       chipStreak: 'dias seguidos',
       chipCard: 'Flashcard',
@@ -124,7 +128,7 @@ export const HOME_COPY = {
       steps: [
         { h3: 'Carregas a matéria', p: 'Apontamentos, manual, sebenta ou slides. O que já usas para estudar.' },
         { h3: 'Vês o mapa', p: 'A app organiza a tua matéria em capítulos, tópicos e conceitos para veres como os temas se ligam.' },
-        { h3: 'Estudas em sessões curtas', p: 'Ao iniciares uma sessão, escolhes a duração: entre 5 e 25 minutos. Estudas a matéria organizada no mapa, numa sessão curta que cabe no teu dia.' },
+        { h3: 'Estudas em sessões curtas', p: 'Estudas o mapa lição a lição ou numa sessão curta. Ao iniciares uma sessão, escolhes quantos itens queres estudar: 5, 10, 20 ou os que quiseres. Cabe no teu dia.' },
       ],
       uploadCaption: 'Exemplo de material',
       uploadItems: ['Sebenta', 'Manual', 'Slides'],
@@ -133,18 +137,18 @@ export const HOME_COPY = {
       mapRoot: 'Energia',
       mapItems: ['Formas', 'Transformações', 'Conservação'],
       sessionCaption: 'Exemplo de sessão',
-      sessionGroup: 'Duração da sessão, em minutos',
-      minutes: 'minutos',
+      sessionGroup: 'Quantos itens queres estudar?',
+      items: 'itens',
+      presets: { 5: 'Relâmpago', 10: 'Arranque', 20: 'Maratona' },
       stepOf: (n, total) => `Passo ${n} de ${total}`,
       play: 'Simular sessão',
       replay: 'Repetir',
-      done: 'Sessão concluída. Mais um dia na tua streak.',
+      done: 'Sessão concluída. Mais um dia na tua sequência.',
       topicLabel: 'Tópico',
-      stepsByMin: {
-        5: ['Mini-lição de um conceito', 'Recapitular'],
-        10: ['Mini-lição de um conceito', 'Cartões do tópico', 'Recapitular'],
-        15: ['Mini-lição de um conceito', 'Cartões do tópico', 'Perguntas sobre o teu documento', 'Recapitular'],
-        25: ['Mini-lição de um conceito', 'Cartões do tópico', 'Perguntas sobre o teu documento', 'Ligar dois conceitos', 'Recapitular'],
+      stepsByItems: {
+        5: ['2 perguntas de escolha múltipla', '1 verdadeiro ou falso', '1 cartão', '1 resposta escrita, avaliada pela IA de 0 a 5', 'Rever o que respondeste'],
+        10: ['4 perguntas de escolha múltipla', '2 verdadeiro ou falso', '2 cartões', '2 respostas escritas, avaliadas pela IA de 0 a 5', 'Rever o que respondeste'],
+        20: ['8 perguntas de escolha múltipla', '4 verdadeiro ou falso', '4 cartões', '4 respostas escritas, avaliadas pela IA de 0 a 5', 'Rever o que respondeste'],
       },
       defaultTopic: 'Membrana',
     },
@@ -155,7 +159,7 @@ export const HOME_COPY = {
       lede: 'Tudo parte do mapa da matéria. Experimenta aqui cada modo — são demos com uma matéria de exemplo.',
       tabsLabel: 'Modos de estudo',
       tabs: [
-        { id: 'licoes', label: 'Lições', blurb: 'Mini-lições curtas, um conceito de cada vez.' },
+        { id: 'licoes', label: 'Lições', blurb: 'Lições curtas do mapa, capítulo a capítulo.' },
         { id: 'flashcards', label: 'Flashcards', blurb: 'Cartões gerados a partir dos teus tópicos.' },
         { id: 'quiz', label: 'Quizzes', blurb: 'Perguntas sobre o teu documento, com explicação.' },
         { id: 'exame', label: 'Simulação de exame', blurb: 'Treina com tempo, como no dia do teste.' },
@@ -215,24 +219,38 @@ export const HOME_COPY = {
         you: 'Tu',
       },
     },
+    extras: {
+      id: 'mais-funcionalidades',
+      kicker: 'Também na app',
+      h2: 'O mapa adapta-se a ti. O estudo, ao teu calendário.',
+      lede: 'O que a app também faz e que não cabe numa demo.',
+      items: [
+        { icon: 'layers', h3: 'Capítulos quando quiseres', p: 'O mapa gera logo a estrutura completa e o primeiro capítulo. Os outros geras quando lá chegares, e vês antes os créditos que vão usar.' },
+        { icon: 'edit', h3: 'Ajustar mapa', p: 'Pede por escrito o que queres mudar: uma lição mais simples, mais exemplos, outra ordem, dividir ou juntar capítulos. Vês as alterações antes de aplicar e podes desfazer durante 7 dias.' },
+        { icon: 'calendar', h3: 'Plano de teste', p: 'Dizes a data do teste e os temas que saem. A IA monta um plano dia a dia e os passos marcam-se sozinhos à medida que estudas.' },
+        { icon: 'target', h3: 'Pontos fracos', p: 'O que falhaste de verdade numa disciplina, no mapa, nas sessões, nos exames e nos flashcards, num só sítio, para reveres só isso.' },
+        { icon: 'globe', h3: 'Idioma de estudo', p: 'Ao criares um plano de teste, escolhes em que idioma estudas a disciplina. O mapa, as lições e as perguntas saem nesse idioma, mesmo que os ficheiros estejam noutro.' },
+        { icon: 'bell', h3: 'Lembretes de estudo', p: 'Recebes o lembrete no telemóvel ou no computador, mesmo com a app fechada. No iPhone, adiciona primeiro a app ao ecrã principal.' },
+      ],
+    },
     progress: {
       id: 'progresso',
       kicker: 'Progresso',
-      h2: 'Progresso que se vê. E colegas para desafiar.',
-      lede: 'O Grind Score, de 0 a 100, mede a consistência com que estudaste nos últimos 30 dias. A streak conta os dias seguidos. As Battles põem-te a competir com colegas sobre a mesma matéria.',
-      score: { title: 'Grind Score', note: 'O MicroGrind recompensa consistência, não maratonas.', max: '/100', delta: '+4 esta semana', label: 'Locked In', breakdownTitle: 'Do que é feito', breakdown: [['Consistência', 80], ['Objetivos Diários', 63], ['Sequência', 60], ['Lições do mapa', 87]] },
-      streak: { title: 'Streak', unit: 'dias seguidos', note: 'Faz a sessão de hoje para manter a chama acesa.', action: 'Fazer a sessão de hoje', doneLabel: 'Feito hoje', days: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] },
+      h2: 'Progresso que se vê. E amigos para desafiar.',
+      lede: 'O Grind Score, de 0 a 100, mede a consistência com que estudaste nos últimos 30 dias. A sequência conta os dias seguidos. Nas batalhas, desafias amigos para um teste sobre a mesma matéria, e cada um joga quando pode.',
+      score: { title: 'Grind Score', note: 'O MicroGrind recompensa consistência, não maratonas.', max: '/100', delta: '+4 esta semana', label: 'Focado', breakdownTitle: 'Do que é feito', breakdown: [['Consistência', 80], ['Objetivos Diários', 63], ['Sequência', 60], ['Lições do mapa', 87]] },
+      streak: { title: 'Sequência', unit: 'dias seguidos', note: 'Faz a sessão de hoje para manter a chama acesa.', action: 'Fazer a sessão de hoje', doneLabel: 'Feito hoje', days: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] },
       battle: {
-        title: 'Battles',
+        title: 'Batalhas',
         subject: 'Revolução Francesa · 5 perguntas',
         you: 'Tu',
         rival: 'Inês',
-        start: 'Simular battle',
-        again: 'Nova battle',
-        win: 'Ganhaste a battle!',
+        start: 'Simular batalha',
+        again: 'Nova batalha',
+        win: 'Ganhaste a batalha!',
         lose: 'A Inês ganhou esta. Desforra?',
         tie: 'Empate. Mais uma?',
-        note: 'Desafia colegas para uma battle sobre a mesma matéria.',
+        note: 'Desafia um amigo, com o código de amigo, para uma batalha sobre a mesma matéria.',
       },
     },
     who: {
@@ -248,7 +266,7 @@ export const HOME_COPY = {
     cta: {
       kicker: 'Começa hoje',
       h2: 'Sessões curtas. Progresso real.',
-      p: 'Abre a MicroGrind na web ou instala-a no telemóvel. Carregas a matéria e a primeira sessão começa a partir do teu mapa. Tudo por 4 € por mês.',
+      p: `Abre a MicroGrind na web ou instala-a no telemóvel. Carregas a matéria e a primeira sessão começa logo a seguir. Começa grátis; os planos pagos começam em ${FROM_PT}/mês.`,
       primary: 'Começar a estudar',
       install: 'Instalar a app',
     },
@@ -259,10 +277,10 @@ export const HOME_COPY = {
       items: [
         { ...MIND_MAP_FAQ.pt, negation: true },
         { q: 'Funciona com manuais densos e slides dados a correr?', a: 'Foi para isso que a pensámos. O mapa separa a matéria em capítulos, tópicos e conceitos para veres o fio condutor antes de estudar.' },
-        { q: 'Tenho pouco tempo e muitas disciplinas. Serve para mim?', a: 'As sessões duram entre 5 e 25 minutos e cabem entre aulas. Ao iniciares uma sessão, escolhes a duração para estudar a matéria organizada no mapa.' },
+        { q: 'Tenho pouco tempo e muitas disciplinas. Serve para mim?', a: 'As sessões são curtas e cabem entre aulas: ao iniciares uma sessão, escolhes quantos itens queres estudar. Uma sessão de 5 minutos já conta. Se tiveres um teste marcado, o plano de teste reparte a matéria pelos dias que faltam.' },
         FILES_FAQ.pt,
-        { q: 'Posso usar?', a: 'Sim. Abre na web ou instala a app no telemóvel.' },
-        { q: 'Quanto custa?', a: '4 € por mês. Vê como a MicroGrind se compara com outras apps de estudo na página Comparar.' },
+        { q: 'Posso usar?', a: 'Sim. Há um plano Grátis: abre na web ou instala a app no telemóvel.' },
+        { q: 'Quanto custa?', a: `Podes começar grátis. Os planos pagos começam em ${FROM_PT}/mês (Plus, no anual). Vê todos os preços na página Planos e como a MicroGrind se compara com outras apps de estudo na página Comparar.` },
       ],
     },
     install: {
@@ -293,14 +311,14 @@ export const HOME_COPY = {
       primary: 'Start studying',
       secondary: 'See how it works',
       support: 'For any course or subject, from primary school to higher education.',
-      formats: ['PDF', 'Word', 'Slides', 'Photos of your notes'],
+      formats: ['PDF', 'Word', 'Slides as PDF', 'Photos of your notes'],
       formatsLabel: 'Formats you can upload',
       deviceLabel: 'Animated demo of the app: upload your material, see the map and study in a short session.',
       stages: ['Upload', 'Map', 'Session'],
       stagesLabel: 'Demo steps',
       upload: { title: 'New subject', file: 'Biology_ch3.pdf', pages: '48 pages', status: 'Building your map…' },
       map: { title: 'Biology', chapter: 'Membrane', lessons: ['Diffusion', 'Osmosis', 'Active transport'] },
-      session: { title: 'Session · 10 min', topic: 'Membrane', steps: ['Mini-lesson', 'Flashcards', 'Quick quiz'], done: 'Session complete' },
+      session: { title: 'Session · 10 items', topic: 'Membrane', steps: ['Multiple choice', 'True or false', 'Flashcards'], done: 'Session complete' },
       chipScore: 'Grind Score',
       chipStreak: 'day streak',
       chipCard: 'Flashcard',
@@ -394,7 +412,7 @@ export const HOME_COPY = {
       steps: [
         { h3: 'Upload your material', p: 'Notes, textbook or slides. What you already use to study.' },
         { h3: 'See your Subject Map', p: 'The app organises your material into chapters, topics and concepts so you can see how they connect.' },
-        { h3: 'Study in short sessions', p: 'When you start a session, you choose its duration: between 5 and 25 minutes. Study the material organised in your Subject Map, in a short session that fits your day.' },
+        { h3: 'Study in short sessions', p: 'Work through your map lesson by lesson, or in a short session. When you start a session, you choose how many items to study: 5, 10, 20 or your own number. It fits your day.' },
       ],
       uploadCaption: 'Example of material',
       uploadItems: ['Notes', 'Textbook', 'Slides'],
@@ -403,18 +421,18 @@ export const HOME_COPY = {
       mapRoot: 'Energy',
       mapItems: ['Forms', 'Transformations', 'Conservation'],
       sessionCaption: 'Example of a session',
-      sessionGroup: 'Session length, in minutes',
-      minutes: 'minutes',
+      sessionGroup: 'How many items do you want to study?',
+      items: 'items',
+      presets: { 5: 'Lightning', 10: 'Warm-up', 20: 'Marathon' },
       stepOf: (n, total) => `Step ${n} of ${total}`,
       play: 'Run the session',
       replay: 'Run again',
       done: 'Session complete. One more day on your streak.',
       topicLabel: 'Topic',
-      stepsByMin: {
-        5: ['A short lesson on one concept', 'Recap'],
-        10: ['A short lesson on one concept', 'Cards on the topic', 'Recap'],
-        15: ['A short lesson on one concept', 'Cards on the topic', 'Questions about your document', 'Recap'],
-        25: ['A short lesson on one concept', 'Cards on the topic', 'Questions about your document', 'Link two concepts', 'Recap'],
+      stepsByItems: {
+        5: ['2 multiple-choice questions', '1 true or false', '1 card', '1 written answer, graded by AI from 0 to 5', 'Review your answers'],
+        10: ['4 multiple-choice questions', '2 true or false', '2 cards', '2 written answers, graded by AI from 0 to 5', 'Review your answers'],
+        20: ['8 multiple-choice questions', '4 true or false', '4 cards', '4 written answers, graded by AI from 0 to 5', 'Review your answers'],
       },
       defaultTopic: 'Membrane',
     },
@@ -425,7 +443,7 @@ export const HOME_COPY = {
       lede: 'Everything starts from your Subject Map. Try each mode here — these are demos with sample material.',
       tabsLabel: 'Study modes',
       tabs: [
-        { id: 'licoes', label: 'Lessons', blurb: 'Short lessons, one concept at a time.' },
+        { id: 'licoes', label: 'Lessons', blurb: 'Short map lessons, chapter by chapter.' },
         { id: 'flashcards', label: 'Flashcards', blurb: 'Cards built from your topics.' },
         { id: 'quiz', label: 'Quizzes', blurb: 'Questions about your document, with explanations.' },
         { id: 'exame', label: 'Mock exams', blurb: 'Practise against the clock, like on test day.' },
@@ -485,11 +503,25 @@ export const HOME_COPY = {
         you: 'You',
       },
     },
+    extras: {
+      id: 'more-features',
+      kicker: 'Also in the app',
+      h2: 'Your map adapts to you. Your studying, to your calendar.',
+      lede: 'What else the app does that does not fit in a demo.',
+      items: [
+        { icon: 'layers', h3: 'Chapters when you want them', p: 'Your map gets its full structure and first chapter straight away. You generate the others when you get there, and see the credits they will use first.' },
+        { icon: 'edit', h3: 'Adjust map', p: 'Write what you want to change: a simpler lesson, more examples, a different order, split or merge chapters. You see the changes before applying them and can undo for 7 days.' },
+        { icon: 'calendar', h3: 'Test plan', p: 'Give it the test date and the topics. AI builds a day-by-day plan, and the steps tick themselves off as you study.' },
+        { icon: 'target', h3: 'Weak points', p: 'What you actually got wrong in a subject, on the map, in sessions, exams and flashcards, in one place, so you review just that.' },
+        { icon: 'globe', h3: 'Study language', p: 'When you create a test plan, you choose the language you study the subject in. The map, lessons and questions come out in that language, even if your files are in another.' },
+        { icon: 'bell', h3: 'Study reminders', p: 'Get your reminder on your phone or computer, even with the app closed. On iPhone, add the app to your Home Screen first.' },
+      ],
+    },
     progress: {
       id: 'progress',
       kicker: 'Progress',
-      h2: 'Progress you can see. And classmates to challenge.',
-      lede: 'Your Grind Score, from 0 to 100, measures how consistently you have studied over the last 30 days. Your streak counts days in a row. Battles let you compete with classmates on the same material.',
+      h2: 'Progress you can see. And friends to challenge.',
+      lede: 'Your Grind Score, from 0 to 100, measures how consistently you have studied over the last 30 days. Your streak counts days in a row. In battles, you challenge friends to a test on the same material, and each of you plays when you can.',
       score: { title: 'Grind Score', note: 'MicroGrind rewards consistency, not cramming.', max: '/100', delta: '+4 this week', label: 'Locked In', breakdownTitle: 'What it is made of', breakdown: [['Consistency', 80], ['Daily Goals', 63], ['Streak', 60], ['Map lessons', 87]] },
       streak: { title: 'Streak', unit: 'day streak', note: 'Do today’s session to keep the flame going.', action: 'Do today’s session', doneLabel: 'Done today', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
       battle: {
@@ -502,7 +534,7 @@ export const HOME_COPY = {
         win: 'You won the battle!',
         lose: 'Sam took this one. Rematch?',
         tie: 'It’s a draw. One more?',
-        note: 'Challenge classmates to a battle on the same material.',
+        note: 'Challenge a friend, with their friend code, to a battle on the same material.',
       },
     },
     who: {
@@ -518,7 +550,7 @@ export const HOME_COPY = {
     cta: {
       kicker: 'Start today',
       h2: 'Short sessions. Real progress.',
-      p: 'Open MicroGrind on the web or install it on your phone. Upload your material and your first session starts from your map. All for €4 a month.',
+      p: `Open MicroGrind on the web or install it on your phone. Upload your material and your first session starts right after. Start for free; paid plans start at ${FROM_EN}/month.`,
       primary: 'Start studying',
       install: 'Install the app',
     },
@@ -529,10 +561,10 @@ export const HOME_COPY = {
       items: [
         { ...MIND_MAP_FAQ.en, negation: true },
         { q: 'Does it work with dense textbooks and slides that were rushed through?', a: 'That’s what we designed it for. The map separates the material into chapters, topics and concepts so you can see how it fits together before you study.' },
-        { q: 'I have little time and several subjects to study. Is this for me?', a: 'Sessions last between 5 and 25 minutes and fit between classes. When you start a session, you choose its duration to study the material organised in your Subject Map.' },
+        { q: 'I have little time and several subjects to study. Is this for me?', a: 'Sessions are short and fit between classes: when you start a session, you choose how many items to study. A 5-minute session already counts. If you have a test coming up, the test plan spreads the material over the days you have left.' },
         FILES_FAQ.en,
-        { q: 'Can I use it?', a: 'Yes. Open it on the web, or install it on your phone.' },
-        { q: 'How much does it cost?', a: '€4 a month. See how MicroGrind compares with other study apps on the Compare page.' },
+        { q: 'Can I use it?', a: 'Yes. There is a Free plan: open it on the web, or install it on your phone.' },
+        { q: 'How much does it cost?', a: `You can start for free. Paid plans start at ${FROM_EN}/month (Plus, billed yearly). See every price on the Pricing page and how MicroGrind compares with other study apps on the Compare page.` },
       ],
     },
     install: {
