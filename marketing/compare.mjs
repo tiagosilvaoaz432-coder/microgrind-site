@@ -7,10 +7,12 @@
  * The old /vs-* pages redirect here (see VS_REDIRECT_RULES in render.mjs).
  * MicroGrind's price comes from plans.mjs (cheapest paid plan per month: Plus on yearly billing).
  */
-import { cheapestMonthlyCents, euros } from './plans.mjs';
+import { PLAN_FACTS, cheapestMonthlyCents, euros } from './plans.mjs';
 
 const FROM_PT = euros(cheapestMonthlyCents(), 'pt');
 const FROM_EN = euros(cheapestMonthlyCents(), 'en');
+const PLUS_PT = euros(PLAN_FACTS.plus.monthlyCents, 'pt');
+const PLUS_EN = euros(PLAN_FACTS.plus.monthlyCents, 'en');
 export const COMPARE_COLUMNS = ['Quizlet', 'Knowunity', 'Gemini Notebook', 'Anki', 'Astra AI', 'MicroGrind'];
 
 export const comparePair = { pt: '/comparar/', en: '/en/compare/' };
@@ -141,7 +143,7 @@ const COPY = {
     ],
     faqTitle: 'Perguntas frequentes',
     faq: [
-      { q: 'Quanto custa a MicroGrind?', a: `Há um plano Grátis. Os planos pagos começam em ${FROM_PT}/mês (Plus, no anual) ou 4,99 € no mensal. Abre a app em microgrind.app, na web ou no telemóvel.` },
+      { q: 'Quanto custa a MicroGrind?', a: `Há um plano Grátis. Os planos pagos começam em ${FROM_PT}/mês (Plus, no anual) ou ${PLUS_PT} no mensal. Abre a app em microgrind.app, na web ou no telemóvel.` },
       {
         q: 'Os preços das outras apps são exatos?',
         a: 'São o plano pago mais barato que encontrámos em fontes públicas a 6 de novembro de 2026. Mudam com o país, a loja e as promoções, por isso confirma sempre no site oficial de cada app.',
@@ -176,7 +178,7 @@ const COPY = {
     ],
     faqTitle: 'Common questions',
     faq: [
-      { q: 'How much does MicroGrind cost?', a: `There is a Free plan. Paid plans start at ${FROM_EN}/month (Plus, billed yearly) or €4.99 billed monthly. Open the app at microgrind.app, on the web or on your phone.` },
+      { q: 'How much does MicroGrind cost?', a: `There is a Free plan. Paid plans start at ${FROM_EN}/month (Plus, billed yearly) or ${PLUS_EN} billed monthly. Open the app at microgrind.app, on the web or on your phone.` },
       {
         q: 'Are the other apps’ prices exact?',
         a: 'They are the cheapest paid plan we found in public sources on 6 November 2026. They change by country, store and promotion, so always check each app’s official site.',
