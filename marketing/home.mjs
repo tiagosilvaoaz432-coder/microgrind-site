@@ -40,6 +40,12 @@ const I = {
   play: svg('<path d="M7 4.5v15l12-7.5z"></path>'),
   spark: svg('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"></path>'),
   mail: svg('<rect x="3" y="5.5" width="18" height="13" rx="2"></rect><path d="m3.5 7 8.5 6 8.5-6"></path>'),
+  layers: svg('<path d="m12 3 9 4.5-9 4.5-9-4.5z"></path><path d="m3 12 9 4.5 9-4.5"></path><path d="m3 16.5 9 4.5 9-4.5"></path>'),
+  edit: svg('<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16z"></path><path d="m13.5 6.5 4 4"></path>'),
+  calendar: svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path><path d="m9 15 2 2 4-4"></path>'),
+  target: svg('<circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="4.5"></circle><circle cx="12" cy="12" r="1"></circle>'),
+  globe: svg('<circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17"></path><path d="M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5S9.6 5.9 12 3.5z"></path>'),
+  bell: svg('<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path>'),
 };
 
 function demoTag(text) {
@@ -94,7 +100,7 @@ ${deviceChapter}
 </div>
 <div class="dv-screen" data-screen="2">
 <p class="dv-title">${esc(h.session.title)}</p>
-<div class="dv-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50"></circle><circle class="dv-ring-fill" cx="60" cy="60" r="50"></circle></svg><span class="dv-ring-num"><b data-dv-clock>10:00</b><small>${esc(h.session.topic)}</small></span></div>
+<div class="dv-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50"></circle><circle class="dv-ring-fill" cx="60" cy="60" r="50"></circle></svg><span class="dv-ring-num"><b data-dv-clock data-total="10">0/10</b><small>${esc(h.session.topic)}</small></span></div>
 <ol class="dv-steps">${steps}</ol>
 <p class="dv-done">${I.spark}<span>${esc(h.session.done)}</span></p>
 </div>
@@ -297,33 +303,32 @@ function mapDemo(c) {
   return `<div class="step-demo sd-map" data-step-demo="map"><p class="session-caption">${esc(h.mapCaption)}</p>${card}</div>`;
 }
 
+/** Item presets of the app's session setup (components/session/SessionSetupScreen.tsx, ITEM_COUNT_PRESETS). */
+const SESSION_ITEMS = [5, 10, 20];
+const SESSION_DEFAULT = 10;
+
 function sessionDemo(c) {
   const h = c.how;
-  const mins = [5, 10, 15, 25];
-  const radios = mins
-    .map(
-      (m) =>
-        `<button type="button" role="radio" data-min="${m}" aria-checked="${m === 15}" tabindex="${m === 15 ? 0 : -1}">${m}<span class="visually-hidden"> ${esc(h.minutes)}</span></button>`
-    )
-    .join('');
-  const lists = mins
-    .map((m) => {
-      const steps = h.stepsByMin[m];
-      const items = steps
-        .map((s, i) => `<li><span class="session-index" aria-hidden="true">${i + 1}</span><span>${esc(s)}</span></li>`)
-        .join('');
-      const hidden = m === 15 ? '' : ' hidden';
-      return `<ol class="session-steps" data-steps="${m}"${hidden}>${items}</ol>`;
-    })
-    .join('');
-  const total = h.stepsByMin[15].length;
-  return `<div class="session" data-session data-min="15" data-step-label="${esc(h.stepOf('{n}', '{t}'))}">
+  const radios = SESSION_ITEMS.map(
+    (n) =>
+      `<button type="button" role="radio" data-items="${n}" data-name="${esc(h.presets[n])}" aria-checked="${n === SESSION_DEFAULT}" tabindex="${n === SESSION_DEFAULT ? 0 : -1}">${n}<span class="visually-hidden"> ${esc(h.items)}, ${esc(h.presets[n])}</span></button>`
+  ).join('');
+  const lists = SESSION_ITEMS.map((n) => {
+    const items = h.stepsByItems[n]
+      .map((step, i) => `<li><span class="session-index" aria-hidden="true">${i + 1}</span><span>${esc(step)}</span></li>`)
+      .join('');
+    const hidden = n === SESSION_DEFAULT ? '' : ' hidden';
+    return `<ol class="session-steps" data-steps="${n}"${hidden}>${items}</ol>`;
+  }).join('');
+  const total = h.stepsByItems[SESSION_DEFAULT].length;
+  return `<div class="session" data-session data-items="${SESSION_DEFAULT}" data-step-label="${esc(h.stepOf('{n}', '{t}'))}">
 <p class="session-caption">${esc(h.sessionCaption)}</p>
-<div class="session-times" role="radiogroup" aria-label="${esc(h.sessionGroup)}"><span class="session-times-pill" aria-hidden="true"></span>${radios}</div>
+<p class="session-ask" id="session-ask">${esc(h.sessionGroup)}</p>
+<div class="session-times" role="radiogroup" aria-labelledby="session-ask"><span class="session-times-pill" aria-hidden="true"></span>${radios}</div>
 <div class="session-board">
-<div class="session-clock" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"></circle><circle class="session-ring" cx="60" cy="60" r="52"></circle></svg><p><b data-session-num>15</b><small>min</small></p></div>
+<div class="session-clock" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"></circle><circle class="session-ring" cx="60" cy="60" r="52"></circle></svg><p><b data-session-num>${SESSION_DEFAULT}</b><small>${esc(h.items)}</small></p></div>
 <div class="session-main">
-<p class="session-topic">${esc(h.topicLabel)}: <b data-session-topic>${esc(h.defaultTopic)}</b></p>
+<p class="session-topic">${esc(h.topicLabel)}: <b data-session-topic>${esc(h.defaultTopic)}</b> · <span data-session-name>${esc(h.presets[SESSION_DEFAULT])}</span></p>
 <p class="session-progress" data-session-progress aria-live="polite">${esc(h.stepOf(0, total))}</p>
 <div class="session-bar" aria-hidden="true"><span data-session-fill></span></div>
 ${lists}
@@ -453,6 +458,30 @@ ${kicker('04', f.kicker)}
 </section>`;
 }
 
+/* ---------- Also in the app: features without a demo ---------- */
+
+function extras(c) {
+  const x = c.extras;
+  const cards = x.items
+    .map(
+      (item, i) =>
+        `<li class="mx-card mg-glass" data-spotlight data-reveal="rise" style="--d:${i * 60}ms"><div class="pg-head"><span class="pg-icon">${I[item.icon]}</span><h3>${esc(item.h3)}</h3></div><p class="pg-note">${esc(item.p)}</p></li>`
+    )
+    .join('');
+  return `<section class="mg-section mg-extras-sec" id="${x.id}" aria-labelledby="${x.id}-h">
+<div class="wrap">
+<div class="mg-split-head">
+<div>
+${kicker('05', x.kicker)}
+<h2 id="${x.id}-h" class="mg-h2" data-reveal="wipe">${esc(x.h2)}</h2>
+</div>
+<p class="mg-lede" data-reveal="rise">${esc(x.lede)}</p>
+</div>
+<ul class="mg-extras">${cards}</ul>
+</div>
+</section>`;
+}
+
 /* ---------- Progress: Grind Score, streak, battles ---------- */
 
 function progress(c) {
@@ -468,7 +497,7 @@ function progress(c) {
 <div class="wrap">
 <div class="mg-split-head">
 <div>
-${kicker('05', p.kicker)}
+${kicker('06', p.kicker)}
 <h2 id="${p.id}-h" class="mg-h2" data-reveal="wipe">${esc(p.h2)}</h2>
 </div>
 <p class="mg-lede" data-reveal="rise">${esc(p.lede)}</p>
@@ -512,7 +541,7 @@ function who(c, locale) {
   return `<section class="mg-section mg-who" id="${w.id}" aria-label="${esc(w.kicker)}">
 <div class="wrap mg-who-grid">
 <div class="mg-who-col" data-reveal="rise">
-${kicker('06', w.kicker)}
+${kicker('07', w.kicker)}
 <aside class="who"><div class="who-copy"><h3>${esc(w.h3)}</h3><p>${esc(w.p)}</p></div>${renderWhoLevels(locale)}</aside>
 </div>
 <div class="principle mg-principle mg-glass" data-spotlight data-reveal="scale">
@@ -617,6 +646,7 @@ ${problem(c)}
 ${mapExplorer(c)}
 ${how(c)}
 ${features(c, locale)}
+${extras(c)}
 ${progress(c)}
 ${who(c, locale)}
 ${cta(c)}

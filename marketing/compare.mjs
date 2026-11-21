@@ -5,7 +5,12 @@
  * every MicroGrind row is ✓, the community-library row was dropped, and a price row
  * shows each app's cheapest paid plan from public sources (they vary by country and store).
  * The old /vs-* pages redirect here (see VS_REDIRECT_RULES in render.mjs).
+ * MicroGrind's price comes from plans.mjs (cheapest paid plan per month: Plus on yearly billing).
  */
+import { cheapestMonthlyCents, euros } from './plans.mjs';
+
+const FROM_PT = euros(cheapestMonthlyCents(), 'pt');
+const FROM_EN = euros(cheapestMonthlyCents(), 'en');
 export const COMPARE_COLUMNS = ['Quizlet', 'Knowunity', 'Gemini Notebook', 'Anki', 'Astra AI', 'MicroGrind'];
 
 export const comparePair = { pt: '/comparar/', en: '/en/compare/' };
@@ -24,8 +29,8 @@ const ROWS = [
     marks: [N, N, N, N, N, Y],
   },
   {
-    pt: 'Sessões curtas de 5 a 25 minutos, ligadas ao mapa',
-    en: 'Short 5–25 minute sessions tied to the map',
+    pt: 'Sessões curtas ligadas ao mapa',
+    en: 'Short sessions tied to the map',
     marks: [N, N, N, N, N, Y],
   },
   {
@@ -66,8 +71,8 @@ const ROWS = [
 ];
 
 const PRICES = {
-  pt: ['≈ 8 €/mês (Plus)', '5,99 €/mês (Lite)', '4,99 €/mês (Google AI Plus)', 'Grátis · iPhone: 29,99 € (pagamento único)', '≈ 24 €/mês (Plus)', 'Grátis · pago desde 4 €/mês'],
-  en: ['≈ €8/month (Plus)', '€5.99/month (Lite)', '€4.99/month (Google AI Plus)', 'Free · iPhone: €29.99 (one-off)', '≈ €24/month (Plus)', 'Free · paid from €4/month'],
+  pt: ['≈ 8 €/mês (Plus)', '5,99 €/mês (Lite)', '4,99 €/mês (Google AI Plus)', 'Grátis · iPhone: 29,99 € (pagamento único)', '≈ 24 €/mês (Plus)', `Grátis · pago desde ${FROM_PT}/mês`],
+  en: ['≈ €8/month (Plus)', '€5.99/month (Lite)', '€4.99/month (Google AI Plus)', 'Free · iPhone: €29.99 (one-off)', '≈ €24/month (Plus)', `Free · paid from ${FROM_EN}/month`],
 };
 
 function mark(value, locale) {
@@ -125,18 +130,18 @@ const COPY = {
       'MicroGrind, Quizlet, Knowunity, Gemini Notebook, Anki e Astra AI lado a lado: o que cada app faz e quanto custa o plano pago mais barato.',
     kicker: 'Comparar',
     h1: 'Comparar apps de estudo',
-    lede: 'Seis apps de estudo lado a lado: o que cada uma faz e quanto custa o plano pago mais barato. A MicroGrind junta mapa da matéria, sessões curtas, flashcards, quizzes e simulações de exame, por 4 € por mês.',
+    lede: `Seis apps de estudo lado a lado: o que cada uma faz e quanto custa o plano pago mais barato. A MicroGrind junta mapa da matéria, sessões curtas, flashcards, quizzes e simulações de exame. Começa grátis; os planos pagos começam em ${FROM_PT}/mês.`,
     tableTitle: 'Tabela de comparação',
     whyTitle: 'Porque escolher a MicroGrind',
     why: [
       [{ strong: true, text: 'Primeiro o mapa.' }, { text: ' Vês a disciplina inteira, capítulo a capítulo, antes de estudar a primeira página.' }],
-      [{ strong: true, text: 'Depois, sessões curtas.' }, { text: ' Escolhes entre 5 e 25 minutos e estudas a matéria organizada no mapa.' }],
+      [{ strong: true, text: 'Depois, sessões curtas.' }, { text: ' Escolhes quantos itens queres estudar e trabalhas a matéria organizada no mapa.' }],
       [{ strong: true, text: 'Tudo no mesmo sítio.' }, { text: ' Lições, flashcards, quizzes, repetição espaçada e simulações de exame, a partir do teu material.' }],
-      [{ strong: true, text: '4 € por mês.' }, { text: ' Na web e no telemóvel.' }],
+      [{ strong: true, text: 'Grátis para começar.' }, { text: ` Planos pagos desde ${FROM_PT}/mês, na web e no telemóvel.` }],
     ],
     faqTitle: 'Perguntas frequentes',
     faq: [
-      { q: 'Quanto custa a MicroGrind?', a: '4 € por mês. Abre a app em microgrind.app, na web ou no telemóvel.' },
+      { q: 'Quanto custa a MicroGrind?', a: `Há um plano Grátis. Os planos pagos começam em ${FROM_PT}/mês (Plus, no anual) ou 4,99 € no mensal. Abre a app em microgrind.app, na web ou no telemóvel.` },
       {
         q: 'Os preços das outras apps são exatos?',
         a: 'São o plano pago mais barato que encontrámos em fontes públicas a 6 de novembro de 2026. Mudam com o país, a loja e as promoções, por isso confirma sempre no site oficial de cada app.',
@@ -160,18 +165,18 @@ const COPY = {
       'MicroGrind, Quizlet, Knowunity, Gemini Notebook, Anki and Astra AI side by side: what each app does and what its cheapest paid plan costs.',
     kicker: 'Compare',
     h1: 'Compare study apps',
-    lede: 'Six study apps side by side: what each one does and what its cheapest paid plan costs. MicroGrind brings together a Subject Map, short sessions, flashcards, quizzes and mock exams for €4 a month.',
+    lede: `Six study apps side by side: what each one does and what its cheapest paid plan costs. MicroGrind brings together a Subject Map, short sessions, flashcards, quizzes and mock exams. Start for free; paid plans start at ${FROM_EN}/month.`,
     tableTitle: 'Comparison table',
     whyTitle: 'Why MicroGrind',
     why: [
       [{ strong: true, text: 'Map first.' }, { text: ' See the whole subject, chapter by chapter, before you study the first page.' }],
-      [{ strong: true, text: 'Then short sessions.' }, { text: ' Pick 5 to 25 minutes and study the material organised in your map.' }],
+      [{ strong: true, text: 'Then short sessions.' }, { text: ' Choose how many items to study and work through the material organised in your map.' }],
       [{ strong: true, text: 'All in one place.' }, { text: ' Lessons, flashcards, quizzes, spaced repetition and mock exams, built from your own material.' }],
-      [{ strong: true, text: '€4 a month.' }, { text: ' On the web and on your phone.' }],
+      [{ strong: true, text: 'Free to start.' }, { text: ` Paid plans from ${FROM_EN}/month, on the web and on your phone.` }],
     ],
     faqTitle: 'Common questions',
     faq: [
-      { q: 'How much does MicroGrind cost?', a: '€4 a month. Open the app at microgrind.app, on the web or on your phone.' },
+      { q: 'How much does MicroGrind cost?', a: `There is a Free plan. Paid plans start at ${FROM_EN}/month (Plus, billed yearly) or €4.99 billed monthly. Open the app at microgrind.app, on the web or on your phone.` },
       {
         q: 'Are the other apps’ prices exact?',
         a: 'They are the cheapest paid plan we found in public sources on 6 November 2026. They change by country, store and promotion, so always check each app’s official site.',

@@ -452,7 +452,7 @@ main:focus { outline: none; }
 html:not(.js) .sd-files li { color: var(--ink); }
 
 /* Session demo */
-.session-times { position: relative; display: inline-grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); box-shadow: 0 0 0 1px var(--line) inset; }
+.session-times { position: relative; display: inline-grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); box-shadow: 0 0 0 1px var(--line) inset; }
 .session-times button { position: relative; z-index: 1; min-width: 58px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--ink-2); font: inherit; font-family: var(--mono); font-weight: 600; cursor: pointer; transition: color 0.3s; }
 .session-times button[aria-checked='true'] { color: #0b0e14; }
 .session-times-pill { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 0; width: var(--tw, 58px); transform: translateX(var(--tx, 4px)); border-radius: 10px; background: var(--ink); box-shadow: 0 6px 18px -6px rgba(255, 255, 255, 0.5); transition: transform 0.5s var(--ease-spring), width 0.4s var(--ease); }
@@ -2456,3 +2456,13 @@ html.ig-lock {
   .pp-actions .btn { flex: 1 1 auto; }
 }
 @media (prefers-reduced-motion: reduce) { .pp-dialog[open], .mg-drop-menu:not([hidden]) { animation: none; } }
+
+/* ---------- Session demo: item presets ---------- */
+.session-ask { margin: 0 0 10px; color: var(--ink-2); font-size: 0.92rem; }
+
+/* ---------- Also in the app (features without a demo) ---------- */
+.mg-extras { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
+.mx-card { padding: clamp(20px, 2.6vw, 28px); }
+.mx-card .pg-head { margin-bottom: 0; }
+.mx-card .pg-head h3 { font-size: 1.15rem; }
+.mx-card .pg-note { margin-top: 14px; }
