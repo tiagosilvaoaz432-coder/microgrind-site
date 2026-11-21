@@ -447,7 +447,7 @@ ${[...NICHE_REDIRECT_RULES, ...VS_REDIRECT_RULES].map(([source, destination, cod
  *   on the pages.dev copies of the site (production alias, previews and per-deploy URLs).
  * - A year of immutable cache for files whose URL carries a content hash (assets.mjs, ?v=...).
  */
-export const IMMUTABLE_PATHS = ['/mg.css', '/mg.js', '/marketing.css', '/motion.css', '/practice.css', '/practice.js', '/fonts/*'];
+export const IMMUTABLE_PATHS = ['/mg.css', '/mg.js', '/mg-attr.js', '/marketing.css', '/motion.css', '/practice.css', '/practice.js', '/fonts/*'];
 
 export function renderHeaders() {
   const immutable = IMMUTABLE_PATHS.map((path) => `${path}\n  Cache-Control: public, max-age=31536000, immutable`).join('\n\n');

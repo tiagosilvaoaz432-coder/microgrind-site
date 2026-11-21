@@ -12,6 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { bundleMgAttr } from './bundle-mg-attr.mjs';
 import { minifyCss } from './minify-css.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -42,12 +43,14 @@ const SOURCES = {
   'practice.css': { file: 'practice.css', css: true },
   'mg.js': { file: 'mg.js' },
   'practice.js': { file: 'practice.js' },
+  // Attribution + cookieless visit counter (mg-attr-boot.mjs), bundled without dependencies.
+  'mg-attr.js': { build: bundleMgAttr },
 };
 
 /** The bytes written to site-static/<name>. CSS is minified and points at the versioned fonts. */
 export const ASSETS = Object.fromEntries(
-  Object.entries(SOURCES).map(([name, { file, css }]) => {
-    const source = readFileSync(join(here, file), 'utf8');
+  Object.entries(SOURCES).map(([name, { file, css, build }]) => {
+    const source = build ? build() : readFileSync(join(here, file), 'utf8');
     const content = css ? `${minifyCss(withVersionedFonts(source))}\n` : source;
     return [name, { content, version: contentVersion(content) }];
   })

@@ -63,8 +63,10 @@ const UI = {
 };
 
 /**
- * Fonts, design-system stylesheet and script, all with content-hash versions (assets.mjs).
+ * Fonts, design-system stylesheet and scripts, all with content-hash versions (assets.mjs).
  * `extraCss` names older page stylesheets (e.g. 'marketing.css'), loaded first.
+ * mg-attr.js (attribution + cookieless visit counter) comes right after mg.js; the publish step puts
+ * window.__MG_HIT__ in front of it (scripts/inject-web-hit-config.mjs looks for this tag).
  */
 export function headAssets(extraCss = []) {
   return [
@@ -73,6 +75,7 @@ export function headAssets(extraCss = []) {
     ...extraCss.map((name) => `<link rel="stylesheet" href="${assetUrl(name.replace(/^\//, ''))}">`),
     `<link rel="stylesheet" href="${assetUrl('mg.css')}">`,
     `<script src="${assetUrl('mg.js')}" defer></script>`,
+    `<script type="module" src="${assetUrl('mg-attr.js')}"></script>`,
   ].join('\n');
 }
 
@@ -180,11 +183,12 @@ export function renderFooter({ locale, onHome = false }) {
 /** Install dialog with the full guide (install.mjs). Every .js-install button opens it (mg.js). */
 export { renderInstallDialog } from './install.mjs';
 
-const COOKIES = {
+/** Banner copy. label/text/policy/accept/decline match the app's cookieBanner (locales/<pt-PT|en>/common.json; check-app-parity.mjs). */
+export const COOKIES = {
   pt: {
     footer: 'Cookies',
     label: 'Cookies',
-    text: 'Usamos cookies de análise (Google Analytics) e o pixel de anúncios da OpenAI para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares.',
+    text: 'Usamos cookies de análise (Google Analytics) e o pixel dos anúncios no ChatGPT para perceber como o site é usado e medir os nossos anúncios. Só os ativamos se aceitares.',
     policy: 'Política de privacidade',
     accept: 'Aceitar',
     decline: 'Recusar',
@@ -192,7 +196,7 @@ const COOKIES = {
   en: {
     footer: 'Cookies',
     label: 'Cookies',
-    text: 'We use analytics cookies (Google Analytics) and OpenAI’s ad pixel to understand how the site is used and measure our ads. They are only turned on if you accept.',
+    text: 'We use analytics cookies (Google Analytics) and the ChatGPT ads pixel to understand how the site is used and measure our ads. They are only turned on if you accept.',
     policy: 'Privacy policy',
     accept: 'Accept',
     decline: 'Decline',

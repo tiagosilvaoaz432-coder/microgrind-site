@@ -1,6 +1,6 @@
 /**
  * Writes the public site into site-static/ (or another directory): homepage, content pages,
- * design-system assets, sitemap, robots, redirects, headers and the 404 page. Does not publish.
+ * design-system assets (mg.css, mg.js, mg-attr.js), sitemap, robots, redirects, headers and the 404 page. Does not publish.
  * The app export in dist/ stays separate and still has no root index.html.
  */
 import { cpSync, mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';

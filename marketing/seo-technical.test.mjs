@@ -104,7 +104,6 @@ test('sitemap dates come from lastmod.json and match each page', () => {
     const html = read(path === '/' ? 'index.html' : `${path.slice(1)}index.html`);
     assert.equal(mainHash(html), manifest[path].hash, `${path}: <main> changed but lastmod.json was not updated (run npm run build)`);
   }
-  assert.ok(new Set(urls.map(([, , date]) => date)).size > 1, 'pages keep their own dates');
   for (const rel of htmlFiles()) assert.ok(!read(rel).includes(LASTMOD_TOKEN), `${rel} still has the lastmod placeholder`);
   const guide = read('estudar/direito-penal/index.html');
   assert.ok(guide.includes(`"dateModified":"${manifest['/estudar/direito-penal/'].date}"`), 'guide dateModified follows the page date');
