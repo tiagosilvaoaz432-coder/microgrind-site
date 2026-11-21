@@ -2,11 +2,13 @@
  * Privacy policy pages, rendered with the same template as the other content pages.
  * Updated 6 Nov 2026: Google Analytics 4 runs only after cookie consent (lib/ga4.ts + banner in mg.js).
  * Updated 6 Nov 2026: the OpenAI ads pixel (lib/oaiq.ts) loads with the same consent.
+ * Updated 21 Nov 2026: the tab keeps the visit's source in sessionStorage (mg-attr) and every page
+ * counts one cookieless visit per day and source (mg-attr.js → public.record_web_hit), without consent.
  * Keep this text in line with what the site actually does.
  */
 const UPDATED = {
-  pt: '<p class="updated">Atualizado a <time datetime="2026-11-06">6 de novembro de 2026</time>.</p>',
-  en: '<p class="updated">Last updated <time datetime="2026-11-06">6 November 2026</time>.</p>',
+  pt: '<p class="updated">Atualizado a <time datetime="2026-11-21">21 de novembro de 2026</time>.</p>',
+  en: '<p class="updated">Last updated <time datetime="2026-11-21">21 November 2026</time>.</p>',
 };
 
 const mail = { href: 'mailto:ola@microgrind.app', text: 'ola@microgrind.app' };
@@ -50,7 +52,7 @@ export const legalPages = [
         items: [
           [
             { strong: true, text: 'Necessários.' },
-            { text: ' Guardamos no teu browser a tua escolha sobre cookies (mg-consent) e se fechaste o aviso para instalar a app. Não te identificam e não precisam de consentimento.' },
+            { text: ' Guardamos no teu browser a tua escolha sobre cookies (mg-consent) e se fechaste o aviso para instalar a app. No mesmo separador, guardamos também a origem da visita (por exemplo chatgpt), só o domínio de onde vieste e a página de entrada, até fechares o separador, para saber de onde veio um registo. Contamos visitas por dia e por origem, sem cookies, sem identificadores e sem o endereço IP. Nada disto te identifica e não precisa de consentimento.' },
           ],
           [
             { strong: true, text: 'Análise (Google Analytics).' },
@@ -125,7 +127,7 @@ export const legalPages = [
         items: [
           [
             { strong: true, text: 'Necessary.' },
-            { text: ' We store your cookie choice (mg-consent) and whether you closed the install prompt in your browser. They do not identify you and need no consent.' },
+            { text: ' We store your cookie choice (mg-consent) and whether you closed the install prompt in your browser. In the same tab we also keep where the visit came from (for example chatgpt), the referring domain only, and the landing page, until you close the tab, so a signup can be attributed. We count visits per day and per source, with no cookies, no identifiers and no IP address. None of this identifies you and it needs no consent.' },
           ],
           [
             { strong: true, text: 'Analytics (Google Analytics).' },

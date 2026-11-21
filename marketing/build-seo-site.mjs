@@ -1,12 +1,13 @@
 /**
  * Writes the public site into site-static/ (or another directory): homepage, content pages,
- * design-system assets, sitemap, robots and redirects. Does not publish.
+ * design-system assets (mg.css, mg.js, mg-attr.js), sitemap, robots and redirects. Does not publish.
  * The app export in dist/ stays separate and still has no root index.html.
  */
 import { cpSync, mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { bundleMgAttr } from './bundle-mg-attr.mjs';
 import { RETIRED_VS_SLUGS } from './compare.mjs';
 import { ORIGIN, pages } from './content.mjs';
 import { renderHome } from './home.mjs';
@@ -63,6 +64,8 @@ export function buildSeoSite(outDir) {
   cpSync(join(here, 'motion.css'), join(outDir, 'motion.css'));
   cpSync(join(here, 'mg.css'), join(outDir, 'mg.css'));
   cpSync(join(here, 'mg.js'), join(outDir, 'mg.js'));
+  // Attribution + cookieless visit counter (mg-attr-boot.mjs). No secrets: see scripts/inject-web-hit-config.mjs.
+  writeFileSync(join(outDir, 'mg-attr.js'), bundleMgAttr());
   cpSync(join(here, 'practice.css'), join(outDir, 'practice.css'));
   cpSync(join(here, 'practice.js'), join(outDir, 'practice.js'));
   cpSync(join(here, 'fonts'), join(outDir, 'fonts'), { recursive: true });
