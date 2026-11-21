@@ -16,11 +16,12 @@ import { registerHooks } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { EXAM_SIMULATIONS, TUTOR_AVERAGE_MESSAGE_TOKENS, TUTOR_PLAN_TOKEN_WINDOWS } from '../lib/app-limits.mjs';
+import { EXAM_SIMULATIONS, MAP_CREDITS_PER_1000_CHARACTERS, PLAN_CREDITS } from '../lib/app-limits.mjs';
 import * as siteAttr from '../lib/attribution.mjs';
 import { GA4_CONSENT_KEY, GA4_MEASUREMENT_ID_PRODUCTION, OAIQ_PIXEL_ID } from '../lib/ga4.mjs';
 import * as siteHit from '../lib/web-hit.mjs';
 import { COOKIES } from '../marketing/chrome.mjs';
+import { planCreditsFromMigrations } from './plan-credits.mjs';
 
 const appRoot = process.argv[2];
 if (!appRoot) {
@@ -49,13 +50,22 @@ function appFile(rel) {
 }
 const load = (rel) => import(pathToFileURL(appFile(rel)).href);
 
-const budget = await load('lib/tutor-message-budget.ts');
 const exams = await load('supabase/functions/_shared/ai-exam/limits.ts');
 const ga4 = await load('lib/ga4.ts');
 const oaiq = await load('lib/oaiq.ts');
 
-assert.equal(TUTOR_AVERAGE_MESSAGE_TOKENS, budget.TUTOR_AVERAGE_MESSAGE_TOKENS, 'tutor message divisor');
-assert.deepEqual(TUTOR_PLAN_TOKEN_WINDOWS, { ...budget.TUTOR_PLAN_TOKEN_WINDOWS }, 'tutor token windows');
+const migrationsDir = path.resolve(appRoot, 'supabase/migrations');
+const migrations = readdirSync(migrationsDir)
+  .filter((name) => name.endsWith('.sql'))
+  .sort()
+  .map((name) => ({ name, sql: readFileSync(path.join(migrationsDir, name), 'utf8') }));
+assert.deepEqual(PLAN_CREDITS, planCreditsFromMigrations(migrations), 'AI credits per plan (public.plans.credit_quota)');
+
+const uploadLimit = readFileSync(path.resolve(appRoot, 'lib/upload-limit.ts'), 'utf8');
+const mapRate = uploadLimit.match(/export function mapCredits\([^)]*\)[^{]*\{[\s\S]*?Math\.ceil\(\(characters \* (\d+)\) \/ 1000\)/);
+assert.ok(mapRate, 'mapCredits() not found in lib/upload-limit.ts');
+assert.equal(MAP_CREDITS_PER_1000_CHARACTERS, Number(mapRate[1]), 'map credits per 1 000 characters');
+
 assert.deepEqual(
   EXAM_SIMULATIONS,
   Object.fromEntries(Object.entries(exams.EXAM_SIMULATION_ALLOWANCE).map(([code, v]) => [code, v.simulations])),
@@ -344,15 +354,14 @@ for (const [group, pathname] of [['site', '/'], ['mapa', ''], ['app', '/app/x']]
 }
 
 // ---------- Database rules (latest definition of each function in supabase/migrations) ----------
-const migrationsDir = appFile('supabase/migrations');
-const migrations = readdirSync(migrationsDir)
+const migrationSql = readdirSync(appFile('supabase/migrations'))
   .filter((name) => name.endsWith('.sql'))
   .sort()
-  .map((name) => readFileSync(path.join(migrationsDir, name), 'utf8'));
+  .map((name) => readFileSync(path.join(appFile('supabase/migrations'), name), 'utf8'));
 function latestFunction(qualified) {
   const re = new RegExp(`create\\s+or\\s+replace\\s+function\\s+${qualified.replace('.', '\\.')}\\s*\\(([\\s\\S]*?)\\$\\$\\s*;`, 'gi');
   let body = null;
-  for (const sql of migrations) for (const match of sql.matchAll(re)) body = match[1];
+  for (const sql of migrationSql) for (const match of sql.matchAll(re)) body = match[1];
   assert.ok(body, `no migration defines ${qualified}`);
   return body;
 }

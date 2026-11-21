@@ -307,13 +307,16 @@
     function runClock() {
       window.clearInterval(clockTimer);
       if (!clock) return;
-      var left = 600;
-      clock.textContent = '10:00';
+      // Counts the session's items, like the app's progress (item n of total).
+      var total = Number(clock.getAttribute('data-total')) || 10;
+      var done = 0;
+      clock.textContent = (reduced() ? total : 0) + '/' + total;
       if (reduced()) return;
       clockTimer = window.setInterval(function () {
-        left = Math.max(0, left - 7);
-        clock.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
-      }, 100);
+        done = Math.min(total, done + 1);
+        clock.textContent = done + '/' + total;
+        if (done === total) window.clearInterval(clockTimer);
+      }, 400);
     }
     function showStage(i, fromUser) {
       stage = i;
@@ -418,9 +421,11 @@
     var playBtn = $('[data-session-play]', session);
     var playLabel = playBtn ? $('span', playBtn) : null;
     var doneMsg = $('[data-session-done]', session);
+    var nameEl = $('[data-session-name]', session);
     var label = session.getAttribute('data-step-label') || '{n}/{t}';
     var runTimer = 0;
-    var current = 15;
+    var current = Number(session.getAttribute('data-items')) || 10;
+    var maxItems = radios.reduce(function (m, r) { return Math.max(m, Number(r.getAttribute('data-items'))); }, 1);
 
     function list() { return $('[data-steps="' + current + '"]', session); }
     function stepText(n, t) { return label.replace('{n}', n).replace('{t}', t); }
@@ -447,29 +452,30 @@
       if (playLabel) playLabel.textContent = playBtn.getAttribute('data-label-play');
       paint(0);
     }
-    function choose(min, focus) {
-      current = min;
-      session.setAttribute('data-min', String(min));
+    function choose(n, focus) {
+      current = n;
+      session.setAttribute('data-items', String(n));
       radios.forEach(function (r) {
-        var on = Number(r.getAttribute('data-min')) === min;
+        var on = Number(r.getAttribute('data-items')) === n;
+        if (on && nameEl) nameEl.textContent = r.getAttribute('data-name') || '';
         r.setAttribute('aria-checked', String(on));
         r.tabIndex = on ? 0 : -1;
         if (on && focus) r.focus();
       });
-      $$('[data-steps]', session).forEach(function (ol) { ol.hidden = Number(ol.getAttribute('data-steps')) !== min; });
-      num.textContent = String(min);
-      session.style.setProperty('--ring', (min / 25).toFixed(3));
+      $$('[data-steps]', session).forEach(function (ol) { ol.hidden = Number(ol.getAttribute('data-steps')) !== n; });
+      num.textContent = String(n);
+      session.style.setProperty('--ring', (n / maxItems).toFixed(3));
       movePill();
       reset();
     }
     radios.forEach(function (r, i) {
-      r.addEventListener('click', function () { choose(Number(r.getAttribute('data-min')), false); });
+      r.addEventListener('click', function () { choose(Number(r.getAttribute('data-items')), false); });
       r.addEventListener('keydown', function (e) {
         var d = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ? -1 : 0;
         if (!d) return;
         e.preventDefault();
         var n = (i + d + radios.length) % radios.length;
-        choose(Number(radios[n].getAttribute('data-min')), true);
+        choose(Number(radios[n].getAttribute('data-items')), true);
       });
     });
     function play() {
@@ -494,7 +500,7 @@
     }
     if (playBtn) playBtn.addEventListener('click', play);
     window.addEventListener('resize', movePill);
-    choose(15, false);
+    choose(current, false);
     sessionApi = {
       setTopic: function (name) { if (topicEl) topicEl.textContent = name; reset(); },
       el: session,

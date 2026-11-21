@@ -10,9 +10,9 @@ import { COMPARE_COLUMNS, RETIRED_VS_SLUGS, comparePages, comparePair } from './
 import { buildSeoSite } from './build-seo-site.mjs';
 import { NICHE_REDIRECT_RULES, VS_REDIRECT_RULES, escapeHtml, renderRedirects, withGa4Head } from './render.mjs';
 import { collidingAppFiles } from '../scripts/check-site-static.mjs';
-import { EXAM_SIMULATIONS, TUTOR_AVERAGE_MESSAGE_TOKENS as APP_AVG_TOKENS, TUTOR_PLAN_TOKEN_WINDOWS } from '../lib/app-limits.mjs';
+import { EXAM_SIMULATIONS, PLAN_CREDITS } from '../lib/app-limits.mjs';
 import { FEATURE_ANCHORS } from './anchors.mjs';
-import { PLAN_FACTS, TUTOR_AVERAGE_MESSAGE_TOKENS, pricingPair } from './plans.mjs';
+import { PLAN_FACTS, cheapestMonthlyCents, creditsPerMapPage, euros, mapPages, planCard, pricingPair } from './plans.mjs';
 import { REGISTER_URL } from './content.mjs';
 import { practicePath } from './practice-page.mjs';
 import { PRACTICE_HUB, practicePages } from './practice/index.mjs';
@@ -154,9 +154,12 @@ try {
     assert.ok(types.includes('FAQPage'), rel);
     assert.equal(graph.some((node) => node.sameAs), false, rel);
     const app = graph.find((node) => (Array.isArray(node['@type']) ? node['@type'] : [node['@type']]).includes('SoftwareApplication'));
-    assert.equal(app.offers.price, '4.00', `${rel} app price`);
+    assert.equal(app.offers['@type'], 'AggregateOffer', `${rel} app offers`);
+    assert.equal(app.offers.lowPrice, '0', `${rel} there is a Free plan`);
+    assert.equal(app.offers.highPrice, '24.99', `${rel} dearest monthly plan`);
+    assert.equal(app.offers.offerCount, 5, rel);
     assert.equal(app.offers.priceCurrency, 'EUR', rel);
-    assert.equal(app.offers.priceSpecification.unitCode, 'MON', rel);
+    assert.doesNotMatch(JSON.stringify(app.featureList), /5 a 25|5–25|Battles entre|between students|streaks|Mini-li/, `${rel} feature list matches the app`);
     assert.ok(app.featureList.length >= 8, rel);
     assert.ok(app.featureList.some((f) => /Tutor/.test(f)), rel);
     if (path !== '/' && path !== '/en/') {
@@ -221,7 +224,7 @@ try {
   assert.match(homePt, /Serve para qualquer curso/);
   assert.doesNotMatch(homePt, /estudantes de Direito/);
   assert.match(homePt, /mapa da matéria/);
-  assert.match(homePt, /5 a 25 minutos/);
+  assert.doesNotMatch(homePt, /5 a 25 minutos|entre 5 e 25|escolhes a duração/);
   assert.match(homePt, /Feito a partir do teu material/);
   assert.match(homePt, /já trabalhaste/);
   assert.match(homePt, /Que ficheiros posso carregar\?/);
@@ -230,7 +233,7 @@ try {
   assert.match(homeEn, /Subject Map/);
   assert.match(homeEn, /Built for any course/);
   assert.match(homeEn, /short sessions/i);
-  assert.match(homeEn, /5–25 minute/);
+  assert.doesNotMatch(homeEn, /5–25 minute|between 5 and 25|choose its duration/);
   assert.doesNotMatch(homeEn, /law students/);
   assert.match(homeEn, /The map is the means/);
   assert.match(homeEn, /Built from your own material/);
@@ -240,7 +243,7 @@ try {
   assert.match(homePt, /Para qualquer curso ou disciplina, do ensino básico ao superior/);
   assert.match(homePt, /Apontamentos, manual, sebenta ou slides/);
   assert.match(homePt, /para veres como os temas se ligam/);
-  assert.match(homePt, /Ao iniciares uma sessão, escolhes a duração: entre 5 e 25 minutos/);
+  assert.match(homePt, /Ao iniciares uma sessão, escolhes quantos itens queres estudar: 5, 10, 20 ou os que quiseres/);
   assert.match(homePt, /estrutura da disciplina, tópico a tópico/);
   assert.match(homePt, /na tua disciplina/);
   assert.match(homePt, /muitas disciplinas/);
@@ -266,7 +269,7 @@ try {
   assert.match(homeEn, /Upload your material/);
   assert.match(homeEn, /See your Subject Map/);
   assert.match(homeEn, /Study in short sessions/);
-  assert.match(homeEn, /When you start a session, you choose its duration: between 5 and 25 minutes/);
+  assert.match(homeEn, /When you start a session, you choose how many items to study: 5, 10, 20 or your own number/);
   assert.match(homeEn, /for your subject/);
   assert.match(homeEn, /several subjects to study/);
   assert.match(homeEn, /data-step-demo="map"/);
@@ -285,11 +288,37 @@ try {
   for (const html of [homePt, homeEn]) {
     const upload = stepDemo(html, 'upload');
     const map = stepDemo(html, 'map');
-    assert.doesNotMatch(upload, /data-min|session-times|session-clock/);
-    assert.doesNotMatch(map, /data-min|session-times|session-clock/);
+    assert.doesNotMatch(upload, /data-items|session-times|session-clock/);
+    assert.doesNotMatch(map, /data-items|session-times|session-clock/);
     assert.match(html, /role="radiogroup"/);
     assert.match(html, /data-session/);
+    // Same presets as the app's session setup: 5, 10 and 20 items, no minute picker.
+    assert.deepEqual([...html.matchAll(/role="radio" data-items="(\d+)"/g)].map((m) => m[1]), ['5', '10', '20']);
+    assert.doesNotMatch(html, /data-min=/);
+    assert.match(html, /data-dv-clock data-total="10">0\/10</);
+    // Formats the app accepts: no PowerPoint, so slides are named as PDF.
+    assert.doesNotMatch(html, /<li[^>]*>Slides<\/li>/);
+    // The section with what the app does beyond the demos.
+    assert.match(html, /class="mg-extras"/);
+    assert.equal((html.match(/class="mx-card /g) ?? []).length, 6);
   }
+  assert.match(homePt, /Slides em PDF/);
+  assert.match(homeEn, /Slides as PDF/);
+  for (const phrase of ['Ajustar mapa', 'Plano de teste', 'Pontos fracos', 'Idioma de estudo', 'Lembretes de estudo', 'Capítulos quando quiseres']) {
+    assert.ok(homePt.includes(phrase), `home shows ${phrase}`);
+  }
+  for (const phrase of ['Adjust map', 'Test plan', 'Weak points', 'Study language', 'Study reminders', 'Chapters when you want them']) {
+    assert.ok(homeEn.includes(phrase), `English home shows ${phrase}`);
+  }
+  // Names as the app shows them in Portuguese.
+  assert.match(homePt, />Sequência</);
+  assert.match(homePt, />Batalhas</);
+  assert.match(homePt, />Focado</);
+  assert.doesNotMatch(homePt, /Battles|[a-z ]battle[ !.]|>Streak<|Locked In|Mini-lição/);
+  // Price: Free to start, paid from Plus on yearly billing.
+  assert.doesNotMatch(`${homePt}${homeEn}`, /Tudo por 4 €|4 € por mês|All for €4|€4 a month/);
+  assert.match(homePt, /os planos pagos começam em 3,99\u00a0€\/mês/);
+  assert.match(homeEn, /paid plans start at €3\.99\/month/);
 
   assert.equal(existsSync(join(out, 'direito', 'index.html')), false);
   assert.equal(existsSync(join(out, 'en', 'law', 'index.html')), false);
@@ -305,9 +334,11 @@ try {
   assert.match(mapa, /<table>/);
   assert.match(mapa, /Serve para qualquer curso/);
   assert.match(mapa, /Mapa da matéria — estrutura da disciplina \| MicroGrind/);
-  assert.match(mapa, /Quando inicias uma sessão de estudo, escolhes a duração: entre 5 e 25 minutos/);
+  assert.match(mapa, /Quando inicias uma sessão de estudo, escolhes quantos itens queres estudar/);
   assert.match(mapa, /conservação da energia/);
-  assert.match(mapa, /Ao iniciares uma sessão de estudo, escolhes a duração, entre 5 e 25 minutos/);
+  assert.match(mapa, /Estudas o mapa lição a lição, com um checkpoint no fim de cada capítulo/);
+  assert.match(mapa, /Ajustar mapa/);
+  assert.doesNotMatch(mapa, /5 a 25|5–25|escolhes a duração/);
   assert.doesNotMatch(mapa, /Direito Penal|irretroatividade|estrutura da cadeira|A partir dele escolhes/);
   assert.doesNotMatch(mapa, /estudantes de Direito/);
   assert.doesNotMatch(mapa, /passagens do documento/);
@@ -321,8 +352,9 @@ try {
 
   const sebenta = read('estudar-sebenta/index.html');
   assert.match(sebenta, /em qualquer curso/);
-  assert.match(sebenta, /Ao iniciares uma sessão, escolhes a duração, entre 5 e 25 minutos/);
-  assert.match(sebenta, /Estudas a matéria organizada no mapa/);
+  assert.match(sebenta, /Ou fazes uma sessão curta: escolhes quantos itens queres estudar/);
+  assert.doesNotMatch(sebenta, /5 a 25|escolhes a duração/);
+  assert.match(sebenta, /Estudas a matéria organizada no mapa, lição a lição/);
   assert.doesNotMatch(sebenta, /href="\/direito\/?"/);
   assert.doesNotMatch(sebenta, /Se estudas Direito, começa/);
   assert.doesNotMatch(sebenta, /passagens do teu ficheiro/);
@@ -330,7 +362,8 @@ try {
   const pdf = read('en/study-from-pdf/index.html');
   assert.match(pdf, /doesn&#39;t just turn a PDF into flashcards|doesn't just turn a PDF into flashcards/);
   assert.match(pdf, /for any course/);
-  assert.match(pdf, /When you start a session, choose a duration between 5 and 25 minutes/);
+  assert.match(pdf, /Or do a short session: choose how many items to study/);
+  assert.doesNotMatch(pdf, /5–25|between 5 and 25|choose a duration/);
   assert.match(pdf, /See your Subject Map/);
   assert.doesNotMatch(pdf, /href="\/en\/law\/?"/);
   assert.doesNotMatch(pdf, /passages of your file/);
@@ -342,11 +375,13 @@ try {
   assert.doesNotMatch(sobre, /mapa mental|mind map/i);
   assert.doesNotMatch(about, /mind map|mapa mental/i);
   assert.match(sobre, /ensino básico, secundário ou superior/);
-  assert.match(sobre, /Ao iniciares uma sessão, escolhes a duração, entre 5 e 25 minutos, e estudas a matéria organizada no mapa/);
+  assert.match(sobre, /Estudas a matéria organizada no mapa, lição a lição ou em sessões curtas em que escolhes quantos itens queres estudar/);
+  assert.doesNotMatch(sobre, /5 a 25|escolhes a duração/);
   assert.doesNotMatch(sobre, /Para universitários/);
   assert.doesNotMatch(sobre, /foco de lançamento/);
   assert.match(about, /primary, secondary or higher education/);
-  assert.match(about, /When you start a session, choose a duration between 5 and 25 minutes and study the material organised in your Subject Map/);
+  assert.match(about, /Study the material organised in your Subject Map, lesson by lesson or in short sessions where you choose how many items to study/);
+  assert.doesNotMatch(about, /5–25|between 5 and 25|choose a duration/);
   assert.match(about, /Built for any course/);
   assert.doesNotMatch(about, /For university students/);
   assert.doesNotMatch(about, /Launch focus is university law/);
@@ -357,8 +392,9 @@ try {
   const subjectPage = read('en/subject-map/index.html');
   assert.match(subjectPage, /For any course/);
   assert.match(subjectPage, /conservation of energy/);
-  assert.match(subjectPage, /When you start a study session, you choose its duration: between 5 and 25 minutes/);
-  assert.match(subjectPage, /When you start a study session, you choose a duration between 5 and 25 minutes/);
+  assert.match(subjectPage, /When you start a study session, you choose how many items to study/);
+  assert.match(subjectPage, /Adjust map/);
+  assert.doesNotMatch(subjectPage, /5–25|between 5 and 25|choose (its|a) duration/);
   assert.doesNotMatch(subjectPage, /Criminal Law|non-retroactivity|href="\/en\/law\/?"/);
   assert.doesNotMatch(subjectPage, /Law students can start/);
   assert.doesNotMatch(subjectPage, /source-linked/);
@@ -412,8 +448,9 @@ try {
     }
     const prices = [...rows.at(-1).matchAll(/<span class="adv-price">([\s\S]*?)<\/span>/g)].map((m) => decode(m[1]));
     assert.equal(prices.length, COMPARE_COLUMNS.length, page.path);
-    assert.equal(prices.at(-1), page.locale === 'pt' ? 'Grátis · pago desde 4 €/mês' : 'Free · paid from €4/month');
-    assert.match(html, page.locale === 'pt' ? /4 € por mês/ : /€4 a month/);
+    assert.equal(prices.at(-1), page.locale === 'pt' ? 'Grátis · pago desde 3,99\u00a0€/mês' : 'Free · paid from €3.99/month');
+    assert.doesNotMatch(html, /4 € por mês|€4 a month|5 a 25|5–25/);
+    assert.match(html, page.locale === 'pt' ? /Há um plano Grátis/ : /There is a Free plan/);
     assert.match(html, /https:\/\/quizlet\.com\/upgrade/);
     assert.doesNotMatch(html, /Studingo|N\/D|N\/A/);
     assert.equal((html.match(/<summary>/g) ?? []).length, 5, page.path);
@@ -725,11 +762,33 @@ try {
   assert.equal(existsSync(join(siteStatic, 'en', 'law', 'index.html')), false);
 
   // Pricing page: numbers match the app, both languages are paired, every card renders.
-  assert.equal(TUTOR_AVERAGE_MESSAGE_TOKENS, APP_AVG_TOKENS, 'tutor message divisor matches the app');
   for (const [code, plan] of Object.entries(PLAN_FACTS)) {
-    assert.equal(plan.tutorTokens, TUTOR_PLAN_TOKEN_WINDOWS[code], `${code} tutor tokens match the app`);
+    assert.equal(plan.credits, PLAN_CREDITS[code], `${code} AI credits match the app`);
     assert.equal(plan.exams, EXAM_SIMULATIONS[code], `${code} exam simulations match the app`);
   }
+  assert.equal(creditsPerMapPage(), 18, 'a 3 000-character map page costs 18 credits, like mapCredits(3000)');
+  assert.deepEqual(
+    Object.fromEntries(Object.keys(PLAN_FACTS).map((code) => [code, mapPages(PLAN_FACTS[code].credits)])),
+    { free: 55, plus: 111, pro: 222, ultra: 555, season: 333 },
+    'map pages per plan, floored like the app'
+  );
+  assert.equal(cheapestMonthlyCents(), 399, 'cheapest paid price: Plus yearly, €3.99 a month');
+  assert.deepEqual(planCard('plus', 'pt').facts, [
+    'Mapa da matéria, lições, flashcards, quizzes e modo exame',
+    '2\u202f000 créditos de IA por mês, para o tutor, exercícios, mapas e exames',
+    'Dá para ≈ 2\u202f000 mensagens do tutor ou ≈ 111 páginas de mapa',
+    '3 simulações de exame com IA por mês',
+    'Os créditos de IA renovam todos os meses, também no plano anual',
+  ]);
+  assert.deepEqual(planCard('free', 'en').facts, [
+    'Subject Map, lessons, flashcards, quizzes and exam mode',
+    '1,000 AI credits (once), for the tutor, exercises, maps and exams',
+    'Enough for ≈ 1,000 tutor messages or ≈ 55 map pages',
+    'No AI exam simulations',
+  ]);
+  assert.ok(planCard('season', 'pt').facts.includes('6\u202f000 créditos de IA ao longo de 8 semanas, para o tutor, exercícios, mapas e exames'));
+  assert.ok(planCard('pro', 'en').facts.includes('Advanced tutor mode'));
+  assert.equal(euros(cheapestMonthlyCents(), 'pt'), '3,99\u00a0€');
   assert.ok(PAIRS.some((pair) => pair.pt === pricingPair.pt && pair.en === pricingPair.en));
   for (const [rel, prices] of [
     ['planos/index.html', ['4,99\u00a0€', '9,99\u00a0€', '24,99\u00a0€', '19,99\u00a0€', '47,90\u00a0€', '95,90\u00a0€', '239,90\u00a0€']],
@@ -739,6 +798,8 @@ try {
     assert.equal((html.match(/class="pl-card/g) ?? []).length, 5, rel);
     for (const price of prices) assert.ok(html.includes(price), `${rel} shows ${price}`);
     assert.ok(html.includes('href="https://microgrind.app/app/plans"'), `${rel} links to the app plans screen`);
+    assert.doesNotMatch(html, /caracteres|characters|tokens/i, `${rel} no longer sells the retired character and token limits`);
+    assert.match(html, rel.startsWith('en/') ? /AI credits/ : /créditos de IA/, `${rel} sells AI credits`);
   }
 
   // Homepage: each study mode has its own anchor, and each studio tab names it.

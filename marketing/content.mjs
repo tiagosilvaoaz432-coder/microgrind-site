@@ -1,14 +1,15 @@
 /**
- * Safe SEO copy (Bea, 5 Nov 2026, Tiago ~21:55 Europe/Lisbon).
+ * Safe SEO copy (Bea, 5 Nov 2026, Tiago ~21:55 Europe/Lisbon), updated 21 Nov 2026 to match the app.
  * Any course, any level: básico, secundário, superior.
- * Duration is chosen when a study session starts, never on the map.
+ * Sessions: the student picks how many items to study (5, 10, 20 or a custom number), as in the app's
+ * session setup. There is no minute picker, so the copy never says "you choose 5–25 minutes".
  * Niche pages /direito and /en/law are retired (redirect, do not link).
  * Lines marked [após OK Duarte] are not included: no exact-excerpt,
  * validation, "não inventa", or concept-mastery claims.
  * The comparison page (one table with every app) lives in compare.mjs.
  */
 import { compareLinks, comparePages, comparePair } from './compare.mjs';
-import { pricingPages, pricingPair } from './plans.mjs';
+import { cheapestMonthlyCents, euros, pricingPages, pricingPair } from './plans.mjs';
 
 export const ORIGIN = 'https://microgrind.app';
 export const WEB_APP = 'https://microgrind.app/app/';
@@ -28,8 +29,8 @@ export const PAIRS = [
 ];
 
 export const DEFINITION = {
-  pt: 'A MicroGrind é uma app de estudo que monta o mapa da matéria — tópicos, conceitos, definições e relações — a partir da tua sebenta, manual ou slides, e depois põe-te a estudar em sessões de 5 a 25 minutos. Serve para qualquer curso. Sessões curtas. Progresso real.',
-  en: 'MicroGrind is a study app that builds a Subject Map — topics, concepts, definitions and how they connect — from your own notes, textbook or slides, then has you study it in 5–25 minute sessions. Built for any course. Short sessions. Real progress.',
+  pt: 'A MicroGrind é uma app de estudo que monta o mapa da matéria — tópicos, conceitos, definições e relações — a partir da tua sebenta, manual ou slides, e depois põe-te a estudar capítulo a capítulo, em sessões de poucos minutos. Serve para qualquer curso. Sessões curtas. Progresso real.',
+  en: 'MicroGrind is a study app that builds a Subject Map — topics, concepts, definitions and how they connect — from your own notes, textbook or slides, then has you study it chapter by chapter, in sessions of a few minutes. Built for any course. Short sessions. Real progress.',
 };
 
 export const MIND_MAP_FAQ = {
@@ -81,7 +82,7 @@ const PT_TABLE = {
   rows: [
     ['Origem', 'Ideias livres', 'O teu documento (sebenta, manual, slides)'],
     ['Forma', 'Diagrama visual', 'Estrutura: tópicos → conceitos → definições → relações'],
-    ['Para quê', 'Brainstorm, resumo visual', 'Gerar e organizar sessões de estudo de 5–25 min'],
+    ['Para quê', 'Brainstorm, resumo visual', 'Gerar lições e organizar sessões de estudo curtas'],
   ],
 };
 
@@ -91,7 +92,7 @@ const EN_TABLE = {
   rows: [
     ['Source', 'Free ideas', 'Your document (notes, textbook, slides)'],
     ['Shape', 'Visual diagram', 'Structure: topics → concepts → definitions → relations'],
-    ['Purpose', 'Brainstorming, visual summary', 'Building and ordering 5–25 min study sessions'],
+    ['Purpose', 'Brainstorming, visual summary', 'Building lessons and short study sessions'],
   ],
 };
 
@@ -118,6 +119,10 @@ const INSTALL_FAQ = {
       a: 'É a mesma MicroGrind, com a mesma conta e o mesmo progresso. Abre pelo ícone, em ecrã inteiro, sem a barra do browser.',
     },
     {
+      q: 'Recebo notificações com a app instalada?',
+      a: 'Sim. Liga as notificações nas Definições da app para receberes o lembrete de estudo, mesmo com a app fechada. No iPhone e no iPad, só funcionam com o iOS 16.4 ou mais recente e com a MicroGrind aberta a partir do ecrã principal.',
+    },
+    {
       q: 'Como tiro a app do telemóvel?',
       a: 'Como qualquer outra app: mantém o ícone premido e escolhe Remover app (iPhone) ou Desinstalar (Android).',
     },
@@ -134,6 +139,10 @@ const INSTALL_FAQ = {
     {
       q: 'Is the installed app different from the web version?',
       a: 'It is the same MicroGrind, with the same account and the same progress. It opens from its icon, full screen, without the browser bar.',
+    },
+    {
+      q: 'Do I get notifications with the installed app?',
+      a: 'Yes. Turn on notifications in the app\'s Settings to get your study reminder, even with the app closed. On iPhone and iPad, they only work on iOS 16.4 or later, with MicroGrind opened from the Home Screen.',
     },
     {
       q: 'How do I remove the app from my phone?',
@@ -192,7 +201,7 @@ export const pages = [
     enPath: '/en/subject-map/',
     title: 'Mapa da matéria — estrutura da disciplina | MicroGrind',
     description:
-      'O mapa da matéria da MicroGrind organiza a tua sebenta em tópicos e conceitos. Não é um mapa mental. Estuda em sessões de 5–25 min. Para qualquer curso.',
+      'O mapa da matéria da MicroGrind organiza a tua sebenta em capítulos, tópicos e conceitos. Não é um mapa mental. Estuda em sessões curtas. Para qualquer curso.',
     kicker: 'Mapa da matéria',
     h1: 'O mapa da matéria',
     lede: DEFINITION.pt,
@@ -200,7 +209,7 @@ export const pages = [
       { type: 'h2', text: 'O que é' },
       {
         type: 'p',
-        text: 'O mapa da matéria é a estrutura da tua disciplina: tópicos, conceitos, definições e relações, organizada a partir dos teus apontamentos, do manual, da sebenta ou dos slides. O mapa organiza a matéria. Quando inicias uma sessão de estudo, escolhes a duração: entre 5 e 25 minutos.',
+        text: 'O mapa da matéria é a estrutura da tua disciplina: tópicos, conceitos, definições e relações, organizada a partir dos teus apontamentos, do manual, da sebenta ou dos slides. O mapa organiza a matéria em capítulos e lições. Quando inicias uma sessão de estudo, escolhes quantos itens queres estudar.',
       },
       {
         type: 'p',
@@ -223,8 +232,13 @@ export const pages = [
         items: [
           'Carregas os apontamentos, o manual, a sebenta ou os slides.',
           'A app monta o mapa da matéria: tópicos, conceitos, definições e relações.',
-          'Ao iniciares uma sessão de estudo, escolhes a duração, entre 5 e 25 minutos, e estudas a matéria organizada no mapa.',
+          'Estudas o mapa lição a lição, com um checkpoint no fim de cada capítulo, ou em sessões curtas em que escolhes quantos itens queres estudar.',
         ],
+      },
+      { type: 'h2', text: 'Capítulos quando quiseres e ajustes ao mapa' },
+      {
+        type: 'p',
+        text: 'O mapa gera logo a estrutura completa e o primeiro capítulo. Os outros geras quando lá chegares, e vês antes os créditos de IA que vão usar. Se quiseres mudar alguma coisa, usas «Ajustar mapa»: pedes por escrito uma lição mais simples, mais exemplos, outra ordem ou dividir e juntar capítulos, vês as alterações antes de aplicar e podes desfazer durante 7 dias.',
       },
       faq('pt', 'Perguntas frequentes'),
       { type: 'cta', href: WEB_APP, label: 'Começar em microgrind.app' },
@@ -238,11 +252,11 @@ export const pages = [
     enPath: '/en/study-from-pdf/',
     title: 'Estudar a partir da sebenta e do PDF | MicroGrind',
     description:
-      'Carrega a sebenta, o PDF ou os slides. A MicroGrind monta primeiro o mapa da matéria e só depois sessões de 5 a 25 minutos. Não é só PDF→flashcards.',
+      'Carrega a sebenta, o PDF ou os slides. A MicroGrind monta primeiro o mapa da matéria e só depois as lições e as sessões curtas. Não é só PDF→flashcards.',
     kicker: 'Sebenta e PDF',
     h1: 'Estudar a partir do PDF — primeiro o mapa, depois o estudo.',
     lede:
-      'A MicroGrind não transforma apenas um PDF em cartões. Primeiro monta o mapa da matéria do documento e, a partir dele, cria sessões de estudo de 5 a 25 minutos.',
+      'A MicroGrind não transforma apenas um PDF em cartões. Primeiro monta o mapa da matéria do documento e, a partir dele, cria lições e sessões de estudo curtas.',
     blocks: [
       { type: 'h2', text: 'Porque saltar do PDF para as perguntas corre mal' },
       {
@@ -255,8 +269,8 @@ export const pages = [
         items: [
           'Carregas o ficheiro: PDF, Word, texto ou uma fotografia dos apontamentos.',
           'Vês o mapa da matéria.',
-          'Ao iniciares uma sessão, escolhes a duração, entre 5 e 25 minutos.',
-          'Estudas a matéria organizada no mapa.',
+          'Estudas a matéria organizada no mapa, lição a lição.',
+          'Ou fazes uma sessão curta: escolhes quantos itens queres estudar.',
         ],
       },
       { type: 'h2', text: 'A partir do teu material' },
@@ -276,7 +290,7 @@ export const pages = [
     enPath: '/en/about/',
     title: 'Sobre a MicroGrind | MicroGrind',
     description:
-      'A MicroGrind é uma app de estudo que monta o mapa da matéria a partir da tua sebenta e organiza sessões de 5 a 25 minutos. Para qualquer curso.',
+      'A MicroGrind é uma app de estudo que monta o mapa da matéria a partir da tua sebenta e organiza o estudo em lições e sessões curtas. Para qualquer curso.',
     kicker: 'Sobre',
     h1: 'Sobre a MicroGrind',
     lede: DEFINITION.pt,
@@ -296,9 +310,9 @@ export const pages = [
       {
         type: 'list',
         items: [
-          'Carregas a matéria: PDF, sebenta, manual ou slides.',
+          'Carregas a matéria: PDF, Word, texto ou fotos dos apontamentos, da sebenta, do manual ou dos slides.',
           'Vês o mapa da matéria, com tópicos, conceitos, definições e relações.',
-          'Ao iniciares uma sessão, escolhes a duração, entre 5 e 25 minutos, e estudas a matéria organizada no mapa.',
+          'Estudas a matéria organizada no mapa, lição a lição ou em sessões curtas em que escolhes quantos itens queres estudar.',
         ],
       },
       {
@@ -330,7 +344,7 @@ export const pages = [
     enPath: '/en/subject-map/',
     title: 'Subject Map vs mind map — what\'s the difference? | MicroGrind',
     description:
-      'MicroGrind\'s Subject Map turns your own document into topics and concepts. Not a mind map. Study it in 5–25 minute sessions. For any course.',
+      'MicroGrind\'s Subject Map turns your own document into chapters, topics and concepts. Not a mind map. Study it in short sessions. For any course.',
     kicker: 'Subject Map',
     h1: 'Subject Map vs mind map',
     h1Negation: true,
@@ -341,7 +355,7 @@ export const pages = [
       { type: 'h2', text: 'What is a Subject Map?' },
       {
         type: 'p',
-        text: 'A Subject Map is the structure of your subject: topics, concepts, definitions and how they connect, organised from your own notes, textbook or slides. The map organises the material. When you start a study session, you choose its duration: between 5 and 25 minutes.',
+        text: 'A Subject Map is the structure of your subject: topics, concepts, definitions and how they connect, organised from your own notes, textbook or slides. The map organises the material into chapters and lessons. When you start a study session, you choose how many items to study.',
       },
       {
         type: 'p',
@@ -362,7 +376,12 @@ export const pages = [
       { type: 'h2', text: 'Why structure beats a diagram for studying' },
       {
         type: 'p',
-        text: 'The Subject Map organises your material into topics and concepts for study. When you start a study session, you choose a duration between 5 and 25 minutes.',
+        text: 'The Subject Map organises your material into topics and concepts for study. You work through it lesson by lesson, with a checkpoint at the end of each chapter, or in short sessions where you choose how many items to study.',
+      },
+      { type: 'h2', text: 'Chapters when you want them, and changes to the map' },
+      {
+        type: 'p',
+        text: 'Your map gets its full structure and first chapter straight away. You generate the others when you get there, and see the AI credits they will use first. To change something, use Adjust map: ask in writing for a simpler lesson, more examples, a different order or to split and merge chapters, see the changes before applying them and undo for 7 days.',
       },
       { type: 'h2', text: 'Is it the same as a syllabus map or a course map?' },
       {
@@ -389,11 +408,11 @@ export const pages = [
     enPath: '/en/study-from-pdf/',
     title: 'Study from your PDFs and notes — Subject Map first | MicroGrind',
     description:
-      'Upload your PDFs, notes or slides. MicroGrind builds a Subject Map first, then short 5–25 min study sessions. Not just PDF-to-flashcards. For any course.',
+      'Upload your PDFs, notes or slides. MicroGrind builds a Subject Map first, then lessons and short study sessions. Not just PDF-to-flashcards. For any course.',
     kicker: 'PDFs and notes',
     h1: 'Study from your PDFs — map first, then study.',
     lede:
-      'MicroGrind doesn\'t just turn a PDF into flashcards. It first builds a Subject Map of the document, then creates study sessions of 5–25 minutes from that map.',
+      'MicroGrind doesn\'t just turn a PDF into flashcards. It first builds a Subject Map of the document, then creates lessons and short study sessions from that map.',
     blocks: [
       { type: 'h2', text: 'Why jumping from a PDF to questions falls short' },
       {
@@ -406,8 +425,8 @@ export const pages = [
         items: [
           'Upload a PDF, a Word file, text or a photo of your notes.',
           'See your Subject Map.',
-          'When you start a session, choose a duration between 5 and 25 minutes.',
-          'Study the material organised in your Subject Map.',
+          'Study the material organised in your Subject Map, lesson by lesson.',
+          'Or do a short session: choose how many items to study.',
         ],
       },
       { type: 'h2', text: 'Built from your document' },
@@ -427,7 +446,7 @@ export const pages = [
     enPath: '/en/about/',
     title: 'About MicroGrind | MicroGrind',
     description:
-      'MicroGrind is a study app that builds a Subject Map from your notes, textbook or slides and turns it into 5–25 minute sessions. For any course.',
+      'MicroGrind is a study app that builds a Subject Map from your notes, textbook or slides and turns it into lessons and short sessions. For any course.',
     kicker: 'About',
     h1: 'About MicroGrind',
     lede: DEFINITION.en,
@@ -447,9 +466,9 @@ export const pages = [
       {
         type: 'list',
         items: [
-          'Upload the material: PDF, notes, textbook or slides.',
+          'Upload the material: PDF, Word, text or photos of your notes, course pack, textbook or slides.',
           'See the Subject Map: topics, concepts, definitions and relations.',
-          'When you start a session, choose a duration between 5 and 25 minutes and study the material organised in your Subject Map.',
+          'Study the material organised in your Subject Map, lesson by lesson or in short sessions where you choose how many items to study.',
         ],
       },
       {
@@ -484,7 +503,7 @@ const CHROME_COURSES = {
 export const HOME = {
   pt: {
     description:
-      'App de estudo: monta o mapa da matéria a partir da tua sebenta, manual ou slides. Sessões de 5 a 25 min, flashcards, quizzes e exames. 4 €/mês.',
+      `App de estudo: monta o mapa da matéria a partir da tua sebenta, manual ou slides. Lições, flashcards, quizzes, exames e tutor IA. Grátis; pago desde ${euros(cheapestMonthlyCents(), 'pt')}/mês.`,
     links: [
       { href: '/mapa-da-materia/', label: 'Mapa da matéria' },
       { href: '/estudar-sebenta/', label: 'Estudar a sebenta' },
@@ -498,7 +517,7 @@ export const HOME = {
   },
   en: {
     description:
-      'Study app: builds a Subject Map from your notes, textbook or slides. 5–25 minute sessions, flashcards, quizzes and mock exams. €4 a month.',
+      `Study app: builds a Subject Map from your notes, textbook or slides. Lessons, flashcards, quizzes, mock exams and an AI tutor. Free; paid from ${euros(cheapestMonthlyCents(), 'en')}/month.`,
     links: [
       { href: '/en/subject-map/', label: 'Subject Map' },
       { href: '/en/study-from-pdf/', label: 'Study from PDFs' },
