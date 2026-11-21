@@ -7,7 +7,11 @@ Fontes das páginas públicas de https://microgrind.app (PT-PT e inglês). Não 
 - `marketing/` — gerador do site (Node.js, sem dependências): conteúdo, render, CSS/JS e o teste.
   - `marketing/practice/` — conteúdo das páginas gratuitas **Praticar** (`/praticar/…`): mini-testes e flashcards por disciplina.
   - `marketing/practice-page.mjs`, `practice.js`, `practice.css` — render e interatividade dessas páginas.
-- `site-static/` — output gerado (HTML, CSS, `sitemap.xml`, `robots.txt`, `_redirects`). Está no git; o teste falha se estiver desatualizado.
+- `site-static/` — output gerado (HTML, CSS minificado, `sitemap.xml`, `robots.txt`, `_redirects`, `_headers`, `404.html`). Está no git; o teste falha se estiver desatualizado.
+  - `marketing/assets.mjs` — cada CSS/JS/fonte é publicado com `?v=<hash do conteúdo>`; o `_headers` guarda-os em cache durante um ano. Não há versões para mudar à mão.
+  - `marketing/lastmod.json` — data da última alteração do conteúdo (`<main>`) de cada página, usada no `sitemap.xml`. O `npm run build` atualiza-o sozinho; faz commit dele com o resto.
+  - `_headers` — `noindex` na web app (`/app/*`) e nas cópias em `*.pages.dev`; o `assemble-pages-site.mjs` junta-o ao `_headers` da app.
+  - `404.html` — o Cloudflare Pages devolve-o com código 404 para endereços que não existem (sem ele, mostrava a página inicial com 200).
 - `deploy/site-root/` — ficheiros que só existem no site publicado (favicons, `og.png`, `logo-mark.png`).
 - `lib/ga4.mjs` — Google Analytics/pixel (só depois do consentimento). Cópia do `lib/ga4.ts` da app.
 - `lib/app-limits.mjs` — números dos planos copiados da app.

@@ -3,6 +3,7 @@
  * Used by the homepage (home.mjs) and by every content page (render.mjs).
  */
 import { FEATURE_ANCHORS } from './anchors.mjs';
+import { assetUrl, fontUrl } from './assets.mjs';
 import { CHROME, CONTACT_EMAIL } from './content.mjs';
 
 export function esc(value) {
@@ -13,8 +14,8 @@ export function esc(value) {
     .replaceAll('"', '&quot;');
 }
 
-/** Bump when mg.css / mg.js change so returning visitors get the new files. */
-export const ASSET_VERSION = '2026-11-12b';
+/** Kept for older imports: the version of mg.css, which changes whenever the file does (assets.mjs). */
+export const ASSET_VERSION = assetUrl('mg.css').split('?v=')[1];
 
 export const NAV = {
   pt: [
@@ -61,15 +62,17 @@ const UI = {
   en: { install: 'Install', menu: 'Menu', product: 'Product', learn: 'Learn more', langName: 'Português', features: 'Show features' },
 };
 
-/** Fonts, design-system stylesheet and script. `extraCss` keeps older page stylesheets first. */
+/**
+ * Fonts, design-system stylesheet and script, all with content-hash versions (assets.mjs).
+ * `extraCss` names older page stylesheets (e.g. 'marketing.css'), loaded first.
+ */
 export function headAssets(extraCss = []) {
-  const v = ASSET_VERSION;
   return [
-    `<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>`,
-    `<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>`,
-    ...extraCss.map((href) => `<link rel="stylesheet" href="${href}">`),
-    `<link rel="stylesheet" href="/mg.css?v=${v}">`,
-    `<script src="/mg.js?v=${v}" defer></script>`,
+    `<link rel="preload" href="${fontUrl('geist.woff2')}" as="font" type="font/woff2" crossorigin>`,
+    `<link rel="preload" href="${fontUrl('bricolage.woff2')}" as="font" type="font/woff2" crossorigin>`,
+    ...extraCss.map((name) => `<link rel="stylesheet" href="${assetUrl(name.replace(/^\//, ''))}">`),
+    `<link rel="stylesheet" href="${assetUrl('mg.css')}">`,
+    `<script src="${assetUrl('mg.js')}" defer></script>`,
   ].join('\n');
 }
 

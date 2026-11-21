@@ -10,7 +10,7 @@ export const normal = {
   subject: 'Distribuição normal (Estatística)',
   level: 'Ensino superior',
   kicker: 'Estatística',
-  title: 'Distribuição normal: 10 exercícios resolvidos passo a passo | MicroGrind',
+  title: 'Distribuição normal: 10 exercícios resolvidos | MicroGrind',
   description: 'Exercícios resolvidos de distribuição normal: padronização, probabilidades, percentis e média amostral. Escolhe a resposta e vê a resolução.',
   h1: 'Exercícios de distribuição normal resolvidos',
   lede: 'Dez exercícios de escolha múltipla sobre a distribuição normal. Em cada um, escolhe a resposta e abre a resolução passo a passo.',

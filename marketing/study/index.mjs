@@ -42,7 +42,7 @@ export const studyGuides = GUIDES.map((guide) => {
 export const STUDY_HUB = {
   path: '/estudar/',
   kicker: 'Como estudar',
-  title: 'Como estudar cada disciplina: guias grátis com plano e mini-teste | MicroGrind',
+  title: 'Como estudar cada disciplina: guias grátis | MicroGrind',
   description: 'Guias grátis de como estudar Direito, Estatística, Matemática, Economia, Anatomia, Português, História e mais: o que estudar, plano e mini-teste.',
   h1: 'Como estudar a tua disciplina',
   lede: 'Guias práticos por disciplina: o que estudar e por que ordem, um plano de 4 semanas, os erros mais comuns e um mini-teste para começares já.',

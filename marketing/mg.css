@@ -2466,3 +2466,12 @@ html.ig-lock {
 .mx-card .pg-head { margin-bottom: 0; }
 .mx-card .pg-head h3 { font-size: 1.15rem; }
 .mx-card .pg-note { margin-top: 14px; }
+
+/* ---------- 404 ---------- */
+.nf { padding-block: clamp(120px, 18vw, 180px) clamp(64px, 10vw, 120px); max-width: 760px; }
+.nf .kicker { margin-bottom: 14px; }
+.nf-lede { color: var(--ink-2); font-size: 1.05rem; margin-top: 14px; }
+.nf-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.nf-links { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 32px 0 0; padding: 0; list-style: none; }
+.nf-links a { color: var(--ink-2); }
+.nf-links a:hover { color: var(--ink); }

@@ -342,7 +342,7 @@ export const pages = [
     path: '/en/subject-map/',
     ptPath: '/mapa-da-materia/',
     enPath: '/en/subject-map/',
-    title: 'Subject Map vs mind map — what\'s the difference? | MicroGrind',
+    title: 'Subject Map vs mind map: the difference | MicroGrind',
     description:
       'MicroGrind\'s Subject Map turns your own document into chapters, topics and concepts. Not a mind map. Study it in short sessions. For any course.',
     kicker: 'Subject Map',
@@ -406,7 +406,7 @@ export const pages = [
     path: '/en/study-from-pdf/',
     ptPath: '/estudar-sebenta/',
     enPath: '/en/study-from-pdf/',
-    title: 'Study from your PDFs and notes — Subject Map first | MicroGrind',
+    title: 'Study from PDFs and notes — Subject Map first | MicroGrind',
     description:
       'Upload your PDFs, notes or slides. MicroGrind builds a Subject Map first, then lessons and short study sessions. Not just PDF-to-flashcards. For any course.',
     kicker: 'PDFs and notes',

@@ -500,13 +500,14 @@ try {
   assert.deepEqual(redirectTo('/en/vs-astra-ai'), { destination: '/en/compare/', code: '301' });
   assert.equal([...redirects.matchAll(/^\/comparar|^\/en\/compare/gm)].length, 0, 'the comparison page itself is never redirected');
 
-  const css = read('marketing.css');
+  // Rule checks read the CSS sources; the published files are minified (assets.mjs).
+  const css = readFileSync(join(here, 'site.css'), 'utf8');
   assert.match(css, /\.compare-adv td\.adv/);
   assert.match(css, /\.compare-hub\{overflow-x:auto/);
   assert.match(css, /\.compare-hub table\{width:100%;min-width:52rem;table-layout:fixed\}/);
   assert.match(css, /\.adv-yes \.adv-glyph\{color:#042f2e;background:#5eead4\}/);
   assert.match(css, /\.adv-no \.adv-glyph\{color:#4c0519;background:#fecdd3\}/);
-  const motion = read('motion.css');
+  const motion = readFileSync(join(here, 'motion.css'), 'utf8');
   assert.match(motion, /\.step-demo/);
   assert.match(motion, /prefers-reduced-motion/);
   assert.doesNotMatch(motion, /session-times|data-min/);
@@ -519,7 +520,7 @@ try {
   assert.match(runtime, /prefers-reduced-motion: reduce/);
   assert.match(runtime, /onMotionChange\(armReveals\)/, 'reveals must settle when reduced motion turns on');
   assert.match(runtime, /if \(reduced\(\)\) \{ show\(beats\.length\); return; \}/, 'step demos must settle with reduced motion');
-  const designCss = read('mg.css');
+  const designCss = readFileSync(join(here, 'mg.css'), 'utf8');
   assert.match(designCss, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(designCss, /\[hidden\] \{ display: none !important; \}/);
   for (const font of ['bricolage.woff2', 'geist.woff2', 'geist-mono.woff2']) {
@@ -592,7 +593,7 @@ try {
   assert.match(sobre, /data-who-levels/);
   assert.match(sobre, /Ensino básico/);
   assert.match(sobre, /Qualquer curso ou disciplina — do teu material\./);
-  assert.match(sobre, /href="\/motion.css"/);
+  assert.match(sobre, /href="\/motion\.css\?v=[0-9a-f]{10}"/);
   assert.match(sobre, /addEventListener\('change', onMotion\)/);
   assert.match(sobre, /Para quem estuda no ensino básico, secundário ou superior/);
   assert.doesNotMatch(sobre, /who-examples|>Direito<|>Gestão<|>Engenharia</);
@@ -600,7 +601,7 @@ try {
   assert.match(about, />Primary</);
   assert.match(about, />Higher education</);
   assert.match(about, /Any course or subject — from your own material\./);
-  assert.match(about, /href="\/motion.css"/);
+  assert.match(about, /href="\/motion\.css\?v=[0-9a-f]{10}"/);
   assert.match(about, /primary, secondary or higher education/);
   assert.doesNotMatch(about, /who-examples|>Law<|>Management<|>Engineering</);
 
@@ -666,7 +667,7 @@ try {
   }
   assert.match(runtime, /mgLoadAnalytics/);
 
-  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', '_redirects'];
+  const committedRels = [...expected.keys(), 'privacidade/index.html', 'en/privacy/index.html', 'sitemap.xml', 'robots.txt', 'marketing.css', 'motion.css', 'practice.css', 'practice.js', '_redirects', '_headers', '404.html'];
   for (const rel of committedRels) {
     const fresh = read(rel);
     const committed = readFileSync(join(siteStatic, rel), 'utf8');
